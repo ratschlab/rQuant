@@ -176,11 +176,11 @@ for g = 1:length(genes),
   end
   try
     [coverage excluded_reads pair_ok] = get_coverage_per_read(CFG, gene, 1);
+    coverage = sum(coverage,2);
   catch
     pair_ok = 0;
   end;
   if ~pair_ok, continue; end
-  coverage = sum(coverage,2);
   b([1:size(profiles,2)]+p_offset,1) = -coverage(exon_mask_idx(TR.mask([1:profiles_len]+mask_offset)>0));
   mask_offset = mask_offset + profiles_len;
   p_offset = p_offset + size(profiles,2);
@@ -462,9 +462,9 @@ switch optimizer
   %how = lp_set_param(lpenv, 'CPX_PARAM_BARTHREADS', 1, 1); 
   %how = lp_set_param(lpenv, 'CPX_PARAM_THREADS', 4, 1); 
   %how = lp_set_param(lpenv, 'CPX_PARAM_THREADS', 8, 1); 
-  fprintf('\nStarting optimising...\n');
-  tic; [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows - 2*(tau_len + kappa_len + theta_len), 1, 'bar');
-  fprintf('\nTook %.1fs.\n', toc);
+  if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
+  [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows - 2*(tau_len + kappa_len + theta_len), double(CFG.VERBOSE>0), 'bar');
+  if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
   if ~isequal(how,'OK')
     warning(sprintf('CPLEX: %s\n',how));
   end
@@ -473,9 +473,14 @@ switch optimizer
  case 'mosek'
   idx_eq = 1:num_rows-2*(tau_len + kappa_len + theta_len);
   idx_neq = num_rows-2*(tau_len + kappa_len + theta_len)+1:num_rows;
-  fprintf('\nStarting optimising...\n');
-  tic; [xopt, lambda] = quadprog(Q, obj, sparse(A(idx_neq,:)), b(idx_neq), sparse(A(idx_eq,:)), b(idx_eq), LB, UB, [], optimset('Display', 'iter'));
-  fprintf('\nTook %.1fs.\n', toc);
+  if CFG.VERBOSE>0,
+    display_mode = 'iter';
+  else
+    display_mode = 'off';
+  end
+  if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
+  [xopt, lambda] = quadprog(Q, obj, sparse(A(idx_neq,:)), b(idx_neq), sparse(A(idx_eq,:)), b(idx_eq), LB, UB, [], optimset('Display', display_mode));
+  if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
  otherwise
   error('unknown optimizer %s', CFG.optimizer);
 end

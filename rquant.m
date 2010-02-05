@@ -10,6 +10,7 @@ if CFG.use_rproc,
   DEBUG = 0;
 else
   DEBUG = 1;
+  CFG.VERBOSE = 2;
 end
 
 %%%% load genes
