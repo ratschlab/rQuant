@@ -42,6 +42,26 @@ function [weights, betas, xis, loss] = opt_transcripts(CFG, gene, coverage, exon
 
 INF = 1e20;
 
+% subsample if problem gets to large
+max_num_exm = 20000;
+if sum(max(exon_mask,[],2))>max_num_exm
+  p = max_num_exm/sum(max(exon_mask,[],2));
+  if CFG.VERBOSE>0, fprintf('subsampling positions p=%1.2f\n', p); end
+  pidx = randperm(size(exon_mask,1));
+  pidx = sort(pidx(1:round(p*size(exon_mask,1))));
+  exon_mask = exon_mask(pidx,:);
+  coverage = coverage(pidx, :);
+  assert(size(exon_mask,1)>0 & size(exon_mask,2)>0);
+end
+if size(coverage,2)>max_num_exm/2
+  if CFG.VERBOSE>0, fprintf('summing up %i reads\n', size(coverage,2)); end
+  coverage = sum(coverage,2);
+  for t = 1:length(gene.transcripts),
+    excluded_reads{t} = [];
+  end
+end
+
+
 T = size(exon_mask,2);   % number of transcripts
 P = size(exon_mask,1);   % number of positions
 I = size(intron_mask,1); % number of introns
@@ -49,22 +69,11 @@ R = size(coverage,2);    % number of reads
 
 size_sparse = P*(T+T*R+T) + T*R;
 
-max_mem = 10^9/8;
-if (size_sparse>max_mem)
-  P_new = floor((max_mem-T*R)/(T+T*R+T));
-  assert(P_new<=P);
-  ridx = randperm(P_new);
-  exon_mask = exon_mask(ridx,:);
-  coverage = coverage(ridx,:);
-  fprintf('Subsampled from %i to %i positions (%3.2f)\n', P, P_new, P_new/P);
-  P = size(exon_mask,1);
-end
-
 b_exon = zeros(P*T+R,1);
 Ac = 0; % matrix counter 
 
 size_sparse = P*(T+T*R+T) + T*R;
-assert(size_sparse<=max_mem);
+if CFG.VERBOSE>1, fprintf(1, 'number of nz in A: %i\n', size_sparse); end
 Ai = zeros(1,size_sparse); % row indices
 Aj = zeros(1,size_sparse); % column indices
 Av = zeros(1,size_sparse); % matrix values
@@ -95,7 +104,7 @@ for r = 1:R,
   Ac = Ac+T;
 end
 assert(Ac==size_sparse);
-idx=find(Av);
+idx = find(Av);
 A_exon = sparse(Ai(idx), Aj(idx), Av(idx), P*T+R, T+T*R+P*T+I);
 % intron part 
 b_intron = zeros(I, 1);
@@ -162,21 +171,27 @@ case 'cplex'
   else
     opt_method = 'primal';
   end
-  fprintf('\nStarting optimising...\n');
-  tic; [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows, 1, opt_method);
-  fprintf('\nTook %.1fs.\n', toc);
+  if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
+    [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows, 1, opt_method);
+  % [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows, double(CFG.VERBOSE>1), opt_method);
+  if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
   if ~isequal(how,'OK')
     warning(sprintf('CPLEX: %s\n',how));
   end
 case 'mosek'
   idx_neq = [];
   idx_eq = 1:num_rows;
-  fprintf('\nStarting optimising...\n');
-  tic; [xopt, lambda] = quadprog(Q, obj, sparse(A(idx_neq,:)), b(idx_neq), sparse(A(idx_eq,:)), b(idx_eq), LB, UB, [], optimset('Display', 'iter'));
-  fprintf('\nTook %.1fs.\n', toc);
+  if CFG.VERBOSE>1,
+    display_mode = 'iter';
+  else
+    display_mode = 'off';
+  end
+  if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
+  [xopt, lambda] = quadprog(Q, obj, sparse(A(idx_neq,:)), b(idx_neq), sparse(A(idx_eq,:)), b(idx_eq), LB, UB, [], optimset('Display', display_mode));
+  if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
  otherwise
   error('unknown optimizer %s', CFG.optimizer);
-  end
+end
   
 loss.exons = 0.5*sum(xopt(T+T*R+1:T+T*R+P*T).^2);
 loss.introns = 0.5*intron_factor*sum(xopt(T+T*R+P*T+1:T+T*R+P*T+I).^2);

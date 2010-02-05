@@ -14,7 +14,6 @@ function CFG = configure_rquant(CFG)
 %%%%% directories from which to load read data and genes
 CFG.base_dir = '../examples/';
 CFG.read_maps_dir = sprintf('%stracks/', CFG.base_dir);
-CFG.read_maps_fn = sprintf('%s%s/%s/%s_', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp);
 CFG.repeat_maps_dir = sprintf('%sannotations/%s/repeat_masker/tracks/', CFG.base_dir, CFG.organism);
 CFG.repeat_maps_fn = CFG.repeat_maps_dir;
 CFG.profiles_fn = '';
@@ -62,6 +61,14 @@ for c = 1:length(CFG.genome_info.flat_fnames),
   CFG.chr_len(c) = d(1).bytes;
 end
 
+for c = 1:length(CFG.genome_info.flat_fnames),
+  CFG.introns_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),
+                       sprintf('%s%s/%s/%s_%s-%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_mapped.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
+   %                      sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
+    %                     sprintf('%s%s/%s/%s_%s-%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),};
+end
 
 %%%%% directory where to store results
 if isequal(CFG.gene_source, 'annotation')
@@ -150,7 +157,7 @@ CFG.max_num_train_exm = 4e6 * 5;
 % fraction of genes to be subsampled for learning profiles
 CFG.subsample_frac_global = 1;
 % fraction of profile_genes to be subsampled for learning profiles
-CFG.subsample_frac = 1;%0.10;
+CFG.subsample_frac = 0.10;
 % regularisation strength in profile optimisation
 CFG.C2.tau   = 100;
 CFG.C2.kappa = 1;
@@ -159,7 +166,7 @@ CFG.C2.tau   = CFG.C2.tau*CFG.max_num_train_exm;
 CFG.C2.kappa = CFG.C2.kappa*CFG.max_num_train_exm;
 CFG.C2.theta = CFG.C2.theta*CFG.max_num_train_exm;
 % more output to stdout
-CFG.VERBOSE = 1;
+CFG.VERBOSE = 1; % 0: no output, 1: more output, 2: debug output
 
 %%%%% paths dependent on configuration 
 if CFG.use_rproc
