@@ -67,7 +67,7 @@ INF = 1e20;
 
 %%%%% preprocessing %%%%%
 P = sum([genes.exonic_len]);
-TR.mask = logical(ones(P,1));
+TR.mask = true(P,1);
 cnt = 1; nnz_feat = 0;
 for g = 1:length(genes),
   gene = genes(g);
@@ -83,7 +83,7 @@ for g = 1:length(genes),
   if CFG.subsample,
     subsample_mask = (rand(sum(exon_mask>0),1)<CFG.subsample_frac);
   else
-    subsample_mask = logical(ones(sum(exon_mask>0),1));
+    subsample_mask = true(sum(exon_mask>0),1);
   end
   TR.mask(cnt:cnt+sum(exon_mask>0)-1) = TR.mask(cnt:cnt+sum(exon_mask>0)-1) & subsample_mask;
   tmp = exon_mask_expr(exon_mask>0);
@@ -162,7 +162,7 @@ for g = 1:length(genes),
     % thetas
     tmp_dist = squeeze(dist(p,:,:));
     sp_idx = find(tmp_dist~=0);
-    assert(length(sp_idx)>=1 | (any(genes(g).transcript_weights==0) & length(sp_idx)==0));
+    assert(~isempty(sp_idx) | (any(genes(g).transcript_weights==0) & isempty(sp_idx)));
     cnt = cnt + length(sp_idx);
     Ai(Ac+1:Ac+length(sp_idx)) = p_offset + p;
     Aj(Ac+1:Ac+length(sp_idx)) = E*N*F + sp_idx;
@@ -196,7 +196,7 @@ offset = P;
 % sum_f w_f/F = 1 
 offset = offset + 1;
 Ai(Ac+[1:E*N*F]) = offset;
-Aj(Ac+[1:E*N*F]) = [1:E*N*F];
+Aj(Ac+[1:E*N*F]) = 1:E*N*F;
 Av(Ac+[1:E*N*F]) = 1/(E*N*F); 
 b(offset, 1) = 1;
 Ac = Ac + E*N*F;
@@ -403,7 +403,7 @@ clear Ai Aj Av feat;
 
 %%%%% bounds %%%%%
 LB = [zeros(E*N*F+D*D,1); -INF*ones(P,1); zeros(tau_len+kappa_len+theta_len, 1)]; % lower bounds for xopt
-UB = [INF*ones(E*N*F+D*D+P+tau_len+kappa_len+theta_len,1)]; % upper bounds for xopt
+UB = INF*ones(E*N*F+D*D+P+tau_len+kappa_len+theta_len,1); % upper bounds for xopt
 
 if CFG.num_intron_plifs>2,
   LB(E*N*F + D*D) = 0;
@@ -439,7 +439,7 @@ clear Qi Qj Qv;
 
 sA = whos('A');
 sQ = whos('Q');
-total_size = sA.bytes+sQ.bytes+prod(size(LB))*3*8 + prod(size(b))*8;
+total_size = sA.bytes+sQ.bytes+numel(LB)*3*8 + numel(b)*8;
 fprintf('total problem size: %1.2f mb\n', total_size/1024^2);
 
 used_mem = whos;
@@ -466,7 +466,7 @@ switch optimizer
   [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows - 2*(tau_len + kappa_len + theta_len), double(CFG.VERBOSE>0), 'bar');
   if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
   if ~isequal(how,'OK')
-    warning(sprintf('CPLEX: %s\n',how));
+    warning('CPLEX: %s\n', how);
   end
   [lpenv, status] = cplex_quit(lpenv,0);
   lpenv = 0;

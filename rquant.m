@@ -19,7 +19,11 @@ load(CFG.gene_fn, 'genes');
 % add exonic length
 % initialise expression bins
 % initialise transcript length bins
-del_idx = [];
+genes(1).expr_bin = [];
+genes(1).transcript_len_bin = [];
+genes(1).eidx = [];
+genes(1).exonic_len = 0;
+del_idx = false(1, length(genes));
 for g = 1:length(genes),
   eidx = [];
   min_start = inf; max_stop = -inf;
@@ -27,12 +31,12 @@ for g = 1:length(genes),
   if isequal(CFG.gene_source, 'annotation')
     genes(g).strands = repmat(genes(g).strand, 1, length(genes(g).transcripts));
   end
-  if genes(g).start>genes(g).stop | genes(g).start<1 | genes(g).stop<1
-    del_idx = [del_idx g];
+  if genes(g).start>genes(g).stop || genes(g).start<1 || genes(g).stop<1
+    del_idx(g) = true;
   end
+  genes(g).expr_bin = ones(1, length(genes(g).transcripts));
+  genes(g).transcript_len_bin = ones(1, length(genes(g).transcripts));
   for t = 1:length(genes(g).transcripts),
-    genes(g).expr_bin(t) = 1;
-    genes(g).transcript_len_bin(t) = 1;
     tidx = [];
     % closed intervals
     if isequal(CFG.gene_source, 'annotation')
@@ -47,7 +51,7 @@ for g = 1:length(genes),
     max_stop = max(max(genes(g).exons{t}(:,2)), max_stop);
     if any(genes(g).exons{t}(:,1)>genes(g).exons{t}(:,2)) || any(genes(g).exons{t}(:,1)<1) || any(genes(g).exons{t}(:,2)<1) || ...
       length(genes(g).exons{t}(:,1))~=length(unique(genes(g).exons{t}(:,1))) || length(genes(g).exons{t}(:,2))~=length(unique(genes(g).exons{t}(:,2))),
-      del_idx = [del_idx g];
+      del_idx(g) = true;
     end
     for e = 1:size(genes(g).exons{t},1),
       tidx = [tidx, genes(g).exons{t}(e,1):genes(g).exons{t}(e,2)];
@@ -55,7 +59,7 @@ for g = 1:length(genes),
     end
     genes(g).transcript_length(t) = length(unique(tidx));
     if genes(g).transcript_length(t)>100000,
-      del_idx = [del_idx g];
+      del_idx(g) = true;
     end
     eidx = unique([eidx tidx]);
   end
@@ -73,11 +77,10 @@ for g = 1:length(genes),
   genes(g).eidx = unique(eidx);
   genes(g).exonic_len = length(genes(g).eidx);
 end
-del_idx = unique(del_idx);
 genes(del_idx) = [];
 
 if CFG.subsample,
-  CFG.subsample_frac_global = str2num(sprintf('%.2f', min(1,CFG.max_num_train_exm/sum([genes.exonic_len])))); 
+  CFG.subsample_frac_global = str2double(sprintf('%.2f', min(1,CFG.max_num_train_exm/sum([genes.exonic_len])))); 
 end
 
 % subsample here
@@ -104,7 +107,7 @@ CFG
 CFG.C2.tau
 CFG.C2.kappa
 CFG.C2.theta
-fprintf(1,'using %i genes (deleted %i)\n\n', length(genes), length(del_idx));
+fprintf(1,'using %i genes (deleted %i)\n\n', length(genes), sum(del_idx));
 clear del_idx;
 
 % initialise profiles and intron distances
@@ -112,11 +115,11 @@ if CFG.load_profiles,
   fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
   load(CFG.profiles_fn, 'RES');
   profile_weights = RES{end-1}.profile_weights;
-  if ~(size(profile_weights,1)==CFG.num_plifs & size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
+  if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
     error('profiles have wrong dimensions');
   end
   intron_dists = RES{end-1}.intron_dists;
-    if ~(size(intron_dists,1)==CFG.num_intron_plifs & size(intron_dists,2)==CFG.num_intron_plifs)
+  if ~(size(intron_dists,1)==CFG.num_intron_plifs && size(intron_dists,2)==CFG.num_intron_plifs)
     error('intron distance matrix has wrong dimensions');
   end
   clear RES;
@@ -131,7 +134,7 @@ iter = 0;
 while(1)
   iter = iter + 1;
   fprintf(1, '\n*** Iteration %i ***\n', iter);
-  fprintf(1, '\nDetermining transcript weights...\n', iter);
+  fprintf(1, '\nDetermining transcript weights...\n');
   
   PAR.CFG = CFG;
   PAR.profile_weights = profile_weights;
@@ -208,7 +211,7 @@ while(1)
     save_fname = sprintf('%s%s_%s_%s_iter%i.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
   else
     if CFG.paired,
-      save_fname = strrep(CFG.gene_fn, '.mat', '_rquant_profile_paired.mat')
+      save_fname = strrep(CFG.gene_fn, '.mat', '_rquant_profile_paired.mat');
     else
       save_fname = strrep(CFG.gene_fn, '.mat', '_rquant_profile.mat');
     end
@@ -227,10 +230,10 @@ while(1)
   fprintf(1, '\nDetermining profile...\n\n');
   profile_genes = genes(CFG.subsample_idx);
   % to ensure that profile_genes.transcript_weights are not empty
-  del_idx = [];
+  del_idx = false(1,length(profile_genes));
   for g = 1:length(profile_genes),
-    if isempty(profile_genes(g).transcript_weights) | any(isnan(profile_genes(g).transcript_weights))
-      del_idx = [g del_idx];
+    if isempty(profile_genes(g).transcript_weights) || any(isnan(profile_genes(g).transcript_weights))
+      del_idx(g) = true;
     end
   end
   profile_genes(del_idx) = [];

@@ -56,7 +56,7 @@ end
 
 % collect masks
 %mask = zeros(gene.exonic_len, num_reads);
-mask = logical(zeros(gene.exonic_len, num_reads));
+mask = false(gene.exonic_len, num_reads);
 cnt = 0;
 for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   if file_exist(f)
@@ -68,7 +68,7 @@ assert(num_reads==cnt);
 clear mask_tmp;
 
 offset = gene.start-1;
-eidx = [1:length(gene.eidx)];
+eidx = 1:length(gene.eidx);
 sum_all = sum(mask,1);
 for t = 1:length(gene.transcripts),
   tidx = [];

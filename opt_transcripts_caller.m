@@ -1,5 +1,5 @@
-function genes = opt_transcripts_caller(PAR);
-% genes = opt_transcripts_caller(PAR);
+function genes = opt_transcripts_caller(PAR)
+% genes = opt_transcripts_caller(PAR)
 %
 % -- input --
 % PAR contains
@@ -80,7 +80,7 @@ for c = chr_num,
       continue;
     end
     genes(g).mean_ec = mean(sum(coverage,2));
-    if isempty(coverage) | genes(g).mean_ec==0
+    if isempty(coverage) || genes(g).mean_ec==0
       if CFG.VERBOSE>0, fprintf(1, 'no coverage for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = 0;
       genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = 0;
@@ -155,7 +155,7 @@ for c = chr_num,
       for e = 1:size(exons,1)-1,
         if ~isempty(intron_list)
           idx = find(exons(e,2)+1==intron_list(:,1) & exons(e+1,1)-1==intron_list(:,2));
-          if CFG.both_strands & isfield(gene, 'strands') & ~isempty(idx)
+          if CFG.both_strands && isfield(gene, 'strands') && ~isempty(idx)
             assert(all(intron_list(idx,4)==(gene.strands(t)=='-')+1));
           end
         end
@@ -166,11 +166,11 @@ for c = chr_num,
           intron_mask(idx,t) = 1;
         end
       end
-      if num_found==0 & CFG.VERBOSE>0
+      if num_found==0 && CFG.VERBOSE>0
         fprintf(1, 'introns not found in gene %i, transcript %i \n', g, t);
       end
     end
-    repeat_mask = logical(zeros(gene.exonic_len, 1));
+    repeat_mask = false(gene.exonic_len, 1); 
     % fill repeat mask
     fname = sprintf('%s%s_repeat', CFG.repeat_maps_fn, gene.chr);
     if exist(sprintf('%s.pos', fname), 'file')
@@ -178,7 +178,7 @@ for c = chr_num,
       if ~isempty(map.pos)
         [tmp idx1 idx2] = intersect(map.pos, gene.eidx);
         assert(length(idx2)<=length(map.pos));
-        repeat_mask(idx2) = 1;
+        repeat_mask(idx2) = true;
       end
     end
     
@@ -192,7 +192,7 @@ for c = chr_num,
       exon_mask = zeros(size(segments,1),length(gene.transcripts));
       coverage = zeros(size(segments,1),1);
       for s = 1:size(segments,1),
-        sidx = [segments(s,1):segments(s,2)];
+        sidx = segments(s,1):segments(s,2);
         exon_mask(s,:) = median(exon_mask_pos(sidx,:),1);
         coverage(s) = round(median(coverage_pos(sidx)));
       end
