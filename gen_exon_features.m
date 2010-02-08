@@ -43,21 +43,21 @@ lmt = linspace(0, sqrt(max_side_len), (num_bins/2)+1).^2;
 lmt(end) = inf;
 
 % left transcript part
-dist = [1:ceil(length(tidx)*0.5)];
+dist = 1:ceil(length(tidx)*0.5);
 for b = 1:(num_bins/2),
   fidx = find(lmt(b)<=dist & lmt(b+1)>dist); 
   feat(tidx(fidx), b) = 1;
 end
 
 % right transcript part
-dist = [1:(length(tidx)-length(tidx)*0.5)];
+dist = 1:(length(tidx)-length(tidx)*0.5);
 for b = 1:(num_bins/2),
   fidx = find(lmt(b)<=dist & lmt(b+1)>dist); 
   feat(tidx(length(tidx)-fidx+1), num_bins-b+1) = 1;
 end
 
 % reverse for minus strand
-if reverse_ret & gene.strand=='-'
+if reverse_ret && gene.strand=='-'
   rev_idx = size(feat,1):-1:1;
   feat = feat(rev_idx,:);
 end

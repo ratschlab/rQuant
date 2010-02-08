@@ -62,7 +62,7 @@ else % transcript with multiple exons
   dist_ends(dist_ends<0) = myINF;
   dist_ends = min(dist_ends, [], 1);
   % reverse for minus strand
-  if reverse_ret & gene.strand=='-'
+  if reverse_ret && gene.strand=='-'
     tmp = dist_starts; dist_starts = dist_ends; dist_ends = tmp;
     clear tmp;
   end
@@ -75,7 +75,7 @@ else % transcript with multiple exons
 end
 
 % reverse for minus strand
-if reverse_ret & gene.strand=='-'
+if reverse_ret && gene.strand=='-'
   rev_idx = size(feat,1):-1:1;
   feat = feat(rev_idx,:,:);
 end

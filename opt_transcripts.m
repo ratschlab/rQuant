@@ -72,7 +72,6 @@ size_sparse = P*(T+T*R+T) + T*R;
 b_exon = zeros(P*T+R,1);
 Ac = 0; % matrix counter 
 
-size_sparse = P*(T+T*R+T) + T*R;
 if CFG.VERBOSE>1, fprintf(1, 'number of nz in A: %i\n', size_sparse); end
 Ai = zeros(1,size_sparse); % row indices
 Aj = zeros(1,size_sparse); % column indices
@@ -176,7 +175,7 @@ case 'cplex'
   % [xopt, lambda, how] = qp_solve(lpenv, Q, obj, sparse(A), b, LB, UB, num_rows, double(CFG.VERBOSE>1), opt_method);
   if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
   if ~isequal(how,'OK')
-    warning(sprintf('CPLEX: %s\n',how));
+    warning('CPLEX: %s\n', how);
   end
 case 'mosek'
   idx_neq = [];
