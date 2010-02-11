@@ -23,6 +23,9 @@ genes(1).expr_bin = [];
 genes(1).transcript_len_bin = [];
 genes(1).eidx = [];
 genes(1).exonic_len = 0;
+if CFG.norm_seqbias
+  genes(1).num_read_starts = [];
+end
 del_idx = false(1, length(genes));
 for g = 1:length(genes),
   eidx = [];
@@ -76,6 +79,9 @@ for g = 1:length(genes),
   assert(genes(g).start<=genes(g).stop);
   genes(g).eidx = unique(eidx);
   genes(g).exonic_len = length(genes(g).eidx);
+  if CFG.norm_seqbias
+    genes(g).num_read_starts = zeros(1, genes(g).exonic_len);
+  end
 end
 genes(del_idx) = [];
 
@@ -87,7 +93,6 @@ end
 if CFG.subsample && isequal(CFG.gene_source, 'annotation') 
   ridx = randperm(length(genes));
   CFG.subsample_idx = ridx(1:ceil(CFG.subsample_frac_global*length(genes)));
-  fprintf('using %i genes for profile learning\n', length(CFG.subsample_idx));
 end
 
 if isequal(CFG.gene_source, 'annotation')
@@ -199,13 +204,14 @@ while(1)
     genes = opt_transcripts_caller(PAR);
   end
 
-  tmp = [genes.loss]; tmp = [tmp{:}];
-  RES{iter}.median_loss = median([tmp.all]);
-  RES{iter}.median_loss_frac = median([tmp.introns]./[tmp.exons]);
+  tmp = [genes.loss]; tmp = [tmp(:)];
+  loss.all = [tmp.all]; loss.exons = [tmp.exons]; loss.introns = [tmp.introns];
+  RES{iter}.median_loss = median(loss.all(~isnan(loss.all)));
+  RES{iter}.median_loss_frac = median(loss.all(~isnan(loss.introns))./loss.exons(~isnan(loss.exons)));
   fprintf(1, '\nMedian loss after iteration %i: %5.2f\n', iter, RES{iter}.median_loss);
   fprintf(1, '\nMedian ratio loss introns/exons after iteration %i: %1.3f\n', iter, RES{iter}.median_loss_frac);
   
-  if DEBUG, keyboard; end;
+  if DEBUG, keyboard; end
   
   if isequal(CFG.gene_source, 'annotation')
     save_fname = sprintf('%s%s_%s_%s_iter%i.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
@@ -217,7 +223,7 @@ while(1)
     end
   end
   genes_tmp = genes;
-  genes = rmfield(genes, 'eidx');
+  %genes = rmfield(genes, 'eidx');
   save(save_fname, 'CFG', 'RES', 'genes');
   genes = genes_tmp;
   clear genes_tmp;
@@ -225,6 +231,30 @@ while(1)
   if iter >= CFG.max_iter
     fprintf(1, '\n\nFinished transcript quantitation.\n');
     break;
+  end
+  
+  if CFG.norm_seqbias
+    fprintf(1, '\nDetermining sequence bias...\n\n');
+    take_idx = false(1, length(genes));
+    tw = [genes.transcript_weights];
+    tw = tw(~isnan(tw) | tw>0);
+    min_expr = prctile(tw, 90);
+    for g = 1:length(genes),
+      if sum(genes(g).transcript_weights>min_expr)==1
+        take_idx(g) = true;
+      end
+    end
+    assert(sum(take_idx)>0);
+    seq_norm_genes = genes(take_idx);
+    for g = 1:length(seq_norm_genes),
+      t = find(seq_norm_genes(g).transcript_weights>min_expr);
+      assert(length(t)==1)
+      seq_norm_genes(g).transcripts = seq_norm_genes(g).transcripts{t};
+      seq_norm_genes(g).exons = seq_norm_genes(g).exons{t};
+    end
+    fprintf('using %i genes for sequence normalisation\n', sum(take_idx));
+    CFG.RR.seq_norm_weights = train_norm_sequence(CFG, seq_norm_genes);
+    if DEBUG, keyboard; end
   end
   
   fprintf(1, '\nDetermining profile...\n\n');
@@ -237,6 +267,7 @@ while(1)
     end
   end
   profile_genes(del_idx) = [];
+  fprintf('using %i genes for profile learning\n', length(profile_genes));
   [profile_weights, intron_dists, profile_genes] = opt_profiles(CFG, profile_genes);
   
   if DEBUG,
