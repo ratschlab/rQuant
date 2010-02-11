@@ -27,7 +27,7 @@ if CFG.VERBOSE>0, tic; end
 % case 'cplex'
 lpenv = cplex_license(0,1);
   if lpenv==0
-    fprintf('\n no cplex licensce, using mosek\n');
+    fprintf(1, '\n no cplex licensce, using mosek\n');
     CFG.optimizer = 'mosek';
   else
     CFG.optimizer = 'cplex';
@@ -64,19 +64,41 @@ for c = chr_num,
   end
   for g = chr_idx,
     gene = genes(g);
-    fprintf(1, 'gene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
+    fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
     %%%%% load exon coverage for gene %%%%%
     try
-      if CFG.VERBOSE>1, fprintf('\nLoading reads...\n'); tic; end
+      if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
       [coverage excluded_reads reads_ok] = get_coverage_per_read(CFG, gene);
-      if CFG.VERBOSE>1, fprintf('Took %.1fs.\n', toc); end
+      if CFG.norm_seqbias
+        if isempty(gene.transcript_weights)
+          diff = coverage - [zeros(1,size(coverage,2)); coverage(1:end-1,:)];
+          [m midx] = max(diff, [], 1);
+          [num_read_starts nidx] = hist(midx, 1:size(coverage,1));
+          assert(length(num_read_starts)==genes(g).exonic_len);
+          genes(g).num_read_starts = num_read_starts;
+        else
+          % to implement: correct coverage by learned deviation
+          % num_reads_starts_pred = predict_Ridge(CFG, X, CFG.RR.seq_norm_weights);
+          % coverage = coverage * num_reads_starts_pred(midx);
+        end
+      end
+      if ~CFG.paired
+        coverage = sum(coverage,2);
+        for t = 1:length(gene.transcripts),
+          excluded_reads{t} = [];
+        end
+      end
+      if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
     catch
       reads_ok = 0;
     end
     if ~reads_ok,
+      if CFG.VERBOSE>0, fprintf(1, 'coverage could not be loaded for gene %i\n', g); end
       genes(g).transcript_weights = nan;
       genes(g).transcript_weights_all = nan;
-      if CFG.VERBOSE>0, fprintf(1, 'coverage could not be loaded for gene %i\n', g); end
+      genes(g).loss.all = nan;
+      genes(g).loss.exons = nan;
+      genes(g).loss.introns = nan;
       continue;
     end
     genes(g).mean_ec = mean(sum(coverage,2));
@@ -84,6 +106,9 @@ for c = chr_num,
       if CFG.VERBOSE>0, fprintf(1, 'no coverage for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = 0;
       genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = 0;
+      genes(g).loss.all = nan;
+      genes(g).loss.exons = nan;
+      genes(g).loss.introns = nan;
       continue;
     end
     %%%%% prepare intron list %%%%%
@@ -214,6 +239,9 @@ for c = chr_num,
       if CFG.VERBOSE>0, fprintf(1, 'no positions left for gene %i\n', g); end
       genes(g).transcript_weights = nan;
       genes(g).transcript_weights_all = nan;
+      genes(g).loss.all = nan;
+      genes(g).loss.exons = nan;
+      genes(g).loss.introns = nan;
       continue;
     end
     
@@ -239,12 +267,12 @@ for c = chr_num,
     [tmp, midx] = min(abs(CFG.C1_loss_frac_target-loss_frac));
     genes(g).transcript_weights = weights(midx,:);
     genes(g).transcript_weights_all = weights;
-    genes(g).loss = loss;
+    genes(g).loss = loss{midx};
   end
 end
 
 if isequal(CFG.optimizer, 'cplex'),
-  fprintf('\n');
+  fprintf(1, '\n');
   [lpenv, status] = cplex_quit(lpenv,0);
   lpenv = 0;
 end

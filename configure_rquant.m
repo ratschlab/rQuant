@@ -11,7 +11,7 @@ function CFG = configure_rquant(CFG)
 % CFG.paths
 
 
-%%%%% directories from which to load read data and genes
+%%%%% directories from which to load read data and genes %%%%%
 CFG.base_dir = '../examples/';
 CFG.read_maps_dir = sprintf('%stracks/', CFG.base_dir);
 CFG.repeat_maps_dir = sprintf('%sannotations/%s/repeat_masker/tracks/', CFG.base_dir, CFG.organism);
@@ -44,7 +44,7 @@ switch CFG.gene_source
 end
 
 
-%%%%% genome config
+%%%%% genome config %%%%%
 switch CFG.organism,
  case 'drosophila'
   CFG.genome_info = '';
@@ -64,13 +64,13 @@ end
 for c = 1:length(CFG.genome_info.flat_fnames),
   CFG.introns_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),
                        sprintf('%s%s/%s/%s_%s-%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
-  CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_mapped.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
    %                      sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
     %                     sprintf('%s%s/%s/%s_%s-%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),};
 end
 
-%%%%% directory where to store results
+%%%%% directory where to store results %%%%%
 if isequal(CFG.gene_source, 'annotation')
   CFG.out_dir = sprintf('%srquant/%s/%s/rquant_result_%s/', CFG.base_dir, CFG.organism, CFG.exp, datestr(now,'yyyy-mm-dd'));
   %CFG.out_dir = sprintf('%srquant/%s/%s/rquant_result_%s/', CFG.base_dir, CFG.organism, CFG.exp, datestr(now,'yyyy-mm-dd_HHhMM'));
@@ -81,7 +81,7 @@ if isequal(CFG.gene_source, 'annotation')
 end
 
 
-%%%%% rproc settings
+%%%%% rproc settings %%%%%
 CFG.use_rproc = 0; % 1: cluster submission or 0: locally
 if CFG.use_rproc,
   CFG.rproc_num_jobs              = 100;
@@ -100,7 +100,8 @@ if CFG.use_rproc,
 end
 
 
-%%%%% rquant parameters
+%%%%% rquant parameters %%%%%
+
 % enables taking data for both strands together
 if isequal(CFG.gene_source, 'annotation')
   CFG.both_strands = 1;
@@ -115,18 +116,27 @@ if isequal(CFG.gene_source, 'annotation')
 else
   CFG.max_iter = 1;
 end
-% loss function
-CFG.lossfct = 'squared'; % 'squared' or 'log'
-CFG.lossbins = 10;
 % optimizer
 CFG.optimizer = 'mosek';
+
+%%%%% transcript weight optimisation
 % method to determine transcript weights 
 CFG.method = 'pos'; % 'pos' or 'seg'
-CFG.paired = 1;
+CFG.paired = 0;
 % regularisation strength in transcript weight optimisation
 CFG.C1 = 1;
 CFG.C1_set = [0.001];
 CFG.C1_loss_frac_target = 0.3;
+
+%%%%% sequence bias normalisation
+CFG.norm_seqbias = 1;
+CFG.RR.seq_norm_weights = [];
+CFG.RR.half_win_size = 20;
+CFG.RR.num_train_frac = 0.8;
+CFG.RR.order = 2;
+CFG.RR.lambda = 1e-2;
+
+%%%%% profile learning
 % enables loading of profiles from CFG.profiles_fn
 CFG.load_profiles = 0;
 % number of plifs for profile functions
@@ -168,7 +178,8 @@ CFG.C2.theta = CFG.C2.theta*CFG.max_num_train_exm;
 % more output to stdout
 CFG.VERBOSE = 1; % 0: no output, 1: more output, 2: debug output
 
-%%%%% paths dependent on configuration 
+
+%%%%% paths dependent on configuration %%%%%
 if CFG.use_rproc
   p = '~/svn/tools/rproc';
   CFG.paths = sprintf('%s:%s', p, CFG.paths);

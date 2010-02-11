@@ -2,10 +2,10 @@ addpath('~/svn/tools/rproc');
 addpath('~/svn/tools/utils');
 
 CFG.organism = 'elegans';
-CFG.exp = 'elegans_pair_15';
+CFG.exp = 'nGASP-Train'; % 'elegans_pair_15'
 CFG.read_len = 36;
 CFG.gene_source = 'annotation';
-CFG.read_maps_select = '';
+CFG.read_maps_select = '_el8_mm1'; % ''
 
 CFG
 
