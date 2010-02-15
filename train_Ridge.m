@@ -7,11 +7,9 @@ function [w TR] = train_Ridge(CFG, X, Y)
 % Y: target values (expression values)
 %
 % -- output --
-% w: weight vector of trained Ridge regressionx
+% w: weight vector of trained Ridge regression
 % TR: training errors of trained Ridge regression
 
-
-if CFG.VERBOSE>0, fprintf(1, '%i training examples for Ridge regression\n', size(X,2)); end
 
 % generate numerical kmer vectors from sequences
 if CFG.VERBOSE>0, tic; end
@@ -36,5 +34,9 @@ for n = 1:N,
   Y_pred(n) = w' * X_num(:,n);
 end
 
-TR.Q1 = mean(abs(Y_pred - Y)) / mean(abs(Y - median(Y)));
-TR.Q2 = mean((Y_pred - Y).^2) / mean((Y - mean(Y)).^2);
+if CFG.VERBOSE>0,
+  % absolute variablity on training set
+  TR.Q1 = mean(abs(Y_pred - Y)) / mean(abs(Y - median(Y)));
+  % squared variablity on training set
+  TR.Q2 = mean((Y_pred - Y).^2) / mean((Y - mean(Y)).^2);
+end
