@@ -9,12 +9,7 @@ function w = train_norm_sequence(CFG, genes)
 % w: weight vector of trained Ridge regression
 
 
-num_nt = 4; num_feat = 0;
-for o = 1:CFG.RR.order,
-  num_feat = num_feat + (2*CFG.RR.half_win_size-o+1) * num_nt^o;
-end
-
-w = ones(num_feat,1); 
+w = nan; 
 
 if CFG.VERBOSE>0, fprintf(1, 'Generating training set for sequence normalisation...\n'); tic; end
 TR.X = []; TR.Y = [];  
@@ -30,14 +25,16 @@ for g = 1:length(genes),
   num_read_starts = gene.num_read_starts(idx2);
   seq = load_genomic(gene.chr, gene.strand, exons(:,1), exons(:,2), CFG.genome_info, 0);
   assert(length(seq)==length(num_read_starts));
-  num_read_starts = length(num_read_starts)*num_read_starts/sum(num_read_starts)+1e-2;
+  num_read_starts = length(num_read_starts) * num_read_starts / sum(num_read_starts) + 1e-2;
   num_read_starts(1:CFG.RR.half_win_size) = nan;
   num_read_starts(end-CFG.RR.half_win_size:end) = nan;
   idx = find(~isnan(num_read_starts));
+  % target values for regression
   TR.Y = [TR.Y log(num_read_starts(idx))];
+  % input sequence data for regression
   X = char(zeros(CFG.RR.half_win_size*2, length(idx)));
-  for j = 1:length(idx),
-    X(:,j) = char(seq(idx(j)-CFG.RR.half_win_size:idx(j)+CFG.RR.half_win_size-1));
+  for x = 1:length(idx),
+    X(:,x) = char(seq(idx(x)-CFG.RR.half_win_size:idx(x)+CFG.RR.half_win_size-1));
   end
   TR.X = [TR.X upper(X)];
 end
@@ -56,12 +53,17 @@ Y_train = TR.Y(:,ridx(1:num_train));
 X_eval = TR.X(:,ridx(num_train+1:end));
 Y_eval = TR.Y(:,ridx(num_train+1:end));
 
+% train weights of Ridge regression
+if CFG.VERBOSE>0, fprintf(1, '%i training examples for Ridge regression\n', size(X_train,2)); end
 [w TR] = train_Ridge(CFG, X_train, Y_train);
-Y_pred = predict_Ridge(CFG, X_eval, w);
-TE.Q1 = mean(abs(Y_pred - Y_eval)) / mean(abs(Y_eval - median(Y_eval)));
-TE.Q2 = mean((Y_pred - Y_eval).^2) / mean((Y_eval - mean(Y_eval)).^2);
-
+% test on omitted examples
 if CFG.VERBOSE>0,
+  fprintf(1, '%i test examples for Ridge regression\n', size(X_eval,2));
+  Y_pred = predict_Ridge(CFG, X_eval, w);
+  % absolute variablity on test set
+  TE.Q1 = mean(abs(Y_pred - Y_eval)) / mean(abs(Y_eval - median(Y_eval)));
+  % squared variablity on test set
+  TE.Q2 = mean((Y_pred - Y_eval).^2) / mean((Y_eval - mean(Y_eval)).^2);
   fprintf(1, 'absolute variability: training %.3f, test %.3f\n', TR.Q1, TE.Q1);
   fprintf(1, 'squared variability: training %.3f, test %.3f\n', TR.Q2, TE.Q2);
 end

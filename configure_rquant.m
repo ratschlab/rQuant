@@ -64,7 +64,8 @@ end
 for c = 1:length(CFG.genome_info.flat_fnames),
   CFG.introns_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),
                        sprintf('%s%s/%s/%s_%s-%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
-  CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_mapped.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
    %                      sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
     %                     sprintf('%s%s/%s/%s_%s-%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),};

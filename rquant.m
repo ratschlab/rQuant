@@ -154,18 +154,12 @@ while(1)
        case 'elegans'
         FG.rproc_memreq = 3000;
         CFG.rproc_par.mem_req_resubmit = [6000 8000 20000];
-        %CFG.rproc_memreq = 10000;
-        %CFG.rproc_par.mem_req_resubmit = [12000 20000];
        case 'drosophila',
         CFG.rproc_memreq = 4000;
         CFG.rproc_par.mem_req_resubmit = [7000 10000 20000];
-        %CFG.rproc_memreq = 10000;
-        %CFG.rproc_par.mem_req_resubmit = [12000 20000];
        case 'human',
         CFG.rproc_memreq = 5000;
         CFG.rproc_par.mem_req_resubmit = [8000 12000 20000];
-        %CFG.rproc_memreq = 10000;
-        %CFG.rproc_par.mem_req_resubmit = [12000 20000];
       end
       CFG.rproc_par.identifier = sprintf('rq.%s.f%i-', CFG.organism(1:3), f);
       fprintf(1, 'Submitting job %i (%s) to cluster\n', f, CFG.rproc_par.identifier);
@@ -174,7 +168,7 @@ while(1)
     save(sprintf('~/tmp/%s_%s_%s.mat', CFG.exp, CFG.gene_source, datestr(now,'yyyy-mm-dd_HHhMM') ), 'JOB_INFO');
     % wait for jobs
     [JOB_INFO num_crashed] = rproc_wait(JOB_INFO, 60, 1, -1);
-    if num_crashed>0, pause(60); end;% some delay to wait until results are written
+    if num_crashed>0, pause(60); end; % some delay to wait until results are written
     try
       % collect results
       for f = 1:CFG.rproc_num_jobs,
@@ -254,7 +248,18 @@ while(1)
     end
     fprintf('using %i genes for sequence normalisation\n', sum(take_idx));
     CFG.RR.seq_norm_weights = train_norm_sequence(CFG, seq_norm_genes);
-    if DEBUG, keyboard; end
+    if DEBUG
+      if ~isnan(CFG.RR.seq_norm_weights),
+        offset = 0;
+        for o = 1:CFG.RR.order,
+          offset(o+1) = offset(o) + (2*CFG.RR.half_win_size-o+1) * 4^o;
+          figure();
+          imagesc(reshape(CFG.RR.seq_norm_weights(offset(o)+1:offset(o+1)), 4^o, 2*CFG.RR.half_win_size-o+1));
+          colorbar;
+        end
+      end
+      keyboard;
+    end
   end
   
   fprintf(1, '\nDetermining profile...\n\n');
@@ -270,10 +275,10 @@ while(1)
   fprintf('using %i genes for profile learning\n', length(profile_genes));
   [profile_weights, intron_dists, profile_genes] = opt_profiles(CFG, profile_genes);
   
-  if DEBUG,
-    keyboard;
+  if DEBUG
     figure(); plot(profile_weights);
     figure(); imagesc(intron_dists); colorbar;
+    keyboard;
   end
 
   if iter>1,

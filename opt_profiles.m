@@ -176,6 +176,9 @@ for g = 1:length(genes),
   end
   try
     [coverage excluded_reads pair_ok] = get_coverage_per_read(CFG, gene, 1);
+    if CFG.norm_seqbias
+      coverage = norm_sequence(CFG, gene, coverage);
+    end
     coverage = sum(coverage,2);
   catch
     pair_ok = 0;

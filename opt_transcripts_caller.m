@@ -66,20 +66,19 @@ for c = chr_num,
     gene = genes(g);
     fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
     %%%%% load exon coverage for gene %%%%%
-    try
+    %try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
       [coverage excluded_reads reads_ok] = get_coverage_per_read(CFG, gene);
       if CFG.norm_seqbias
-        if isempty(gene.transcript_weights)
+        if isempty(gene.transcript_weights) % before first iteration of quantitation
+          % determine number of reads starting at the exonic positions
           diff = coverage - [zeros(1,size(coverage,2)); coverage(1:end-1,:)];
           [m midx] = max(diff, [], 1);
           [num_read_starts nidx] = hist(midx, 1:size(coverage,1));
           assert(length(num_read_starts)==genes(g).exonic_len);
           genes(g).num_read_starts = num_read_starts;
-        else
-          % to implement: correct coverage by learned deviation
-          % num_reads_starts_pred = predict_Ridge(CFG, X, CFG.RR.seq_norm_weights);
-          % coverage = coverage * num_reads_starts_pred(midx);
+        else % normalise with trained regression weights
+          coverage = norm_sequence(CFG, gene, coverage);
         end
       end
       if ~CFG.paired
@@ -89,9 +88,9 @@ for c = chr_num,
         end
       end
       if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
-    catch
-      reads_ok = 0;
-    end
+    %catch
+    %  reads_ok = 0;
+    %end
     if ~reads_ok,
       if CFG.VERBOSE>0, fprintf(1, 'coverage could not be loaded for gene %i\n', g); end
       genes(g).transcript_weights = nan;
