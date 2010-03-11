@@ -12,22 +12,25 @@ function CFG = configure_rquant(CFG)
 
 
 %%%%% directories from which to load read data and genes %%%%%
-CFG.base_dir = '../examples/';
+CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/'
+%CFG.base_dir = '../examples/';
 CFG.read_maps_dir = sprintf('%stracks/', CFG.base_dir);
 CFG.repeat_maps_dir = sprintf('%sannotations/%s/repeat_masker/tracks/', CFG.base_dir, CFG.organism);
 CFG.repeat_maps_fn = CFG.repeat_maps_dir;
 CFG.profiles_fn = '';
 %CFG.profiles_fn = sprintf('%srquant/%s/%s/profiles.mat', CFG.base_dir, CFG.organism, CFG.exp);
-CFG.samtools_dir = '/fml/ag-raetsch/share/software/samtools-0.1.7a/';
+CFG.samtools_dir = '/fml/ag-raetsch/share/software/samtools/';
 
 switch CFG.gene_source
  case 'annotation'
-  CFG.gene_dir = sprintf('%sannotations/', CFG.base_dir);
+  CFG.gene_dir = sprintf('%srun_2010-03-10/', CFG.base_dir);
+  %CFG.gene_dir = sprintf('%sannotations/', CFG.base_dir);
   switch CFG.organism,
    case 'drosophila'
     CFG.gene_fn = '';
    case 'elegans'
-    CFG.gene_fn = sprintf('%sgenes.mat', CFG.gene_dir);
+    CFG.gene_fn = sprintf('%sgenes_expr.mat', CFG.gene_dir);
+    %CFG.gene_fn = sprintf('%sgenes.mat', CFG.gene_dir);
    case 'human'
     CFG.gene_fn = '';
    otherwise
@@ -49,7 +52,8 @@ switch CFG.organism,
  case 'drosophila'
   CFG.genome_info = '';
  case 'elegans'
-  CFG.genome_info = init_genome(sprintf('%sgenomes/%s/genome.config', CFG.base_dir, CFG.organism));
+  CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
+  %CFG.genome_info = init_genome(sprintf('%sgenomes/%s/genome.config', CFG.base_dir, CFG.organism));
  case 'human'
   CFG.genome_info = '';
  otherwise
@@ -62,9 +66,10 @@ for c = 1:length(CFG.genome_info.flat_fnames),
 end
 
 for c = 1:length(CFG.genome_info.flat_fnames),
-  CFG.introns_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),
-                       sprintf('%s%s/%s/%s_%s-%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
-  CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  %CFG.introns_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),
+  %                     sprintf('%s%s/%s/%s_%s-%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
+  CFG.read_maps_fn{c} = {sprintf('%s%s.mapped.2.bam', CFG.read_maps_dir, CFG.exp), sprintf('%s%s.spliced.2.bam', CFG.read_maps_dir, CFG.exp)};
+  %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_mapped.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
    %                      sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
@@ -80,7 +85,7 @@ if isequal(CFG.gene_source, 'annotation')
     assert(s);
   end
 end
-
+keyboard
 
 %%%%% rproc settings %%%%%
 CFG.use_rproc = 0; % 1: cluster submission or 0: locally
