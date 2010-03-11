@@ -1,5 +1,5 @@
-function [mask excluded_reads ok] = get_coverage_per_read(CFG, gene, reverse_ret)
-% [mask excluded_reads ok] = get_coverage_per_read(CFG, gene, reverse_ret)
+function [mask excluded_reads ok intron_list] = get_coverage_per_read(CFG, gene, reverse_ret)
+% [mask excluded_reads ok intron_list] = get_coverage_per_read(CFG, gene, reverse_ret)
 %
 % -- input --
 % CFG: configuration struct
@@ -9,6 +9,7 @@ function [mask excluded_reads ok] = get_coverage_per_read(CFG, gene, reverse_ret
 % -- output --
 % mask: matrix of exonic positions x reads
 % excluded_reads: reads exluded per transcript
+% intron_list: nx4 list of introns (intron start, intron stop, confirmation, strand)
 % ok: indicates success of file parsing
 
 MIN_COV = 0.5;
@@ -34,11 +35,14 @@ file_exist = zeros(1,length(CFG.read_maps_fn{gene.chr_num}));
 for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   fname = CFG.read_maps_fn{gene.chr_num}{f};
   try
+    % 
     if CFG.both_strands
       mask_tmp{f} = get_reads(fname, CFG.samtools_dir, gene.chr, '0', eidx, CFG.paired);
     else
       mask_tmp{f} = get_reads(fname, CFG.samtools_dir, gene.chr, gene.strand, eidx, CFG.paired); 
     end
+    %%%% parse introns from mask_tmp HERE
+    intron_list = zeros(0,4);
     mask_tmp{f}(mask_tmp{f}>1) = 1;
     % delete rows with zeros and those with overlapping reads
     mask_tmp{f}(sum(mask_tmp{f},2)==0 | any(mask_tmp{f}>1,2),:) = [];

@@ -47,6 +47,7 @@ for c = chr_num,
   if CFG.VERBOSE>0, fprintf(1, '\nprocessing %i genes for contig %i (%s)\n', length(chr_idx), genes(chr_idx(1)).chr_num, genes(chr_idx(1)).chr); end
   %%%%% load intron lists for contig %%%%%
   % plus strand
+  if 0
   fname = CFG.introns_fn{c}{1}; 
   if exist(fname, 'file')
     fprintf(1, 'plus strand intron list - ');
@@ -62,13 +63,24 @@ for c = chr_num,
   else
     intron_starts{2} = []; intron_stops{2} = []; conf{2} = [];
   end
+  end
   for g = chr_idx,
     gene = genes(g);
     fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
     %%%%% load exon coverage for gene %%%%%
     %try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
-      [coverage excluded_reads reads_ok] = get_coverage_per_read(CFG, gene);
+      [coverage excluded_reads reads_ok introns] = get_coverage_per_read(CFG, gene);
+      % plus strand
+      fidx = find(introns(:,4)==0);
+      intron_starts{1} = introns(fidx,1); 
+      intron_stops{1} = introns(fidx,2);
+      conf{1} = introns(fidx,3);
+      % minus strand
+      fidx = find(introns(:,4)==1);
+      intron_starts{1} = introns(fidx,1); 
+      intron_stops{1} = introns(fidx,2);
+      conf{1} = introns(fidx,3);
       if CFG.norm_seqbias
         if isempty(gene.transcript_weights) % before first iteration of quantitation
           % determine number of reads starting at the exonic positions

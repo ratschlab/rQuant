@@ -1,4 +1,9 @@
 function rquant(CFG)
+% rquant(CFG)
+%
+% -- input --
+% CFG: configuration struct
+
 
 %%%% paths
 CFG.paths = set_rquant_paths();
@@ -93,6 +98,8 @@ end
 if CFG.subsample && isequal(CFG.gene_source, 'annotation') 
   ridx = randperm(length(genes));
   CFG.subsample_idx = ridx(1:ceil(CFG.subsample_frac_global*length(genes)));
+else
+  CFG.subsample_idx = 1:length(genes);
 end
 
 if isequal(CFG.gene_source, 'annotation')
