@@ -85,7 +85,7 @@ if isequal(CFG.gene_source, 'annotation')
     assert(s);
   end
 end
-keyboard
+%keyboard
 
 %%%%% rproc settings %%%%%
 CFG.use_rproc = 0; % 1: cluster submission or 0: locally

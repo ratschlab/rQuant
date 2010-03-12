@@ -32,17 +32,19 @@ win_size = length(max(gene.eidx(1)-win,1):gene.eidx(1)-1);
 
 num_reads = 0;
 file_exist = zeros(1,length(CFG.read_maps_fn{gene.chr_num}));
+intron_list = zeros(4,0);
 for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   fname = CFG.read_maps_fn{gene.chr_num}{f};
   try
     % 
     if CFG.both_strands
-      mask_tmp{f} = get_reads(fname, CFG.samtools_dir, gene.chr, '0', eidx, CFG.paired);
+      [mask_tmp{f}, read_intron_list] = get_reads(fname, CFG.samtools_dir, gene.chr, '0', eidx, CFG.paired);
     else
-      mask_tmp{f} = get_reads(fname, CFG.samtools_dir, gene.chr, gene.strand, eidx, CFG.paired); 
+      [mask_tmp{f}, read_intron_list] = get_reads(fname, CFG.samtools_dir, gene.chr, gene.strand, eidx, CFG.paired); 
     end
-    %%%% parse introns from mask_tmp HERE
-    intron_list = zeros(0,4);
+    if ~isempty(mask_tmp{f}),
+      intron_list = [intron_list read_intron_list{:}] ;
+    end ;
     mask_tmp{f}(mask_tmp{f}>1) = 1;
     % delete rows with zeros and those with overlapping reads
     mask_tmp{f}(sum(mask_tmp{f},2)==0 | any(mask_tmp{f}>1,2),:) = [];
@@ -57,6 +59,17 @@ for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
     return;
   end
 end
+intron_list = intron_list' ;
+intron_list_unique = unique(intron_list, 'rows') ;
+intron_list_unique(:,3)=0 ;
+for i=1:size(intron_list_unique,1),
+  cnt = sum(intron_list_unique(i,1)==intron_list(:,1) & ...
+            intron_list_unique(i,2)==intron_list(:,2) & ...
+            intron_list_unique(i,4)==intron_list(:,4)) ;
+  intron_list_unique(i,3)=cnt ;
+end ;
+intron_list=intron_list_unique ;
+clear intron_list_unique ;
 
 % collect masks
 %mask = zeros(gene.exonic_len, num_reads);
