@@ -72,7 +72,8 @@ for c = chr_num,
     %%%%% load exon coverage for gene %%%%%
     %try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
-      [coverage excluded_reads reads_ok introns] = get_coverage_per_read(CFG, gene);
+      [coverage excluded_reads reads_ok introns read_starts] = get_coverage_per_read(CFG, gene);
+
       % plus strand
       fidx = find(introns(:,4)==0);
       intron_starts{1} = introns(fidx,1); 
@@ -84,17 +85,19 @@ for c = chr_num,
       intron_stops{2} = introns(fidx,2);
       conf{2} = introns(fidx,3);
       if CFG.norm_seqbias
-        if isempty(gene.transcript_weights) % before first iteration of quantitation
-          % determine number of reads starting at the exonic positions
-          diff = coverage - [zeros(1,size(coverage,2)); coverage(1:end-1,:)];
-          [m midx] = max(diff, [], 1);
-          [num_read_starts nidx] = hist(midx, 1:size(coverage,1));
-          assert(length(num_read_starts)==genes(g).exonic_len);
-          genes(g).num_read_starts = num_read_starts;
-        else % normalise with trained regression weights
-          coverage = norm_sequence(CFG, gene, coverage);
-        end
+        genes(g).num_read_starts = read_starts ;
+        %if isempty(gene.transcript_weights) % before first iteration of quantitation
+        %  % determine number of reads starting at the exonic positions
+        %  diff = coverage - [zeros(1,size(coverage,2)); coverage(1:end-1,:)];
+        %  [m midx] = max(diff, [], 1);
+        %  [num_read_starts nidx] = hist(midx, 1:size(coverage,1));
+        %  assert(length(num_read_starts)==genes(g).exonic_len);
+        %  genes(g).num_read_starts = num_read_starts;
+        %else % normalise with trained regression weights
+        %  coverage = norm_sequence(CFG, gene, coverage);
+        %end
       end
+      
       if ~CFG.paired
         coverage = sum(coverage,2);
         for t = 1:length(gene.transcripts),
@@ -115,6 +118,8 @@ for c = chr_num,
       continue;
     end
     genes(g).mean_ec = mean(sum(coverage,2));
+    genes(g).all_coverage = sum(coverage,2);
+    genes(g).all_introns = introns;
     if isempty(coverage) || genes(g).mean_ec==0
       if CFG.VERBOSE>0, fprintf(1, 'no coverage for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = 0;

@@ -88,7 +88,7 @@ end
 %keyboard
 
 %%%%% rproc settings %%%%%
-CFG.use_rproc = 0; % 1: cluster submission or 0: locally
+CFG.use_rproc = 1; % 1: cluster submission or 0: locally
 if CFG.use_rproc,
   CFG.rproc_num_jobs              = 100;
   CFG.rproc_memreq                = 4000;

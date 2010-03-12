@@ -125,6 +125,7 @@ p_offset = 0;
 mask_offset = 0;
 cnt = 0;
 for g = 1:length(genes),
+  g
   gene = genes(g);
   exon_mask = zeros(1, gene.exonic_len);
   profiles = zeros(length(genes(g).transcripts), gene.exonic_len, CFG.num_plifs);
@@ -176,9 +177,9 @@ for g = 1:length(genes),
   end
   try
     [coverage excluded_reads pair_ok] = get_coverage_per_read(CFG, gene, 1);
-    if CFG.norm_seqbias
-      coverage = norm_sequence(CFG, gene, coverage);
-    end
+    %if CFG.norm_seqbias
+    %  coverage = norm_sequence(CFG, gene, coverage);
+    %end
     coverage = sum(coverage,2);
   catch
     pair_ok = 0;

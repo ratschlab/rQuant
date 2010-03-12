@@ -20,6 +20,7 @@ end
 
 %%%% load genes
 load(CFG.gene_fn, 'genes');
+%genes=genes(1:500) ;
 
 % add exonic length
 % initialise expression bins
@@ -235,13 +236,14 @@ while(1)
   end
   
   if CFG.norm_seqbias
+    keyboard
     fprintf(1, '\nDetermining sequence bias...\n\n');
     take_idx = false(1, length(genes));
     tw = [genes.transcript_weights];
     tw = tw(~isnan(tw) | tw>0);
     min_expr = prctile(tw, 90);
     for g = 1:length(genes),
-      if sum(genes(g).transcript_weights>min_expr)==1
+      if sum(genes(g).transcript_weights>min_expr)==1 && max(genes(g).transcript_weights)/sum(genes(g).transcript_weights)>=0.9,
         take_idx(g) = true;
       end
     end
@@ -260,7 +262,7 @@ while(1)
         offset = 0;
         for o = 1:CFG.RR.order,
           offset(o+1) = offset(o) + (2*CFG.RR.half_win_size-o+1) * 4^o;
-          figure();
+          figure(o);
           imagesc(reshape(CFG.RR.seq_norm_weights(offset(o)+1:offset(o+1)), 4^o, 2*CFG.RR.half_win_size-o+1));
           colorbar;
         end
