@@ -2,7 +2,7 @@ addpath('~/svn/tools/rproc');
 addpath('~/svn/tools/utils');
 
 CFG.organism = 'elegans';
-CFG.exp = 'bias=weak_seqbias';
+CFG.exp = 'bias=weak_seqbias=no' %=no.mapped.2.bam_sorted';
 CFG.read_len = 75;
 %CFG.exp = 'elegans_pair_15'; % 'elegans_pair_15' 'nGASP-Train'
 %CFG.read_len = 36;

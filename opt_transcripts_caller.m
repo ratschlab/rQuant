@@ -39,7 +39,7 @@ lpenv = cplex_license(0,1);
 genes(1).mean_ec = [];
 genes(1).transcript_weights = [];
 genes(1).transcript_weights_all = [];
-genes(1).loss = {[]};
+genes(1).loss = struct ;%{[]};
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,
@@ -66,6 +66,8 @@ for c = chr_num,
   end
   for g = chr_idx,
     gene = genes(g);
+    %if gene.strand=='+', continue ; end ;
+
     fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
     %%%%% load exon coverage for gene %%%%%
     %try
@@ -78,9 +80,9 @@ for c = chr_num,
       conf{1} = introns(fidx,3);
       % minus strand
       fidx = find(introns(:,4)==1);
-      intron_starts{1} = introns(fidx,1); 
-      intron_stops{1} = introns(fidx,2);
-      conf{1} = introns(fidx,3);
+      intron_starts{2} = introns(fidx,1); 
+      intron_stops{2} = introns(fidx,2);
+      conf{2} = introns(fidx,3);
       if CFG.norm_seqbias
         if isempty(gene.transcript_weights) % before first iteration of quantitation
           % determine number of reads starting at the exonic positions
@@ -145,13 +147,13 @@ for c = chr_num,
       if ~isempty(intron_starts{strand})
         idx = find(intron_starts{strand}>=gene.start & intron_stops{strand}<=gene.stop);
         intron_list = [intron_list; ...
-                       double([intron_starts{strand}(idx)', intron_stops{strand}(idx)', ...
-                            conf{strand}(idx)', ((strand_str(s)=='-')+1)*ones(length(idx),1)])];
+                       double([intron_starts{strand}(idx), intron_stops{strand}(idx), ...
+                            conf{strand}(idx), ((strand_str(s)=='-')+1)*ones(length(idx),1)])];
       end
     end
-    if CFG.VERBOSE==2,
+    if CFG.VERBOSE>=2,
       fprintf(1, 'found %i transcripts, %i on + strand, %i on - strand\n', num_transcripts(1), num_transcripts(2), num_transcripts(3));
-      fprintf(1, 'found %i introns, %i on + strand, %i on - strand\n', size(intron_list,1), sum(intron_list(:,4)==1), sum(intron_list(:,4)==2));
+      fprintf(1, 'found %i introns, %i on + strand, %i on - strand (%i ignored)\n', size(intron_list,1), sum(intron_list(:,4)==1), sum(intron_list(:,4)==2), size(introns,1)-size(intron_list,1));
     end
     %%%%% prepare exon and intron masks %%%%%
     exon_mask = zeros(gene.exonic_len, length(gene.transcripts));
@@ -202,8 +204,14 @@ for c = chr_num,
           intron_mask(idx,t) = 1;
         end
       end
-      if num_found==0 && CFG.VERBOSE>0
-        fprintf(1, 'introns not found in gene %i, transcript %i \n', g, t);
+      if num_found==0,
+        if CFG.VERBOSE>0
+          fprintf(1, 'introns not found in gene %i, transcript %i \n', g, t);
+        end ;
+      else
+        if CFG.VERBOSE>=2
+          fprintf(1, 'found %i matching introns, gene %i, transcript %i\n', num_found, g, t)
+        end ;
       end
     end
     repeat_mask = false(gene.exonic_len, 1); 
