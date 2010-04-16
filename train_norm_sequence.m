@@ -41,7 +41,6 @@ for g = 1:length(genes),
   TR.X = [TR.X upper(X)];
 end
 if CFG.VERBOSE>0, fprintf(1, 'Took %.1fs.\n', toc); end
-keyboard
 
 ridx = randperm(size(TR.X,2));
 num_train = floor(length(ridx)*CFG.RR.num_train_frac);

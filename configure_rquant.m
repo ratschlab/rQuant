@@ -12,24 +12,26 @@ function CFG = configure_rquant(CFG)
 
 
 %%%%% directories from which to load read data and genes %%%%%
-CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/'
+%CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/'
 %CFG.base_dir = '../examples/';
-CFG.read_maps_dir = sprintf('%stracks/', CFG.base_dir);
-CFG.repeat_maps_dir = sprintf('%sannotations/%s/repeat_masker/tracks/', CFG.base_dir, CFG.organism);
-CFG.repeat_maps_fn = CFG.repeat_maps_dir;
+%CFG.read_maps_dir = sprintf('%stracks/', CFG.base_dir);
+%CFG.repeat_maps_dir = sprintf('%sannotations/%s/repeat_masker/tracks/', CFG.base_dir, CFG.organism);
+%CFG.repeat_maps_fn = CFG.repeat_maps_dir;
+
 CFG.profiles_fn = '';
 %CFG.profiles_fn = sprintf('%srquant/%s/%s/profiles.mat', CFG.base_dir, CFG.organism, CFG.exp);
 CFG.samtools_dir = '/fml/ag-raetsch/share/software/samtools/';
 
 switch CFG.gene_source
  case 'annotation'
-  CFG.gene_dir = sprintf('%srun_2010-03-10/', CFG.base_dir);
-  %CFG.gene_dir = sprintf('%sannotations/', CFG.base_dir);
+  %CFG.gene_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-03-10/');
+  CFG.gene_dir = sprintf('/fml/ag-raetsch/nobackup/projects/rquant/simulation_2010-04-05/');
+  %CFG.gene_dir = sprintf('%sannotations/%s/', CFG.base_dir, CFG.organism);
   switch CFG.organism,
    case 'drosophila'
     CFG.gene_fn = '';
    case 'elegans'
-    CFG.gene_fn = sprintf('%sgenes_expr.mat', CFG.gene_dir);
+    CFG.gene_fn = sprintf('%s/%s', CFG.gene_dir, CFG.genes_mat_fname); 
     %CFG.gene_fn = sprintf('%sgenes.mat', CFG.gene_dir);
    case 'human'
     CFG.gene_fn = '';
@@ -68,7 +70,7 @@ end
 for c = 1:length(CFG.genome_info.flat_fnames),
   %CFG.introns_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select),
   %                     sprintf('%s%s/%s/%s_%s-%s.introns', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
-  CFG.read_maps_fn{c} = {sprintf('%s%s.mapped.2.bam', CFG.read_maps_dir, CFG.exp), sprintf('%s%s.spliced.2.bam', CFG.read_maps_dir, CFG.exp)};
+  CFG.read_maps_fn{c} = {sprintf('%s%s.bam', CFG.read_maps_dir, CFG.exp)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_spliced.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select)};
   %CFG.read_maps_fn{c} = {sprintf('%s%s/%s/%s_%s+%s_mapped.bam', CFG.read_maps_dir, CFG.organism, CFG.exp, CFG.exp, CFG.genome_info.contig_names{c}, CFG.read_maps_select), ...
@@ -117,8 +119,8 @@ else
 end
 % number of iterations (1: no profile learning)
 if isequal(CFG.gene_source, 'annotation')
-  %CFG.max_iter = 1;
-  CFG.max_iter = 6;
+  CFG.max_iter = 1;
+  %CFG.max_iter = 6;
 else
   CFG.max_iter = 1;
 end
@@ -135,7 +137,7 @@ CFG.C1_set = [0.001];
 CFG.C1_loss_frac_target = 0.3;
 
 %%%%% sequence bias normalisation
-CFG.norm_seqbias = 1;
+CFG.norm_seqbias = 0;
 CFG.RR.seq_norm_weights = [];
 CFG.RR.half_win_size = 20;
 CFG.RR.num_train_frac = 0.8;
@@ -201,11 +203,11 @@ switch CFG.optimizer
   CFG.paths = sprintf('%s:%s', p, CFG.paths);
   addpath(p);
  case 'mosek'
-  p = '/fml/ag-raetsch/share/software/mosek/5/toolbox/r2007a';
+  p = '/fml/ag-raetsch/share/software/mosek/6/toolbox/r2009b';
   CFG.paths = sprintf('%s:%s', p, CFG.paths);
   addpath(p);
   if CFG.use_rproc
-    CFG.rproc_par.envstr = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/home/bohnert/tmp/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/5/tools/platform/linux64x86/bin';
+    CFG.rproc_par.envstr = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/share/software/mosek/6/licenses/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/6/tools/platform/linux64x86/bin';
   end
  otherwise
   error('unknown optimizer %s', CFG.optimizer);
