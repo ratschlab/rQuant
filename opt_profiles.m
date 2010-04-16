@@ -24,7 +24,7 @@ function [weights, dists, genes] = opt_profiles(CFG, genes)
 % for all p=1..P:   -sum_{t=1}^{T} sum_{e=1}^{E} sum_{n=1}^{N}
 %                    sum_{f=1}^{F} [[delta(len_{t})=n v
 %                                    epsilon(w_{t}^{~}=e v
-%                                    phi(t,p)=f)]] w_{e,n,f}
+%                                    phi(t,p)=f)]] w_{e,n,f}      * seq_bias_coverage(t,p)
 %                   + sum_{l=1}^{D} sum_{r=1}^{D} w_{l,r}
 %                    - xi_{p}                                  = -ec_{p}
 %                    sum_{e,n,f} 1/(E*N*F) w_{e,n,f}           = 1
@@ -181,6 +181,7 @@ for g = 1:length(genes),
     %  coverage = norm_sequence(CFG, gene, coverage);
     %end
     coverage = sum(coverage,2);
+    coverage = gene.all_coverage ;
   catch
     pair_ok = 0;
   end;

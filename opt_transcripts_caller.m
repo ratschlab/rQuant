@@ -86,16 +86,6 @@ for c = chr_num,
       conf{2} = introns(fidx,3);
       if CFG.norm_seqbias
         genes(g).num_read_starts = read_starts ;
-        %if isempty(gene.transcript_weights) % before first iteration of quantitation
-        %  % determine number of reads starting at the exonic positions
-        %  diff = coverage - [zeros(1,size(coverage,2)); coverage(1:end-1,:)];
-        %  [m midx] = max(diff, [], 1);
-        %  [num_read_starts nidx] = hist(midx, 1:size(coverage,1));
-        %  assert(length(num_read_starts)==genes(g).exonic_len);
-        %  genes(g).num_read_starts = num_read_starts;
-        %else % normalise with trained regression weights
-        %  coverage = norm_sequence(CFG, gene, coverage);
-        %end
       end
       
       if ~CFG.paired
@@ -191,7 +181,14 @@ for c = chr_num,
       else
         rev_idx = size(profile_weights,1):-1:1;
       end
-      exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t)) - gene.intron_dists(:,t);
+      exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
+
+      % normalize profile for sequence biases (depending on transcript sequence)
+      if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
+        idx_exon_t = find(exon_mask(:,t)>0) ;
+        exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t)) ;
+      end ;
+
       % fill intron mask
       exons = gene.exons{t};
       num_found = 0;

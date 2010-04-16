@@ -37,6 +37,9 @@ read_starts = zeros(1,0) ;
 read_starts_pos = [] ;
 for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   fname = CFG.read_maps_fn{gene.chr_num}{f};
+  if ~fexist(fname),
+    warning('BAM file %s does not exist', fname) ;
+  end ;
   try
     % 
     if CFG.both_strands
@@ -44,34 +47,36 @@ for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
     else
       [mask_tmp{f}, read_intron_list] = get_reads(fname, CFG.samtools_dir, gene.chr, gene.strand, eidx, CFG.paired); 
     end
-    if ~isempty(mask_tmp{f}),
-      intron_list = [intron_list read_intron_list{:}] ;
-    end ;
-    mask_tmp{f}(mask_tmp{f}>1) = 1;
-
-    % delete rows with zeros and those with overlapping reads
-    mask_tmp{f}(sum(mask_tmp{f},2)==0 | any(mask_tmp{f}>1,2),:) = [];
-    mask_tmp{f} = mask_tmp{f}(:,win_size+1:win_size+gene.exonic_len);
-    assert(all(all(mask_tmp{f}==0 | mask_tmp{f}==1)));
-    num_reads = num_reads + size(mask_tmp{f},1);
-    if ~isempty(mask_tmp{f})
-      file_exist(f) = 1;
-    end
-    read_starts_ = zeros(1, size(mask_tmp{f},1)) ;
-    for i=1:size(mask_tmp{f}, 1),
-      idx = find(mask_tmp{f}(i,:)~=0, 1, 'first') ;
-      if ~isempty(idx),
-        read_starts_(i) = idx ;
-      else
-        read_starts_(i) = nan ;
-      end ;
-    end ;
-    read_starts = [read_starts read_starts_(~isnan(read_starts_))] ;
   catch
+    warning('get_reads failed') ;
     intron_list = intron_list' ;
     ok = 0;
     return;
   end
+  
+  if ~isempty(mask_tmp{f}),
+    intron_list = [intron_list read_intron_list{:}] ;
+  end ;
+  mask_tmp{f}(mask_tmp{f}>1) = 1;
+  
+  % delete rows with zeros and those with overlapping reads
+  mask_tmp{f}(sum(mask_tmp{f},2)==0 | any(mask_tmp{f}>1,2),:) = [];
+  mask_tmp{f} = mask_tmp{f}(:,win_size+1:win_size+gene.exonic_len);
+  assert(all(all(mask_tmp{f}==0 | mask_tmp{f}==1)));
+  num_reads = num_reads + size(mask_tmp{f},1);
+  if ~isempty(mask_tmp{f})
+    file_exist(f) = 1;
+  end
+  read_starts_ = zeros(1, size(mask_tmp{f},1)) ;
+  for i=1:size(mask_tmp{f}, 1),
+    idx = find(mask_tmp{f}(i,:)~=0, 1, 'first') ;
+    if ~isempty(idx),
+      read_starts_(i) = idx ;
+    else
+      read_starts_(i) = nan ;
+    end ;
+  end ;
+  read_starts = [read_starts read_starts_(~isnan(read_starts_))] ;
 end
 
 % process intron list
