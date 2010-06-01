@@ -2,13 +2,20 @@ addpath('~/svn/tools/rproc');
 addpath('~/svn/tools/utils');
 
 CFG.organism = 'elegans';
-CFG.exp = 'bias=weak_seqbias=yes' %=no.mapped.2.bam_sorted';
-%CFG.exp = 'bias=strong_seqbias=no' %=no.mapped.2.bam_sorted';
+CFG.exp = 'fs_strong_bias'; %=no.mapped.2.bam_sorted';
 CFG.read_len = 75;
 %CFG.exp = 'elegans_pair_15'; % 'elegans_pair_15' 'nGASP-Train'
 %CFG.read_len = 36;
 CFG.gene_source = 'annotation';
 CFG.read_maps_select = ''; % '' '_el8_mm1'
+
+CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/';
+CFG.read_maps_dir = sprintf('%s/tracks/', CFG.base_dir);
+repeat_base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/';
+CFG.repeat_maps_dir = sprintf('%sannotations/%s/repeat_masker/tracks/', repeat_base_dir, CFG.organism);
+CFG.repeat_maps_fn = CFG.repeat_maps_dir;
+
+
 
 CFG
 
