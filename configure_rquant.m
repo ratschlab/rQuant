@@ -25,14 +25,15 @@ CFG.samtools_dir = '/fml/ag-raetsch/share/software/samtools/';
 switch CFG.gene_source
  case 'annotation'
   %CFG.gene_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-03-10/');
-  CFG.gene_dir = sprintf('/fml/ag-raetsch/nobackup/projects/rquant/simulation_2010-04-05/');
+  CFG.gene_dir = sprintf('%srun_2010-05-07/', CFG.base_dir);
   %CFG.gene_dir = sprintf('%sannotations/%s/', CFG.base_dir, CFG.organism);
   switch CFG.organism,
    case 'drosophila'
     CFG.gene_fn = '';
    case 'elegans'
-    CFG.gene_fn = sprintf('%s/%s', CFG.gene_dir, CFG.genes_mat_fname); 
+    %CFG.gene_fn = sprintf('%sgenes_expr_merged_strands.mat', CFG.gene_dir);
     %CFG.gene_fn = sprintf('%sgenes.mat', CFG.gene_dir);
+    CFG.gene_fn = sprintf('%sgenes_expr_c2_r1.mat', CFG.gene_dir); 
    case 'human'
     CFG.gene_fn = '';
    otherwise
@@ -87,10 +88,10 @@ if isequal(CFG.gene_source, 'annotation')
     assert(s);
   end
 end
-%keyboard
+
 
 %%%%% rproc settings %%%%%
-CFG.use_rproc = 1; % 1: cluster submission or 0: locally
+CFG.use_rproc = 0; % 1: cluster submission or 0: locally
 if CFG.use_rproc,
   CFG.rproc_num_jobs              = 100;
   CFG.rproc_memreq                = 4000;
@@ -112,7 +113,7 @@ end
 
 % enables taking data for both strands together
 if isequal(CFG.gene_source, 'annotation')
-  CFG.both_strands = 1;
+  CFG.both_strands = 0;
   %CFG.both_strands = 0;
 else
   CFG.both_strands = 1;

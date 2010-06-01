@@ -39,7 +39,7 @@ lpenv = cplex_license(0,1);
 genes(1).mean_ec = [];
 genes(1).transcript_weights = [];
 genes(1).transcript_weights_all = [];
-genes(1).loss = struct ;%{[]};
+genes(1).loss = struct;%{[]};
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,
@@ -66,14 +66,14 @@ for c = chr_num,
   end
   for g = chr_idx,
     gene = genes(g);
-    %if gene.strand=='+', continue ; end ;
+    %if gene.strand=='+', continue; end
 
     fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
     %%%%% load exon coverage for gene %%%%%
     %try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
       [coverage excluded_reads reads_ok introns read_starts] = get_coverage_per_read(CFG, gene);
-
+      keyboard
       % plus strand
       fidx = find(introns(:,4)==0);
       intron_starts{1} = introns(fidx,1); 
@@ -85,7 +85,7 @@ for c = chr_num,
       intron_stops{2} = introns(fidx,2);
       conf{2} = introns(fidx,3);
       if CFG.norm_seqbias
-        genes(g).num_read_starts = read_starts ;
+        genes(g).num_read_starts = read_starts;
       end
       
       if ~CFG.paired
@@ -185,9 +185,9 @@ for c = chr_num,
 
       % normalize profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
-        idx_exon_t = find(exon_mask(:,t)>0) ;
-        exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t)) ;
-      end ;
+        idx_exon_t = find(exon_mask(:,t)>0);
+        exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t));
+      end
 
       % fill intron mask
       exons = gene.exons{t};
@@ -209,11 +209,11 @@ for c = chr_num,
       if num_found==0,
         if CFG.VERBOSE>0
           fprintf(1, 'introns not found in gene %i, transcript %i \n', g, t);
-        end ;
+        end
       else
         if CFG.VERBOSE>=2
           fprintf(1, 'found %i matching introns, gene %i, transcript %i\n', num_found, g, t)
-        end ;
+        end
       end
     end
     repeat_mask = false(gene.exonic_len, 1); 

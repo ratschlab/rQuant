@@ -20,7 +20,7 @@ end
 
 %%%% load genes
 load(CFG.gene_fn, 'genes');
-%genes=genes(1:500) ;
+genes=genes(1:500);
 
 % add exonic length
 % initialise expression bins
@@ -248,15 +248,16 @@ while(1)
       end
     end
     assert(sum(take_idx)>0);
-    seq_norm_genes = genes(take_idx); use_idx=zeros(1,length(take_idx)) ;
+    seq_norm_genes = genes(take_idx);
+    use_idx = zeros(1,length(take_idx));
     for g = 1:length(seq_norm_genes),
       t = find(seq_norm_genes(g).transcript_weights>min_expr);
       assert(length(t)==1)
       seq_norm_genes(g).transcripts = seq_norm_genes(g).transcripts{t};
       seq_norm_genes(g).exons = seq_norm_genes(g).exons{t};
-      use_idx(g)=(seq_norm_genes(g).strands(t)=='+') ;
+      use_idx(g) = (seq_norm_genes(g).strands(t)=='+');
     end
-    seq_norm_genes=seq_norm_genes(logical(use_idx)) ;
+    seq_norm_genes = seq_norm_genes(logical(use_idx));
 
     fprintf('using %i genes for sequence normalisation\n', length(seq_norm_genes));
 

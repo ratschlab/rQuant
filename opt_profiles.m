@@ -181,7 +181,7 @@ for g = 1:length(genes),
     %  coverage = norm_sequence(CFG, gene, coverage);
     %end
     coverage = sum(coverage,2);
-    coverage = gene.all_coverage ;
+    coverage = gene.all_coverage;
   catch
     pair_ok = 0;
   end;

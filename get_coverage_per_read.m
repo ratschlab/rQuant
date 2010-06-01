@@ -32,32 +32,37 @@ win_size = length(max(gene.eidx(1)-win,1):gene.eidx(1)-1);
 
 num_reads = 0;
 file_exist = zeros(1,length(CFG.read_maps_fn{gene.chr_num}));
-intron_list = zeros(4,0);
-read_starts = zeros(1,0) ;
-read_starts_pos = [] ;
+intron_list = zeros(2,0);
+read_starts = zeros(1,0);
+read_starts_pos = [];
 for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   fname = CFG.read_maps_fn{gene.chr_num}{f};
   if ~fexist(fname),
-    warning('BAM file %s does not exist', fname) ;
-  end ;
+    warning('BAM file %s does not exist', fname);
+  end
   try
-    % 
     if CFG.both_strands
       [mask_tmp{f}, read_intron_list] = get_reads(fname, CFG.samtools_dir, gene.chr, '0', eidx, CFG.paired);
     else
-      [mask_tmp{f}, read_intron_list] = get_reads(fname, CFG.samtools_dir, gene.chr, gene.strand, eidx, CFG.paired); 
+      [mask_idx, read_intron_list] = get_reads(fname, gene.chr, eidx(1),eidx(end),gene.strand); 
+    end
+    if ~isempty(mask_idx)
+      mask_tmp{f} = sparse(mask_idx(1,:), mask_idx(2,:), 1, max(mask_idx(1,:)),eidx(end)-eidx(1)+1);
+      mask_tmp{f} = full(mask_tmp{f}(:,eidx-eidx(1)+1)); % remove this part to continue working with a sparse matrix
+    else
+      mask_tmp{f} = zeros(0,length(eidx));
     end
   catch
-    warning('get_reads failed') ;
-    intron_list = intron_list' ;
+    warning('get_reads failed');
+    intron_list = intron_list';
     ok = 0;
     return;
   end
   
   if ~isempty(mask_tmp{f}),
-    intron_list = [intron_list read_intron_list{:}] ;
-  end ;
-  mask_tmp{f}(mask_tmp{f}>1) = 1;
+    intron_list = [intron_list read_intron_list{:}];
+  end
+  %mask_tmp{f}(mask_tmp{f}>1) = 1;
   
   % delete rows with zeros and those with overlapping reads
   mask_tmp{f}(sum(mask_tmp{f},2)==0 | any(mask_tmp{f}>1,2),:) = [];
@@ -67,36 +72,39 @@ for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   if ~isempty(mask_tmp{f})
     file_exist(f) = 1;
   end
-  read_starts_ = zeros(1, size(mask_tmp{f},1)) ;
+  read_starts_ = zeros(1, size(mask_tmp{f},1));
   for i=1:size(mask_tmp{f}, 1),
-    idx = find(mask_tmp{f}(i,:)~=0, 1, 'first') ;
+    idx = find(mask_tmp{f}(i,:)~=0, 1, 'first');
     if ~isempty(idx),
-      read_starts_(i) = idx ;
+      read_starts_(i) = idx;
     else
-      read_starts_(i) = nan ;
-    end ;
-  end ;
-  read_starts = [read_starts read_starts_(~isnan(read_starts_))] ;
+      read_starts_(i) = nan;
+    end
+  end
+  read_starts = [read_starts read_starts_(~isnan(read_starts_))];
 end
 
 % process intron list
-intron_list = intron_list' ;
-intron_list_unique = unique(intron_list, 'rows') ;
-intron_list_unique(:,3)=0 ;
+intron_list = intron_list';
+intron_list_unique = unique(intron_list, 'rows');
+intron_list(:,3)=0;
+intron_list(:,4)=0;
+intron_list_unique(:,3)=0;
+intron_list_unique(:,4)=0;
 for i=1:size(intron_list_unique,1),
   cnt = sum(intron_list_unique(i,1)==intron_list(:,1) & ...
             intron_list_unique(i,2)==intron_list(:,2) & ...
-            intron_list_unique(i,4)==intron_list(:,4)) ;
-  intron_list_unique(i,3)=cnt ;
-end ;
-intron_list=intron_list_unique ;
-clear intron_list_unique ;
+            intron_list_unique(i,4)==intron_list(:,4));
+  intron_list_unique(i,3)=cnt;
+end
+intron_list=intron_list_unique;
+clear intron_list_unique;
 
 % process read_start list
-read_starts_pos = zeros(1, gene.exonic_len) ;
+read_starts_pos = zeros(1, gene.exonic_len);
 for i=1:length(read_starts),
-  read_starts_pos(read_starts(i)) = read_starts_pos(read_starts(i)) + 1 ;
-end ;
+  read_starts_pos(read_starts(i)) = read_starts_pos(read_starts(i)) + 1;
+end
 
 % collect masks
 %mask = zeros(gene.exonic_len, num_reads);
