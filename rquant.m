@@ -6,7 +6,7 @@ function rquant(CFG)
 
 
 %%%% paths
-CFG.paths = set_rquant_paths();
+CFG.paths = set_rquant_paths(CFG);
 
 %%%% configuration
 CFG = configure_rquant(CFG);
@@ -20,7 +20,7 @@ end
 
 %%%% load genes
 load(CFG.gene_fn, 'genes');
-genes=genes(1:500);
+genes = genes(1:500);
 
 % add exonic length
 % initialise expression bins
