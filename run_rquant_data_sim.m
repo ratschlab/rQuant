@@ -9,7 +9,7 @@ CFG.read_len = 75;
 CFG.gene_source = 'annotation';
 
 CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
-CFG.repeat_maps_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/%s/repeat_masker/tracks/';
+CFG.repeat_maps_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
 
 %%%%% genes %%%%% 
 CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-05-07/genes_expr_c2_r1.mat';

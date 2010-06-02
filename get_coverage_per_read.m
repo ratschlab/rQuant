@@ -42,7 +42,7 @@ for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   end
   try
     if CFG.both_strands
-      [mask_tmp{f}, read_intron_list] = get_reads(fname, CFG.samtools_dir, gene.chr, '0', eidx, CFG.paired);
+      [mask_idx, read_intron_list] = get_reads(fname, gene.chr, eidx(1),eidx(end),'0');
     else
       [mask_idx, read_intron_list] = get_reads(fname, gene.chr, eidx(1),eidx(end),gene.strand); 
     end
@@ -62,7 +62,8 @@ for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
   if ~isempty(mask_tmp{f}),
     intron_list = [intron_list read_intron_list{:}];
   end
-  %mask_tmp{f}(mask_tmp{f}>1) = 1;
+  
+  mask_tmp{f}(mask_tmp{f}>1) = 1;
   
   % delete rows with zeros and those with overlapping reads
   mask_tmp{f}(sum(mask_tmp{f},2)==0 | any(mask_tmp{f}>1,2),:) = [];
