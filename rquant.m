@@ -20,7 +20,7 @@ end
 
 %%%% load genes
 load(CFG.gene_fn, 'genes');
-genes = genes(1:500);
+%genes = genes(1:500);
 
 % add exonic length
 % initialise expression bins
@@ -144,8 +144,31 @@ end
 
 % iteratively optimise transcript and profile weights 
 iter = 0;
-while(1)
+while (1)
   iter = iter + 1;
+  % load previous iterations if exist
+  if isequal(CFG.gene_source, 'annotation')
+    load_fname = sprintf('%s%s_%s_%s_iter%i_interm.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
+    while (exist(load_fname, 'file'))
+      iter = iter + 1;
+      load_fname = sprintf('%s%s_%s_%s_iter%i_interm.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
+    end
+    if iter>1
+      load_fname = sprintf('%s%s_%s_%s_iter%i_interm.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter-1);
+      genes_tmp = genes;
+      load(load_fname, 'CFG', 'RES', 'genes');
+      profile_weights = RES{iter-1}.profile_weights;
+      intron_dists = RES{iter-1}.intron_dists;
+      if ~isfield(genes, 'eidx')
+        genes(1).eidx = [];
+        for g = 1:length(genes),
+          assert(genes(g).id==genes_tmp(g).id);
+          genes(g).eidx = genes_tmp(g).eidx;
+        end
+      end
+    end
+  end
+  
   fprintf(1, '\n*** Iteration %i ***\n', iter);
   fprintf(1, '\nDetermining transcript weights...\n');
   
@@ -213,7 +236,7 @@ while(1)
   fprintf(1, '\nMedian loss after iteration %i: %5.2f\n', iter, RES{iter}.median_loss);
   fprintf(1, '\nMedian ratio loss introns/exons after iteration %i: %1.3f\n', iter, RES{iter}.median_loss_frac);
   
-  if DEBUG, keyboard; end
+  %if DEBUG, keyboard; end
   
   if isequal(CFG.gene_source, 'annotation')
     save_fname = sprintf('%s%s_%s_%s_iter%i.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
@@ -236,7 +259,6 @@ while(1)
   end
   
   if CFG.norm_seqbias
-    keyboard
     fprintf(1, '\nDetermining sequence bias...\n\n');
     take_idx = false(1, length(genes));
     tw = [genes.transcript_weights];
@@ -304,7 +326,6 @@ while(1)
   RES{iter}.intron_dists = intron_dists;
   RES{iter}.profile_genes = profile_genes;
   
-  save_fname = sprintf('%s%s_%s_%s_iter%i.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
   save_fname = sprintf('%s%s_%s_%s_iter%i_interm.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
   genes_tmp = genes;
   genes = rmfield(genes, 'eidx');

@@ -3,19 +3,22 @@ function CFG = configure_rquant(CFG)
 %
 % -- input --
 % CFG: configure struct with paths, data directories etc.
+%
+% --output --
+% CFG: configure struct augmented by rQuant parameters
 
 
 %%%%% rquant parameters %%%%%
 
 % enables taking data for both strands together
 if isequal(CFG.gene_source, 'annotation')
-  CFG.both_strands = 0;
+  CFG.both_strands = 1;
   %CFG.both_strands = 0;
 else
   CFG.both_strands = 1;
 end
 % number of iterations (1: no profile learning)
-CFG.max_iter = 1;
+CFG.max_iter = 6;
 
 %%%%% transcript weight optimisation
 % method to determine transcript weights 
@@ -27,7 +30,7 @@ CFG.C1_set = [0.001];
 CFG.C1_loss_frac_target = 0.3;
 
 %%%%% sequence bias normalisation
-CFG.norm_seqbias = 0;
+CFG.norm_seqbias = 1;
 CFG.RR.seq_norm_weights = [];
 CFG.RR.half_win_size = 20;
 CFG.RR.num_train_frac = 0.8;

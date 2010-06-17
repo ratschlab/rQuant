@@ -32,7 +32,7 @@ for g = 1:length(genes),
   idx = find(~isnan(num_read_starts_norm));
 
   % target values for regression
-  TR.Y = [TR.Y log(num_read_starts_norm(idx))];
+  TR.Y = [TR.Y log(num_read_starts_norm(idx))'];
   % input sequence data for regression
   X = char(zeros(CFG.RR.half_win_size*2, length(idx)));
   for x = 1:length(idx),

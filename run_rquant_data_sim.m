@@ -4,7 +4,7 @@ addpath('~/svn/tools/genomes');
 
 %%%%% directories from which to load read data and genes %%%%%
 CFG.organism = 'elegans';
-CFG.exp = 'fs_strong_bias';
+CFG.exp = 'fs_weak_bias_seq_bias';
 CFG.read_len = 75;
 CFG.gene_source = 'annotation';
 
@@ -28,8 +28,10 @@ for c = 1:length(CFG.genome_info.flat_fnames),
 end
 
 %%%%% result directory %%%%%
-CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, datestr(now,'yyyy-mm-dd'));
-%CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, datestr(now,'yyyy-mm-dd_HHhMM'));
+date_exp = '2010-06-15';
+%date_exp = datestr(now,'yyyy-mm-dd');
+%date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
+CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
 if ~exist(CFG.out_dir ,'dir'),
   [s m mid] = mkdir(CFG.out_dir);
   assert(s);
