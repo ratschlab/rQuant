@@ -10,13 +10,13 @@ function profile_norm = norm_sequence(CFG, gene, transcript_idx, profile)
 
 exons = gene.exons{transcript_idx};
 exons(1,1) = exons(1,1)-CFG.RR.half_win_size; 
-exons(end,2) = exons(end,2) + CFG.RR.half_win_size + 1;
+exons(end,2) = exons(end,2) + CFG.RR.half_win_size;
 
 if ~isfield(gene, 'strands') || length(gene.strands)<transcript_idx,
   gene.strands(transcript_idx) = gene.strands;
 end
 seq = load_genomic(gene.chr, gene.strands(transcript_idx), exons(:,1), exons(:,2), CFG.genome_info, 0);
-assert(length(seq)==length(profile)+2*CFG.RR.half_win_size+1);
+assert(length(seq)==length(profile)+2*CFG.RR.half_win_size);
 
 % input sequence data for regression
 X = char(zeros(CFG.RR.half_win_size*2, length(seq)-2*CFG.RR.half_win_size));
@@ -31,11 +31,10 @@ else
 end
 
 coverage = zeros(1, length(num_read_starts_pred));
-for i=1:length(num_read_starts_pred),
-  idx = i:min(i+CFG.read_len-1, length(num_read_starts_pred));
-  coverage(idx) = coverage(idx) + num_read_starts_pred(i);
+for n = 1:length(num_read_starts_pred),
+  idx = n:min(n+CFG.read_len-1, length(num_read_starts_pred));
+  coverage(idx) = coverage(idx) + num_read_starts_pred(n);
 end
 coverage = coverage / mean(coverage);
 
-profile_norm = profile .* coverage;
-
+profile_norm = profile .* coverage';

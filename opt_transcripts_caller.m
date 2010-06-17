@@ -39,41 +39,19 @@ lpenv = cplex_license(0,1);
 genes(1).mean_ec = [];
 genes(1).transcript_weights = [];
 genes(1).transcript_weights_all = [];
-genes(1).loss = struct;%{[]};
+genes(1).loss = struct;
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,
   chr_idx = find([genes.chr_num]==c);
   if CFG.VERBOSE>0, fprintf(1, '\nprocessing %i genes for contig %i (%s)\n', length(chr_idx), genes(chr_idx(1)).chr_num, genes(chr_idx(1)).chr); end
-  %%%%% load intron lists for contig %%%%%
-  % plus strand
-  if 0
-  fname = CFG.introns_fn{c}{1}; 
-  if exist(fname, 'file')
-    fprintf(1, 'plus strand intron list - ');
-    [intron_starts{1}, intron_stops{1}, conf{1}, max_both, max_left, max_right] = read_intron_list(fname);
-  else
-    intron_starts{1} = []; intron_stops{1} = []; conf{1} = [];
-  end
-  % minus strand
-  fname = CFG.introns_fn{c}{2};
-  if exist(fname, 'file')
-    fprintf(1, 'minus strand intron list - ');
-    [intron_starts{2}, intron_stops{2}, conf{2}, max_both, max_left, max_right] = read_intron_list(fname);
-  else
-    intron_starts{2} = []; intron_stops{2} = []; conf{2} = [];
-  end
-  end
   for g = chr_idx,
     gene = genes(g);
-    %if gene.strand=='+', continue; end
-
     fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
-    %%%%% load exon coverage for gene %%%%%
+    %%%%% load exon coverage and introns for gene %%%%%
     %try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
       [coverage excluded_reads reads_ok introns read_starts] = get_coverage_per_read(CFG, gene);
-      keyboard
       % plus strand
       fidx = find(introns(:,4)==0);
       intron_starts{1} = introns(fidx,1); 
@@ -87,7 +65,7 @@ for c = chr_num,
       if CFG.norm_seqbias
         genes(g).num_read_starts = read_starts;
       end
-      
+      % collapse coverage per read
       if ~CFG.paired
         coverage = sum(coverage,2);
         for t = 1:length(gene.transcripts),
@@ -183,7 +161,7 @@ for c = chr_num,
       end
       exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
 
-      % normalize profile for sequence biases (depending on transcript sequence)
+      % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
         idx_exon_t = find(exon_mask(:,t)>0);
         exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t));

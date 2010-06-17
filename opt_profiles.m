@@ -176,16 +176,16 @@ for g = 1:length(genes),
     Ac            = Ac + 1;
   end
   try
-    [coverage excluded_reads pair_ok] = get_coverage_per_read(CFG, gene, 1);
+    [coverage excluded_reads reads_ok] = get_coverage_per_read(CFG, gene, 1);
     %if CFG.norm_seqbias
     %  coverage = norm_sequence(CFG, gene, coverage);
     %end
     coverage = sum(coverage,2);
     coverage = gene.all_coverage;
   catch
-    pair_ok = 0;
+    reads_ok = 0;
   end;
-  if ~pair_ok, continue; end
+  if ~reads_ok, continue; end
   b([1:size(profiles,2)]+p_offset,1) = -coverage(exon_mask_idx(TR.mask([1:profiles_len]+mask_offset)>0));
   mask_offset = mask_offset + profiles_len;
   p_offset = p_offset + size(profiles,2);
