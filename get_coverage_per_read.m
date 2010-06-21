@@ -29,21 +29,27 @@ if ~isfield(CFG, 'both_strands')
   CFG.both_strands = 0;
 end
 
+if CFG.both_strands
+  strand = '0';
+else
+  strand = gene.strand;
+end
+
 win = CFG.read_len;
 
 eidx = [max(gene.eidx(1)-win,1):gene.eidx(1)-1, gene.eidx, gene.eidx(end)+1:min(gene.eidx(end)+win,CFG.chr_len(gene.chr_num))];
 win_size = length(max(gene.eidx(1)-win,1):gene.eidx(1)-1);
 
-for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
-  fname = CFG.read_maps_fn{gene.chr_num}{f};
+for f = 1:length(CFG.tracks_fn{gene.chr_num}),
+  fname = CFG.tracks_fn{gene.chr_num}{f};
   if ~fexist(fname),
     warning('BAM file %s does not exist', fname);
   end
   try
-    if CFG.both_strands
-      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), '0');
+    if nargout>3
+      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand);
     else
-      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), gene.strand); 
+      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand);
     end
   catch
     warning('get_reads failed');
@@ -51,13 +57,14 @@ for f = 1:length(CFG.read_maps_fn{gene.chr_num}),
     ok = 0;
     return;
   end
-  if ~isempty(intron_list_tmp),
+  if exist('intron_list_tmp', 'var') & ~isempty(intron_list_tmp),
     intron_list = [intron_list intron_list_tmp{:}];
   end
 end
 
 % process coverage: convert to exonic position indices
 coverage_idx = [coverage_idx_tmp{:}];
+coverage_idx = unique(coverage_idx', 'rows')'; % no overlapping reads
 if ~isempty(coverage_idx)
   coverage = sparse(coverage_idx(1,:), coverage_idx(2,:), 1, max(coverage_idx(1,:)), eidx(end)-eidx(1)+1)';
 else
@@ -68,21 +75,25 @@ coverage = coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(win_size+1)+1
 assert(~any(any(full(coverage>1))));
 
 % process intron list (1: intron start, 2: intron stop, 3: confirmation, 4: strand)
-intron_list = [intron_list', zeros(size(intron_list,2), 1), (gene.strand=='-')*ones(size(intron_list,2), 1)];
-intron_list_unique = unique(intron_list, 'rows');
-for n = 1:size(intron_list_unique,1),
-  intron_list_unique(n,3) = sum(intron_list_unique(n,1)==intron_list(:,1) & ...
-                                intron_list_unique(n,2)==intron_list(:,2) & ...
-                                intron_list_unique(n,4)==intron_list(:,4));
+if nargout>3
+  intron_list = [intron_list', zeros(size(intron_list,2), 1), (gene.strand=='-')*ones(size(intron_list,2), 1)];
+  intron_list_unique = unique(intron_list, 'rows');
+  for n = 1:size(intron_list_unique,1),
+    intron_list_unique(n,3) = sum(intron_list_unique(n,1)==intron_list(:,1) & ...
+                                  intron_list_unique(n,2)==intron_list(:,2) & ...
+                                  intron_list_unique(n,4)==intron_list(:,4));
+  end
+  intron_list = intron_list_unique;
+  clear intron_list_unique;
 end
-intron_list = intron_list_unique;
-clear intron_list_unique;
 
 % process read starts: count reads starting at each exonic position
-for c = 1:size(coverage, 2),
-  fidx = find(coverage(:,c)~=0, 1, 'first');
-  if ~isempty(fidx),
-    read_starts(fidx) = read_starts(fidx) + 1;
+if nargout>4
+  for c = 1:size(coverage, 2),
+    fidx = find(coverage(:,c)~=0, 1, 'first');
+    if ~isempty(fidx),
+      read_starts(fidx) = read_starts(fidx) + 1;
+    end
   end
 end
 
