@@ -21,7 +21,7 @@ excluded_reads = [];
 intron_list = zeros(2, 0);
 read_starts = zeros(gene.exonic_len, 1);
 
-if nargin<4
+if nargin<3
   reverse_ret = 0;
 end
 
@@ -35,8 +35,19 @@ else
   strand = gene.strand;
 end
 
-win = CFG.read_len;
+if ~isfield(CFG, 'tracks_max_intron_len')
+  CFG.tracks_max_intron_len = 1e9;
+end
 
+if ~isfield(CFG, 'tracks_min_exon_len')
+  CFG.tracks_min_exon_len = -1;
+end
+
+if ~isfield(CFG, 'tracks_max_mismatches')
+  CFG.tracks_max_mismatches = CFG.read_len;
+end
+
+win = CFG.read_len;
 eidx = [max(gene.eidx(1)-win,1):gene.eidx(1)-1, gene.eidx, gene.eidx(end)+1:min(gene.eidx(end)+win,CFG.chr_len(gene.chr_num))];
 win_size = length(max(gene.eidx(1)-win,1):gene.eidx(1)-1);
 
@@ -47,9 +58,9 @@ for f = 1:length(CFG.tracks_fn{gene.chr_num}),
   end
   try
     if nargout>3
-      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand);
+      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, 0, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
     else
-      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand);
+      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, 0, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
     end
   catch
     warning('get_reads failed');
@@ -58,7 +69,7 @@ for f = 1:length(CFG.tracks_fn{gene.chr_num}),
     return;
   end
   if exist('intron_list_tmp', 'var') & ~isempty(intron_list_tmp),
-    intron_list = [intron_list intron_list_tmp{:}];
+    intron_list = [intron_list intron_list_tmp];
   end
 end
 
@@ -70,7 +81,8 @@ if ~isempty(coverage_idx)
 else
   coverage = sparse([], [], 1, eidx(end)-eidx(1)+1, 0);
 end
-coverage = coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(win_size+1)+1, :);
+coverage = coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(1)+1, :);
+
 % no overlapping reads
 assert(~any(any(full(coverage>1))));
 
