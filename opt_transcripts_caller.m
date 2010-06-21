@@ -196,7 +196,7 @@ for c = chr_num,
     end
     repeat_mask = false(gene.exonic_len, 1); 
     % fill repeat mask
-    fname = sprintf('%s%s_repeat', CFG.repeat_maps_fn, gene.chr);
+    fname = sprintf('%s%s_repeat', CFG.repeats_fn, gene.chr);
     if exist(sprintf('%s.pos', fname), 'file')
       [map.pos map.repeats] = interval_query(fname, {'repeats'}, [gene.start;gene.stop]);
       if ~isempty(map.pos)
