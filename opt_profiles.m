@@ -125,7 +125,6 @@ p_offset = 0;
 mask_offset = 0;
 cnt = 0;
 for g = 1:length(genes),
-  g
   gene = genes(g);
   exon_mask = zeros(1, gene.exonic_len);
   profiles = zeros(length(genes(g).transcripts), gene.exonic_len, CFG.num_plifs);

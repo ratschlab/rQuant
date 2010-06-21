@@ -9,7 +9,7 @@ CFG.read_len = 75;
 CFG.gene_source = 'annotation';
 
 CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
-CFG.repeat_maps_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
+CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
 
 %%%%% genes %%%%% 
 CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-05-07/genes_expr_c2_r1.mat';
@@ -24,12 +24,13 @@ end
 
 %%%%% alignments %%%%%
 for c = 1:length(CFG.genome_info.flat_fnames),
-  CFG.read_maps_fn{c} = {sprintf('%s%s.bam', CFG.tracks_dir, CFG.exp)};
+  CFG.tracks_fn{c} = {sprintf('%s%s.bam', CFG.tracks_dir, CFG.exp)};
 end
 
-%%%%% result directory %%%%%
-CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, datestr(now,'yyyy-mm-dd'));
-%CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, datestr(now,'yyyy-mm-dd_HHhMM'));
+%%%%% result directory %%%%
+date_exp = datestr(now,'yyyy-mm-dd');
+%date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
+CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
 if ~exist(CFG.out_dir ,'dir'),
   [s m mid] = mkdir(CFG.out_dir);
   assert(s);
