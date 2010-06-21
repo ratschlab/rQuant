@@ -27,6 +27,9 @@ for c = 1:length(CFG.genome_info.flat_fnames),
   CFG.tracks_fn{c} = {sprintf('%s%s_%s+_mapped.bam', CFG.tracks_dir, CFG.exp, CFG.genome_info.contig_names{c}), ...
                       sprintf('%s%s_%s+_el15_mm1_spliced.bam', CFG.tracks_dir, CFG.exp, CFG.genome_info.contig_names{c})};
 end
+CFG.tracks_max_intron_len = 1e9;
+CFG.tracks_min_exon_len = -1;
+CFG.tracks_max_mismatches = CFG.read_len;
 
 %%%%% result directory %%%%%
 date_exp = datestr(now,'yyyy-mm-dd');
