@@ -49,7 +49,7 @@ for c = chr_num,
     gene = genes(g);
     fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
     %%%%% load exon coverage and introns for gene %%%%%
-    %try
+    try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
       [coverage excluded_reads reads_ok introns read_starts] = get_coverage_per_read(CFG, gene);
       % plus strand
@@ -73,9 +73,9 @@ for c = chr_num,
         end
       end
       if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
-    %catch
-    %  reads_ok = 0;
-    %end
+    catch
+      reads_ok = 0;
+    end
     if ~reads_ok,
       if CFG.VERBOSE>0, fprintf(1, 'coverage could not be loaded for gene %i\n', g); end
       genes(g).transcript_weights = nan;
@@ -163,7 +163,13 @@ for c = chr_num,
 
       % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
-        idx_exon_t = find(exon_mask(:,t)>0);
+        tidx = [];
+        for e = 1:size(gene.exons{t},1),
+          tidx = [tidx, gene.exons{t}(e,1):gene.exons{t}(e,2)];
+          tidx = unique(tidx);
+        end
+        [tmp1 idx_exon_t tmp2]= intersect(gene.eidx, tidx);
+        assert(isequal(tmp2,[1:length(tidx)]));
         exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t));
       end
 
