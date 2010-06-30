@@ -6,7 +6,7 @@ function rquant(CFG)
 
 
 %%%% paths
-CFG.paths = set_rquant_paths(CFG);
+[CFG.paths CFG.rproc_par.envstr] = set_rquant_paths(CFG);
 
 %%%% configuration
 CFG = configure_rquant(CFG);
@@ -55,9 +55,7 @@ end
 CFG.transcript_len_ranges
 
 CFG
-CFG.C2.tau
-CFG.C2.kappa
-CFG.C2.theta
+CFG.C2
 fprintf(1,'using %i genes (deleted %i)\n\n', length(genes), num_del);
 clear num_del;
 

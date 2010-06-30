@@ -31,9 +31,8 @@ CFG.tracks_min_exon_len = -1;
 CFG.tracks_max_mismatches = CFG.read_len;
 
 %%%%% result directory %%%%%
-date_exp = '2010-06-15';
 %date_exp = datestr(now,'yyyy-mm-dd');
-%date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
+date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
 CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
 if ~exist(CFG.out_dir ,'dir'),
   [s m mid] = mkdir(CFG.out_dir);
@@ -41,17 +40,17 @@ if ~exist(CFG.out_dir ,'dir'),
 end
 
 %%%%% optimizer %%%%%
-CFG.optimizer = 'mosek';
+CFG.optimizer = 'cplex';
 
 %%%%% pre-learned profiles %%%%%
 CFG.profiles_fn = '';
 
 %%%%% rproc settings for rquant subjobs %%%%%
-CFG.use_rproc = 0; % 1: cluster submission or 0: locally
+CFG.use_rproc = 1; % 1: cluster submission or 0: locally
 if CFG.use_rproc,
-  CFG.rproc_num_jobs              = 100;
+  CFG.rproc_num_jobs              = 50;
   CFG.rproc_memreq                = 4000;
-  CFG.rproc_par.priority          = 20;
+  CFG.rproc_par.priority          = 8;
   CFG.rproc_par.resubmit          = 3;
   CFG.rproc_par.mem_req_resubmit  = [8000 12000 20000];
   CFG.rproc_par.time_req_resubmit = [36*60 70*60 90*60];

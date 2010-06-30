@@ -60,7 +60,7 @@ for g = 1:length(genes),
     end
     eidx = unique([eidx tidx]);
   end
-  if isequal(CFG.gene_source, 'annotation'),
+  if isequal(CFG.gene_source, 'annotation')
     if (min_start~=genes(g).start)
       assert(min_start==genes(g).start+1);
     end
