@@ -20,21 +20,20 @@ clear PAR;
 %%%% paths
 addpath(CFG.paths);
 
-
 if CFG.VERBOSE>0, tic; end
   
-%switch CFG.optimizer
-% case 'cplex'
-lpenv = cplex_license(0,1);
+switch CFG.optimizer
+ case 'cplex'
+  lpenv = cplex_license(0,1);
   if lpenv==0
-    fprintf(1, '\n no cplex licensce, using mosek\n');
+    fprintf(1, '\n no cplex licence, using mosek\n');
     CFG.optimizer = 'mosek';
   else
     CFG.optimizer = 'cplex';
   end
-% otherwise
-% lpenv = 0;
-%end
+ otherwise
+  lpenv = 0;
+end
 
 genes(1).mean_ec = [];
 genes(1).transcript_weights = [];

@@ -111,8 +111,8 @@ tau_len = E*N*(F-1);    % taus couple adjacent supporting points
 kappa1_len = E*(N-1)*F; % kappa1s couple adjacent transcript length bins
 kappa2_len = (E-1)*N*F; % kappa2s couple adjacent expression bins
 kappa_len = kappa1_len + kappa2_len;
-theta1_len = D*(D-1);
-theta2_len = D*(D-1);
+theta1_len = D*(D-1);   % theta1 contraints: coupling adjacent supporting points for 3' introns
+theta2_len = D*(D-1);   % theta2 contraints: coupling adjacent supporting points for 5' introns
 theta_len = theta1_len + theta2_len; % thetas
 
 b = zeros(P + 1 + 2*tau_len + 2*kappa_len, 1);
@@ -434,7 +434,7 @@ idx_theta = E*N*F+D*D+P+tau_len+kappa_len+1:E*N*F+P+D*D+tau_len+kappa_len+theta_
 
 Qi = [idx_loss, idx_tau, idx_kappa, idx_theta];
 Qj = [idx_loss, idx_tau, idx_kappa, idx_theta];
-Qv = [ones(1,P), CFG.C2.tau * ones(1,tau_len), CFG.C2.kappa * ones(1,kappa_len), CFG.C2.theta * ones(1,theta_len)];
+Qv = [ones(1,P), CFG.C2.tau * log(P) * ones(1,tau_len), CFG.C2.kappa * log(P) * ones(1,kappa_len), CFG.C2.theta * log(P) * ones(1,theta_len)];
 Q = sparse(Qi, Qj, Qv, length(obj), length(obj));
 clear Qi Qj Qv;
 
@@ -448,9 +448,7 @@ fprintf('used memory: %1.2f mb\n', sum([used_mem.bytes])/1024^2);
 
 
 %%%%% solve optimisation problem %%%%%
-optimizer = 'cplex';
-switch optimizer
-%switch CFG.optimizer
+switch CFG.optimizer
  case 'cplex'
   lpenv = cplex_license(1,1);
   %how = lp_set_param(lpenv,'CPX_PARAM_PREDUAL', 0, 1); 
@@ -499,4 +497,3 @@ objective.theta = 0.5*CFG.C2.theta*sum(thetas.^2);
 objective.all = sum(xopt.*obj) + 0.5*xopt'*Q*xopt;
 
 objective
-

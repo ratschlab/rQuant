@@ -30,7 +30,7 @@ CFG.C1_set = [0.001];
 CFG.C1_loss_frac_target = 0.3;
 
 %%%%% sequence bias normalisation
-CFG.norm_seqbias = 1;
+CFG.norm_seqbias = 0;
 CFG.RR.seq_norm_weights = [];
 CFG.RR.half_win_size = 20;
 CFG.RR.num_train_frac = 0.8;
@@ -61,11 +61,9 @@ CFG.subsample_frac_global = 1;
 % fraction of profile_genes to be subsampled for learning profiles
 CFG.subsample_frac = 0.10;
 % regularisation strength in profile optimisation
+% will be weighted by the number of positions in profile_genes
 CFG.C2.tau   = 100;
 CFG.C2.kappa = 1;
 CFG.C2.theta = 10;
-CFG.C2.tau   = CFG.C2.tau*CFG.max_num_train_exm;
-CFG.C2.kappa = CFG.C2.kappa*CFG.max_num_train_exm;
-CFG.C2.theta = CFG.C2.theta*CFG.max_num_train_exm;
 % more output to stdout
 CFG.VERBOSE = 1; % 0: no output, 1: more output, 2: debug output
