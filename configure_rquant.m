@@ -17,8 +17,6 @@ if isequal(CFG.gene_source, 'annotation')
 else
   CFG.both_strands = 1;
 end
-% number of iterations (1: no profile learning)
-CFG.max_iter = 3;
 
 %%%%% transcript weight optimisation
 % method to determine transcript weights 

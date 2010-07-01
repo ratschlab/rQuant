@@ -174,13 +174,13 @@ while (1)
   
   %if DEBUG, keyboard; end
   
-  if isequal(CFG.gene_source, 'annotation')
+  if ~isfield(CFG, 'out_fn')
     save_fname = sprintf('%s%s_%s_%s_iter%i.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
   else
     if CFG.paired,
-      save_fname = strrep(CFG.gene_fn, '.mat', '_rquant_profile_paired.mat');
+      save_fname = strrep(CFG.out_fn, '.mat', '_rquant_paired.mat');
     else
-      save_fname = strrep(CFG.gene_fn, '.mat', '_rquant_profile.mat');
+      save_fname = strrep(CFG.out_fn, '.mat', '_rquant.mat');
     end
   end
   genes_tmp = genes;
