@@ -42,6 +42,9 @@ end
 %%%%% optimizer %%%%%
 CFG.optimizer = 'cplex';
 
+%%%%% number of iterations (1: no profile learning) %%%%%
+CFG.max_iter = 3;
+
 %%%%% pre-learned profiles %%%%%
 CFG.profiles_fn = '';
 

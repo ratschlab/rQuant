@@ -125,6 +125,7 @@ for c = chr_num,
     end
     if CFG.VERBOSE>=2,
       fprintf(1, 'found %i transcripts, %i on + strand, %i on - strand\n', num_transcripts(1), num_transcripts(2), num_transcripts(3));
+      fprintf(1, 'found %i reads\n', sum(read_starts));
       fprintf(1, 'found %i introns, %i on + strand, %i on - strand (%i ignored)\n', size(intron_list,1), sum(intron_list(:,4)==1), sum(intron_list(:,4)==2), size(introns,1)-size(intron_list,1));
     end
     %%%%% prepare exon and intron masks %%%%%

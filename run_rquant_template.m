@@ -42,6 +42,9 @@ end
 %%%%% optimizer %%%%%
 CFG.optimizer = 'mosek';
 
+%%%%% number of iterations (1: no profile learning) %%%%%
+CFG.max_iter = 1;
+
 %%%%% pre-learned profiles %%%%%
 CFG.profiles_fn = '';
 
