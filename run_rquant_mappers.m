@@ -75,7 +75,7 @@ for o = 1:length(organisms),
     CFG.chr_len(c) = d(1).bytes;
   end
   
-  for e = 1:length(exp{o}),
+  for e = 2%1:length(exp{o}),
     CFG.exp = exp{o}{e};
     for s = 1:length(subexp),
       fprintf(1, '*** %s %s %s ***\n', CFG.organism, CFG.exp, subexp{s});
