@@ -12,7 +12,7 @@ CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/t
 CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
 
 %%%%% genes %%%%% 
-CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-05-07/genes_expr_c2_r1.mat';
+CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-07-13/genes_expr.mat';
 
 %%%%% genome info %%%%%
 CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
@@ -69,20 +69,20 @@ end
 CFG
 
 %%%%% rproc settings for main job %%%%%
-rproc_memreq                = 5000;
-rproc_par.priority          = 500;
-rproc_par.express           = 0;
-rproc_par.immediately_bg    = 0;
-rproc_par.immediately       = 0;
-rproc_par.arch              = 64;
-rproc_par.identifier        = '';
-rproc_par.verbosity         = 0;
-rproc_time                  = 72*60; % mins
 if 0
-  rproc_par.envstr = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/home/bohnert/tmp/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/5/tools/platform/linux64x86/bin';
-  rproc_par.identifier = sprintf('rq.%s-', organism(1:2));
-  fprintf(1, 'Submitting job %i (%s) to cluster\n', cnt, rproc_par.identifier);
-  job(cnt) = rproc('rquant', CFG, rproc_memreq, rproc_par, rproc_time);
+  rproc_memreq                = 10000;
+  rproc_par.priority          = 8;
+  rproc_par.express           = 0;
+  rproc_par.immediately_bg    = 0;
+  rproc_par.immediately       = 0;
+  rproc_par.arch              = 64;
+  rproc_par.identifier        = '';
+  rproc_par.verbosity         = 0;
+  rproc_time                  = 72*60; % mins
+  rproc_par.envstr            = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/share/software/mosek/6/licenses/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/6/tools/platform/linux64x86/bin';
+  rproc_par.identifier = sprintf('rq.%s-', CFG.organism(1:2));
+  fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
+  job = rproc('rquant', CFG, rproc_memreq, rproc_par, rproc_time);
 else
   rquant(CFG);
 end
