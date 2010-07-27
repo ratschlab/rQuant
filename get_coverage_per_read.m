@@ -21,6 +21,8 @@ excluded_reads = [];
 intron_list = zeros(2, 0);
 read_starts = zeros(gene.exonic_len, 1);
 
+collapse = double(~CFG.paired & nargout<=4);
+
 if nargin<3
   reverse_ret = 0;
 end
@@ -58,9 +60,9 @@ for f = 1:length(CFG.tracks_fn{gene.chr_num}),
   end
   try
     if nargout>3
-      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, 0, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
+      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
     else
-      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, 0, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
+      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
     end
   catch
     warning('get_reads failed');
@@ -75,17 +77,24 @@ end
 
 % process coverage: convert to exonic position indices
 coverage_idx = [coverage_idx_tmp{:}];
-coverage_idx = unique(coverage_idx', 'rows')'; % no overlapping reads
-if ~isempty(coverage_idx)
-  coverage = sparse(coverage_idx(1,:), coverage_idx(2,:), 1, max(coverage_idx(1,:)), eidx(end)-eidx(1)+1)';
+if ~collapse
+  coverage_idx = unique(coverage_idx', 'rows')'; % no overlapping reads
+  if ~isempty(coverage_idx)
+    coverage = sparse(coverage_idx(1,:), coverage_idx(2,:), 1, max(coverage_idx(1,:)), eidx(end)-eidx(1)+1)';
+  else
+    coverage = sparse([], [], 1, eidx(end)-eidx(1)+1, 0);
+  end
+  coverage = coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(1)+1, :);
+  % no overlapping reads
+  assert(~any(any(full(coverage>1))));
 else
-  coverage = sparse([], [], 1, eidx(end)-eidx(1)+1, 0);
+  coverage = sum(coverage_idx, 1);
+  coverage = sparse(coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(1)+1)');
 end
-coverage = coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(1)+1, :);
-
-% no overlapping reads
-assert(~any(any(full(coverage>1))));
-
+if ~CFG.paired
+  coverage = sum(coverage, 2);
+end
+  
 % process intron list (1: intron start, 2: intron stop, 3: confirmation, 4: strand)
 if nargout>3
   intron_list = [intron_list', zeros(size(intron_list,2), 1), (gene.strand=='-')*ones(size(intron_list,2), 1)];
@@ -110,23 +119,29 @@ if nargout>4
 end
 
 % determine set of excluded reads
-offset = gene.start-1;
-eidx = 1:length(gene.eidx);
-sum_all = sum(coverage,1);
-for t = 1:length(gene.transcripts),
-  tidx = [];
-  for e = 1:size(gene.exons{t},1),
-    tidx = [tidx, gene.exons{t}(e,1):gene.exons{t}(e,2)];
-    tidx = unique(tidx);
+if CFG.paired
+  offset = gene.start-1;
+  eidx = 1:length(gene.eidx);
+  sum_all = sum(coverage,1);
+  for t = 1:length(gene.transcripts),
+    tidx = [];
+    for e = 1:size(gene.exons{t},1),
+      tidx = [tidx, gene.exons{t}(e,1):gene.exons{t}(e,2)];
+      tidx = unique(tidx);
+    end
+    tidx = unique(tidx)-offset;
+    assert(all(tidx>=0));
+    % transcript indices in relative exonic coordinates
+    [tmp idx1 idx2] = intersect(tidx, gene.eidx-offset);
+    assert(isequal(tidx, gene.eidx(idx2)-offset));
+    tidx = idx2;
+    % exclude reads that do not cover at least MIN_COV of all transcript positions
+    excluded_reads{t} = find(sum(coverage(tidx,:),1)./sum_all<MIN_COV);
   end
-  tidx = unique(tidx)-offset;
-  assert(all(tidx>=0));
-  % transcript indices in relative exonic coordinates
-  [tmp idx1 idx2] = intersect(tidx, gene.eidx-offset);
-  assert(isequal(tidx, gene.eidx(idx2)-offset));
-  tidx = idx2;
-  % exclude reads that do not cover at least MIN_COV of all transcript positions
-  excluded_reads{t} = find(sum(coverage(tidx,:),1)./sum_all<MIN_COV);
+else
+ for t = 1:length(gene.transcripts),
+   excluded_reads{t} = [];
+ end
 end
 
 % reverse for minus strand
