@@ -50,7 +50,11 @@ for c = chr_num,
     %%%%% load exon coverage and introns for gene %%%%%
     try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
-      [coverage excluded_reads reads_ok introns read_starts] = get_coverage_per_read(CFG, gene);
+      if ~CFG.norm_seqbias
+        [coverage excluded_reads reads_ok introns] = get_coverage_per_read(CFG, gene);
+      else
+        [coverage excluded_reads reads_ok introns genes(g).num_read_starts] = get_coverage_per_read(CFG, gene);
+      end
       % plus strand
       fidx = find(introns(:,4)==0);
       intron_starts{1} = introns(fidx,1); 
@@ -61,16 +65,6 @@ for c = chr_num,
       intron_starts{2} = introns(fidx,1); 
       intron_stops{2} = introns(fidx,2);
       conf{2} = introns(fidx,3);
-      if CFG.norm_seqbias
-        genes(g).num_read_starts = read_starts;
-      end
-      % collapse coverage per read
-      if ~CFG.paired
-        coverage = sum(coverage,2);
-        for t = 1:length(gene.transcripts),
-          excluded_reads{t} = [];
-        end
-      end
       if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
     catch
       reads_ok = 0;
@@ -84,7 +78,7 @@ for c = chr_num,
       genes(g).loss.introns = nan;
       continue;
     end
-    genes(g).mean_ec = mean(sum(coverage,2));
+    genes(g).mean_ec = full(mean(sum(coverage,2)));
     genes(g).all_coverage = sum(coverage,2);
     genes(g).all_introns = introns;
     if isempty(coverage) || genes(g).mean_ec==0
@@ -125,7 +119,9 @@ for c = chr_num,
     end
     if CFG.VERBOSE>=2,
       fprintf(1, 'found %i transcripts, %i on + strand, %i on - strand\n', num_transcripts(1), num_transcripts(2), num_transcripts(3));
-      fprintf(1, 'found %i reads\n', sum(read_starts));
+      if exist('read_starts', 'var')
+        fprintf(1, 'found %i reads\n', sum(read_starts));
+      end
       fprintf(1, 'found %i introns, %i on + strand, %i on - strand (%i ignored)\n', size(intron_list,1), sum(intron_list(:,4)==1), sum(intron_list(:,4)==2), size(introns,1)-size(intron_list,1));
     end
     %%%%% prepare exon and intron masks %%%%%
