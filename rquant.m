@@ -240,13 +240,13 @@ while (1)
   % to ensure that profile_genes.transcript_weights are not empty
   del_idx = false(1,length(profile_genes));
   for g = 1:length(profile_genes),
-    if isempty(profile_genes(g).transcript_weights) || any(isnan(profile_genes(g).transcript_weights))
+    if isempty(profile_genes(g).transcript_weights) || any(isnan(profile_genes(g).transcript_weights)) || profile.genes(g).mean_ec < 1
       del_idx(g) = true;
     end
   end
   profile_genes(del_idx) = [];
   fprintf('using %i genes for profile learning\n', length(profile_genes));
-  [profile_weights, intron_dists, profile_genes] = opt_profiles(CFG, profile_genes);
+  [profile_weights, intron_dists, profile_genes, profile_objective] = opt_profiles(CFG, profile_genes);
   
   if DEBUG
     figure(); plot(profile_weights);
@@ -261,6 +261,7 @@ while (1)
   RES{iter}.profile_weights = profile_weights;
   RES{iter}.intron_dists = intron_dists;
   RES{iter}.profile_genes = profile_genes;
+  RES{iter}.profile_objective = profile_objective;
   
   save_fname = sprintf('%s%s_%s_%s_iter%i_interm.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method, iter);
   genes_tmp = genes;

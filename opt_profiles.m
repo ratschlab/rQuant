@@ -1,5 +1,5 @@
-function [weights, dists, genes] = opt_profiles(CFG, genes)
-% [weights, dists, genes] = opt_profiles(CFG, genes)
+function [weights, dists, genes, objective] = opt_profiles(CFG, genes)
+% [weights, dists, genes, objective] = opt_profiles(CFG, genes)
 %
 % -- input --
 % CFG: configuration struct
@@ -10,6 +10,7 @@ function [weights, dists, genes] = opt_profiles(CFG, genes)
 % dists: distances to closest intron
 % genes: struct defining genes with respective expression and
 % transcript length bin added
+% objective: objective evaluated with optimal parameters
 
 
 %%%%% define optimisation problem %%%%%
@@ -491,9 +492,9 @@ taus = xopt(idx_tau);
 kappas = xopt(idx_kappa);
 thetas = xopt(idx_theta);
 
-objective.tau = 0.5*CFG.C2.tau*sum(taus.^2);
-objective.kappa = 0.5*CFG.C2.kappa*sum(kappas.^2);
-objective.theta = 0.5*CFG.C2.theta*sum(thetas.^2);
+objective.tau = 0.5*CFG.C2.tau*log(P)*sum(taus.^2);
+objective.kappa = 0.5*CFG.C2.kappa*log(P)*sum(kappas.^2);
+objective.theta = 0.5*CFG.C2.theta*log(P)*sum(thetas.^2);
 objective.all = sum(xopt.*obj) + 0.5*xopt'*Q*xopt;
 
 objective
