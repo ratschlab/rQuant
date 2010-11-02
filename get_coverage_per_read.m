@@ -70,8 +70,10 @@ for f = 1:length(CFG.tracks_fn{gene.chr_num}),
     ok = 0;
     return;
   end
-  if exist('intron_list_tmp', 'var') & ~isempty(intron_list_tmp),
-    intron_list = [intron_list intron_list_tmp];
+  if exist('intron_list_tmp', 'var')
+    if ~isempty(intron_list_tmp)
+      intron_list = [intron_list intron_list_tmp];
+    end
   end
 end
 

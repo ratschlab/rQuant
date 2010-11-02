@@ -17,11 +17,11 @@ function [weights, betas, xis, loss] = opt_transcripts(CFG, gene, coverage, exon
 % loss: exon, intron and total loss
 
 
-%%%%% define LP %%%%%
+%%%%% define optimisation problem %%%%%
 % min_{x=[w,b,xis]}  sum_{t=1}^{T} C_1*w_{t}
 %                  + sum_{t=1}^{T} sum_{r=1}^{R} C_beta b_{t,r}
 %                  + sum_{p=1}^{P} sum_{t=1}^{T} xi_{t,p}
-%                  + sum_{i=1}^{I} sum_{i in I} xi_{i}
+%                  + sum_{i=1}^{I} xi_{i}
 % s.t.
 % for all p in P,
 %     all t in T: -em_{t,p}*w_{t} + sum_{r=1}^{R} rm_{p,t,r}*b_{t,r} - xi_{t,p} = 0
@@ -140,7 +140,7 @@ C_betas = reshape(C_betas, T*R, 1);
 
 
 %%%%% linear term of the objective function %%%%%
-if ~isfield(gene, 'C1'), gene.C1(length(gene.transcripts)) = 1; end
+if ~isfield(gene, 'C1'), gene.C1(1:length(gene.transcripts)) = 1; end
 if ~isfield(gene, 'transcript_len'), gene.transcript_len = gene.transcript_length; end
 obj = [(CFG.C1*gene.transcript_len.*(gene.C1.^2))'; C_betas; zeros(P*T+I,1)];
 

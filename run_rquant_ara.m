@@ -3,19 +3,19 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% directories from which to load read data and genes %%%%%
-CFG.organism = 'elegans';
-CFG.exp = 'fs_weak_bias_seq_bias';
-CFG.read_len = 75;
+CFG.organism = 'arabidopsis';
+CFG.exp = 'reads_ara';
+CFG.read_len = 36;
 CFG.gene_source = 'annotation';
 
-CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
-CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
+CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-06-28/';
+CFG.repeats_fn = '';
 
 %%%%% genes %%%%% 
-CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-07-13/genes_expr.mat';
+CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-06-28/genes_ara.mat';
 
 %%%%% genome info %%%%%
-CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
+CFG.genome_info = init_genome('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-06-28/genome_tair7.config');
 % contig length
 for c = 1:length(CFG.genome_info.flat_fnames),
   d = dir(CFG.genome_info.flat_fnames{c});
@@ -42,14 +42,11 @@ end
 %%%%% optimizer %%%%%
 CFG.optimizer = 'cplex';
 
-%%%%% number of iterations (1: no profile learning) %%%%%
-CFG.max_iter = 5;
-
 %%%%% pre-learned profiles %%%%%
 CFG.profiles_fn = '';
 
 %%%%% rproc settings for rquant subjobs %%%%%
-CFG.use_rproc = 1; % 1: cluster submission or 0: locally
+CFG.use_rproc = 0; % 1: cluster submission or 0: locally
 if CFG.use_rproc,
   CFG.rproc_num_jobs              = 50;
   CFG.rproc_memreq                = 4000;
@@ -69,20 +66,20 @@ end
 CFG
 
 %%%%% rproc settings for main job %%%%%
-if 1
-  rproc_memreq                = 10000;
-  rproc_par.priority          = 8;
-  rproc_par.express           = 0;
-  rproc_par.immediately_bg    = 0;
-  rproc_par.immediately       = 0;
-  rproc_par.arch              = 64;
-  rproc_par.identifier        = '';
-  rproc_par.verbosity         = 0;
-  rproc_time                  = 72*60; % mins
-  rproc_par.envstr            = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/share/software/mosek/6/licenses/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/6/tools/platform/linux64x86/bin';
-  rproc_par.identifier = sprintf('rq.%s-', CFG.organism(1:2));
-  fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
-  job = rproc('rquant', CFG, rproc_memreq, rproc_par, rproc_time);
+rproc_memreq                = 5000;
+rproc_par.priority          = 500;
+rproc_par.express           = 0;
+rproc_par.immediately_bg    = 0;
+rproc_par.immediately       = 0;
+rproc_par.arch              = 64;
+rproc_par.identifier        = '';
+rproc_par.verbosity         = 0;
+rproc_time                  = 72*60; % mins
+if 0
+  rproc_par.envstr = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/home/bohnert/tmp/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/5/tools/platform/linux64x86/bin';
+  rproc_par.identifier = sprintf('rq.%s-', organism(1:2));
+  fprintf(1, 'Submitting job %i (%s) to cluster\n', cnt, rproc_par.identifier);
+  job(cnt) = rproc('rquant', CFG, rproc_memreq, rproc_par, rproc_time);
 else
   rquant(CFG);
 end
