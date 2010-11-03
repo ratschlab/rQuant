@@ -5,9 +5,7 @@ addpath('~/svn/tools/genomes');
 %%%%% directories from which to load read data and genes %%%%%
 CFG.organism = 'elegans';
 CFG.exp = 'fs_strong_bias';
-CFG.read_len = 75;
 CFG.gene_source = 'annotation';
-
 CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
 CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
 
@@ -28,7 +26,7 @@ for c = 1:length(CFG.genome_info.flat_fnames),
 end
 CFG.tracks_max_intron_len = 1e9;
 CFG.tracks_min_exon_len = -1;
-CFG.tracks_max_mismatches = CFG.read_len;
+CFG.tracks_max_mismatches = 1e3;
 
 %%%%% result directory %%%%
 date_exp = datestr(now,'yyyy-mm-dd');
@@ -38,6 +36,10 @@ if ~exist(CFG.out_dir ,'dir'),
   [s m mid] = mkdir(CFG.out_dir);
   assert(s);
 end
+
+%%%%% output files %%%%%
+CFG.write_gff = 1;
+CFG.write_density_model = 1;
 
 %%%%% optimizer %%%%%
 CFG.optimizer = 'mosek';

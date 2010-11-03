@@ -1,15 +1,22 @@
-function rquant(CFG)
-% rquant(CFG)
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 3 of the License, or
+% (at your option) any later version.
+%
+% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
+% Copyright (C) 2009-2010 Max Planck Society
+%
+
+function save_fname = rquant_core(CFG)
+% save_fname = rquant_core(CFG)
 %
 % -- input --
 % CFG: configuration struct
+%
+% -- output --
+% save_fname: file name of saved rQuant result
 
-
-%%%% paths
-[CFG.paths CFG.rproc_par.envstr] = set_rquant_paths(CFG);
-
-%%%% configuration
-CFG = configure_rquant(CFG);
 
 if CFG.use_rproc,
   DEBUG = 0;
@@ -28,7 +35,7 @@ end
 %genes = genes(1:500);
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
-
+keyboard
 if CFG.subsample,
   CFG.subsample_frac_global = str2double(sprintf('%.2f', min(1,CFG.max_num_train_exm/sum([genes.exonic_len])))); 
 end
