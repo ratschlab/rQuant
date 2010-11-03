@@ -1,3 +1,13 @@
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 3 of the License, or
+% (at your option) any later version.
+%
+% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
+% Copyright (C) 2009-2010 Max Planck Society
+%
+
 function [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
 % [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
 %
@@ -55,7 +65,7 @@ win_size = length(max(gene.eidx(1)-win,1):gene.eidx(1)-1);
 
 for f = 1:length(CFG.tracks_fn{gene.chr_num}),
   fname = CFG.tracks_fn{gene.chr_num}{f};
-  if ~fexist(fname),
+  if ~exist(fname, 'file'),
     warning('BAM file %s does not exist', fname);
   end
   try
@@ -71,7 +81,7 @@ for f = 1:length(CFG.tracks_fn{gene.chr_num}),
     return;
   end
   if exist('intron_list_tmp', 'var')
-    if ~isempty(intron_list_tmp)
+    if ~isempty(intron_list_tmp),
       intron_list = [intron_list intron_list_tmp];
     end
   end

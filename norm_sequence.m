@@ -1,12 +1,22 @@
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 3 of the License, or
+% (at your option) any later version.
+%
+% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
+% Copyright (C) 2009-2010 Max Planck Society
+%
+
 function profile_norm = norm_sequence(CFG, gene, transcript_idx, profile)
-% coverage_norm = norm_sequence(CFG, gene, coverage)
+% profile_norm = norm_sequence(CFG, gene, coverage)
 %
 % -- input --
 % CFG: configuration struct
 % gene: struct defining a gene with start, stops, exons etc. 
 %
 % -- output --
-% coverage_norm: matrix of exonic positions x reads, normalised 
+% profile_norm: matrix of exonic positions x reads, normalised 
 
 exons = gene.exons{transcript_idx};
 exons(1,1) = exons(1,1) - CFG.RR.half_win_size; 

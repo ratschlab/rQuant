@@ -5,7 +5,6 @@ addpath('~/svn/tools/genomes');
 %%%%% directories from which to load read data and genes %%%%%
 CFG.organism = 'elegans';
 CFG.exp = 'fs_weak_bias_seq_bias';
-CFG.read_len = 75;
 CFG.gene_source = 'annotation';
 
 CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
@@ -23,12 +22,13 @@ for c = 1:length(CFG.genome_info.flat_fnames),
 end
 
 %%%%% alignments %%%%%
+CFG.samtools_dir = '/fml/ag-raetsch/share/software/samtools/';
 for c = 1:length(CFG.genome_info.flat_fnames),
   CFG.tracks_fn{c} = {sprintf('%s%s.bam', CFG.tracks_dir, CFG.exp)};
 end
 CFG.tracks_max_intron_len = 1e9;
 CFG.tracks_min_exon_len = -1;
-CFG.tracks_max_mismatches = CFG.read_len;
+CFG.tracks_max_mismatches = 1e3;
 
 %%%%% result directory %%%%%
 date_exp = datestr(now,'yyyy-mm-dd');
@@ -38,6 +38,10 @@ if ~exist(CFG.out_dir ,'dir'),
   [s m mid] = mkdir(CFG.out_dir);
   assert(s);
 end
+
+%%%%% output files %%%%%
+CFG.write_gff = 1;
+CFG.write_density_model = 1;
 
 %%%%% optimizer %%%%%
 CFG.optimizer = 'cplex';
@@ -49,7 +53,7 @@ CFG.max_iter = 5;
 CFG.profiles_fn = '';
 
 %%%%% rproc settings for rquant subjobs %%%%%
-CFG.use_rproc = 1; % 1: cluster submission or 0: locally
+CFG.use_rproc = 0; % 1: cluster submission or 0: locally
 if CFG.use_rproc,
   CFG.rproc_num_jobs              = 50;
   CFG.rproc_memreq                = 4000;
@@ -69,7 +73,7 @@ end
 CFG
 
 %%%%% rproc settings for main job %%%%%
-if 1
+if 0
   rproc_memreq                = 10000;
   rproc_par.priority          = 8;
   rproc_par.express           = 0;
