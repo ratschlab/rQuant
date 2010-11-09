@@ -35,7 +35,7 @@ end
 %genes = genes(1:500);
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
-keyboard
+
 if CFG.subsample,
   CFG.subsample_frac_global = str2double(sprintf('%.2f', min(1,CFG.max_num_train_exm/sum([genes.exonic_len])))); 
 end
