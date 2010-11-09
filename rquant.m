@@ -47,7 +47,7 @@ save_fname = rquant_core(CFG);
 if CFG.write_gff,
   load(save_fname, 'genes');
   %unix(sprintf('cp -p %s %s/genes.mat', save_fname, CFG.out_dir)) ;
-  output_file = strrep(save_fname, '.mat', 'gff3');
+  output_file = strrep(save_fname, '.mat', '.gff3');
   write_rquant_gff(genes, output_file, 'rQuant', mapped_reads, CFG.read_len);
 end
 
