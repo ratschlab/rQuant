@@ -136,8 +136,6 @@ for c = chr_num,
     end
     %%%%% prepare exon and intron masks %%%%%
     exon_mask = zeros(gene.exonic_len, length(gene.transcripts));
-    exon_mask2 = zeros(gene.exonic_len, CFG.num_plifs, length(gene.transcripts));
-    profile_weights2 = zeros(CFG.num_plifs, length(gene.transcripts));
     intron_mask = zeros(size(intron_list,1), length(gene.transcripts));
     gene.intron_dists = zeros(gene.exonic_len, length(gene.transcripts));
     for t = 1:length(gene.transcripts),
@@ -168,8 +166,6 @@ for c = chr_num,
         rev_idx = size(profile_weights,1):-1:1;
       end
       exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
-      exon_mask2(:,:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len);
-      profile_weights2 = (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8);
 
       % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
@@ -274,7 +270,7 @@ for c = chr_num,
       CFG.C1 = CFG.C1_set(C1_idx);
       if size(exon_mask,2)<=10
         [weights(C1_idx,:), betas, xis, loss{end+1}] = opt_transcripts(CFG, gene, coverage, exon_mask, excluded_reads, intron_count, intron_mask, lpenv);
-        tmp_weights = opt_transcripts_new(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
+        tmp_weights = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
         [weights; tmp_weights]
       else
         weights(C1_idx,:) = nan;  

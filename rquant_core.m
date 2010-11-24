@@ -112,8 +112,8 @@ while (1)
     end
   end
   
-  keyboard
-  [profiles, obj] = opt_profiles_new(CFG, genes);
+  %keyboard
+  %[profiles, obj] = opt_profiles_new(CFG, genes);
   
   fprintf(1, '\n*** Iteration %i ***\n', iter);
   fprintf(1, '\nDetermining transcript weights...\n');
