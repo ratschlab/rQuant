@@ -22,6 +22,8 @@ function rquant(CFG)
 CFG = configure_rquant(CFG);
 
 %%%% determine read length and number of mapped reads %%%%
+CFG.read_len = 75;
+if 0
 CFG.read_len = 0;
 mapped_reads = zeros(1, length(CFG.tracks_fn));
 for c = 1:length(CFG.tracks_fn),
@@ -39,6 +41,7 @@ for c = 1:length(CFG.tracks_fn),
     CFG.read_len = max(CFG.read_len, read_len);
   end
 end
+end
 
 %%%%% rquant %%%%%
 save_fname = rquant_core(CFG);
@@ -47,7 +50,7 @@ save_fname = rquant_core(CFG);
 if CFG.write_gff,
   load(save_fname, 'genes');
   %unix(sprintf('cp -p %s %s/genes.mat', save_fname, CFG.out_dir)) ;
-  output_file = strrep(save_fname, '.mat', '.gff3');
+  output_file = strrep(save_fname, '.mat', 'gff3');
   write_rquant_gff(genes, output_file, 'rQuant', mapped_reads, CFG.read_len);
 end
 
