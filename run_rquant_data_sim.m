@@ -31,7 +31,8 @@ CFG.tracks_min_exon_len = -1;
 CFG.tracks_max_mismatches = 1e3;
 
 %%%%% result directory %%%%%
-date_exp = datestr(now,'yyyy-mm-dd');
+date_exp = '2010-11-03';
+%date_exp = datestr(now,'yyyy-mm-dd');
 %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
 CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
 if ~exist(CFG.out_dir ,'dir'),
