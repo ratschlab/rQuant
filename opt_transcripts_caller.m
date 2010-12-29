@@ -81,8 +81,8 @@ for c = chr_num,
     end
     if ~reads_ok,
       if CFG.VERBOSE>0, fprintf(1, 'coverage could not be loaded for gene %i\n', g); end
-      genes(g).transcript_weights = nan;
-      genes(g).transcript_weights_all = nan;
+      genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
+      genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = nan;
       genes(g).loss.all = nan;
       genes(g).loss.exons = nan;
       genes(g).loss.introns = nan;
@@ -248,8 +248,8 @@ for c = chr_num,
     end
     if isempty(exon_mask)
       if CFG.VERBOSE>0, fprintf(1, 'no positions left for gene %i\n', g); end
-      genes(g).transcript_weights = nan;
-      genes(g).transcript_weights_all = nan;
+      genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
+      genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = nan;
       genes(g).loss.all = nan;
       genes(g).loss.exons = nan;
       genes(g).loss.introns = nan;
@@ -269,6 +269,12 @@ for c = chr_num,
     for C1_idx = 1:length(CFG.C1_set),
       CFG.C1 = CFG.C1_set(C1_idx);
       if size(exon_mask,2)<=10
+        keyboard
+        
+        %exon_mask = exon_mask - repmat(mean(exon_mask,1), size(exon_mask,1), 1);
+        %exon_mask = exon_mask./repmat(std(exon_mask)+eps, size(exon_mask,1), 1);
+        %y = full(coverage)-mean(full(coverage),1);
+        
         [weights(C1_idx,:), betas, xis, loss{end+1}] = opt_transcripts(CFG, gene, coverage, exon_mask, excluded_reads, intron_count, intron_mask, lpenv);
         tmp_weights = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
         [weights; tmp_weights]

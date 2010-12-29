@@ -32,7 +32,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-genes = genes(1:5);
+genes = genes(1:20);
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
 
@@ -112,8 +112,8 @@ while (1)
     end
   end
   
-  %keyboard
-  %[profiles, obj] = opt_profiles_new(CFG, genes);
+  keyboard
+  [profiles, obj] = opt_profiles_smo(CFG, genes);
   
   fprintf(1, '\n*** Iteration %i ***\n', iter);
   fprintf(1, '\nDetermining transcript weights...\n');
