@@ -1,5 +1,5 @@
-function [weights, obj, fval] = opt_transcripts_new(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter)
-% [weights, obj, fval] = opt_transcripts_new(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter)
+function [weights, obj, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter, weights0)
+% [weights, obj, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter)
 %
 % -- input --
 % CFG: configuration struct
@@ -24,7 +24,11 @@ I = size(intron_mask,1); % number of introns
 
 exon_count = sum(coverage,2);
 
-weights = full(mean(coverage)/T*ones(1,T));
+if nargin<8
+  weights = full(mean(coverage)/T*ones(1,T));
+else
+  weights = weights0;
+end
 %weights = rand(1,T);
 weights_old = zeros(1,T);
 fval = 1e100*ones(1,T);
