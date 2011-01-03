@@ -63,7 +63,8 @@ while 1
   exon_mask = exon_feat*tmp_profiles;
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
-  [weights, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, [], [], C_w, 1);
+  [weights, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, [], [], C_w, 1, weights); % intron model missing -- to implement
+  %corr(weights', [genes.expr_orig]')
   CFG.VERBOSE = tmp_VERBOSE;
     
   % B. optimise profile weights
@@ -86,25 +87,41 @@ while 1
     idx_wo_n2 = find(tscp_len_bin~=n2); % all transcripts not in n2
     idx_wo_th1 = f1+(idx_wo_n1-1)*F;    % entries corresponding to theta_f1_notn1
     idx_wo_th2 = f2+(idx_wo_n2-1)*F;    % entries corresponding to theta_f2_notn2
-    idx_wo_f = setdiff([1:F*T], [f1:F:F*T, f2:F:F*T]);
+    idx_wo_th = setdiff([1:F*T], [f1:F:F*T, f2:F:F*T]);
     % residue for theta2
     Rth2 = exon_feat(:,idx_w_th2)*tmp_profiles(idx_w_th2,idx_w_n2)*weights(idx_w_n2)' - ...
            exon_feat(:,idx_w_th1)*tmp_profiles(idx_w_th1,idx_w_n1)*weights(idx_w_n1)';
     % residue for theta1/theta2 independent variables
-    Rp = exon_feat(:,idx_wo_th1)*tmp_profiles(idx_wo_th1,idx_wo_n1)*weights(idx_wo_n1)' + ...
+    R1 = exon_feat(:,idx_wo_th1)*tmp_profiles(idx_wo_th1,idx_wo_n1)*weights(idx_wo_n1)' + ...
          exon_feat(:,idx_wo_th2)*tmp_profiles(idx_wo_th2,idx_wo_n2)*weights(idx_wo_n2)' + ...
-         exon_feat(:,idx_wo_f)*tmp_profiles(idx_wo_f,:)*weights' + ...
+         exon_feat(:,idx_wo_th)*tmp_profiles(idx_wo_th,:)*weights' + ...
          exon_feat(:,idx_w_th1)*tmp_profiles(idx_w_th1,idx_w_n1)*weights(idx_w_n1)'*d - ...
          coverage;
+    R2 = 0;
+    if n1<N, R2 = R2 + (profile_weights(f1+n1*F)-d)^2; end
+    if n2<N, R2 = R2 + profile_weights(f2+n2*F)^2; end
+    for f = 1:F,
+      for n = 1:N-1,
+        if n~=n1 & n~=n2, R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+n*F))^2; end
+      end
+    end
+    R3 = 0;
+    if f1<F, R3 = R3 + (profile_weights(f1+1+(n1-1)*F)-d)^2; end
+    if f2<F, R3 = R3 + profile_weights(f2+1+(n2-1)*F)^2; end
+    for n = 1:N,
+      for f = 1:F-1,
+        if f~=f1 & f~=f2, R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+1+(n-1)*F))^2; end
+      end
+    end  
     S1 = 2*sum(Rth2.^2) + 8; % quadratic term
     assert(S1>0); % condition for minimum (2nd derivative > 0)
-    S2 = 4*d - sum(Rth2'*Rp); % linear term
-    S3 = 0; % constant term -- to implement
+    S2 = 4*d - sum(Rth2'*R1); % linear term
     % coupling constraints
     if n1<N, S2 = S2 - 2*profile_weights(f1+n1*F); end % theta_f1,n1+1
     if n2<N, S2 = S2 + 2*profile_weights(f2+n2*F); end % theta_f2,n2+1
     if f1<F, S2 = S2 - 2*profile_weights(f1+1+(n1-1)*F); end % theta_f1+1,n1
     if f2<F, S2 = S2 + 2*profile_weights(f2+1+(n2-1)*F); end % theta_f2+1,n2
+    S3 = sum(R1.^2) + R2 + R3; % constant term
     theta2_new = S2/S1;
     % clipping of theta2
     if theta2_new<0
@@ -115,7 +132,7 @@ while 1
     end
     theta1_new = d - theta2_new;
     % check if thetas have been changed
-    eps = 1e^-3;
+    eps = 1e-3;
     if abs(theta1_new-theta1)>eps | abs(theta2_new-theta2)>eps
       num_changed = num_changed + 1;
     end
@@ -129,7 +146,7 @@ while 1
   profile_weights = reshape(profile_weights, F, N);
   %figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
-  %if iter>20, keyboard; end
+  if iter>8, keyboard; end
   norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
   if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 2*100*num_changed/(F*N)); end
