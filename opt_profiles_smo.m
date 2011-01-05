@@ -46,7 +46,6 @@ fval_old = 0;
 iter = 1;
 if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tNorm diff\n'); end
-%figure(1); hold on;
 while 1
   weights_old = weights;
   fval_old = fval;
@@ -70,15 +69,18 @@ while 1
   % B. optimise profile weights
   profile_weights = reshape(profile_weights, 1, F*N);
   num_changed = 0; examine_all = true;
+  changed = zeros(1, F*N);
   % TODO: clever choice of theta1 and theta2
-    for p = 1:2:N*F-1,
+  for p = 1:N*F-1,
+    for q = p+1:N*F,
     theta1 = profile_weights(p);
-    theta2 = profile_weights(p+1);
+    theta2 = profile_weights(q);
     d = theta1 + theta2;
     f1 = mod(p,F); if f1==0, f1 = F; end
-    f2 = mod(p+1,F); if f2==0, f2 = F; end
+    f2 = mod(q,F); if f2==0, f2 = F; end
     n1 = ceil(p/F);
-    n2 = ceil((p+1)/F);
+    n2 = ceil((q)/F);
+    if n1~=n2, continue; end
     idx_w_n1 = find(tscp_len_bin==n1);  % all transcripts in length bin n1
     idx_w_n2 = find(tscp_len_bin==n2);  % all transcripts in length bin n2
     idx_w_th1 = f1+(idx_w_n1-1)*F;      % entries corresponding to theta1
@@ -89,13 +91,12 @@ while 1
     idx_wo_th2 = f2+(idx_wo_n2-1)*F;    % entries corresponding to theta_f2_notn2
     idx_wo_th = setdiff([1:F*T], [f1:F:F*T, f2:F:F*T]);
     % residue for theta2
-    Rth2 = exon_feat(:,idx_w_th2)*tmp_profiles(idx_w_th2,idx_w_n2)*weights(idx_w_n2)' - ...
-           exon_feat(:,idx_w_th1)*tmp_profiles(idx_w_th1,idx_w_n1)*weights(idx_w_n1)';
+    Rth2 = exon_feat(:,idx_w_th2)*weights(idx_w_n2)' - exon_feat(:,idx_w_th1)*weights(idx_w_n1)';
     % residue for theta1/theta2 independent variables
     R1 = exon_feat(:,idx_wo_th1)*tmp_profiles(idx_wo_th1,idx_wo_n1)*weights(idx_wo_n1)' + ...
          exon_feat(:,idx_wo_th2)*tmp_profiles(idx_wo_th2,idx_wo_n2)*weights(idx_wo_n2)' + ...
          exon_feat(:,idx_wo_th)*tmp_profiles(idx_wo_th,:)*weights' + ...
-         exon_feat(:,idx_w_th1)*tmp_profiles(idx_w_th1,idx_w_n1)*weights(idx_w_n1)'*d - ...
+         exon_feat(:,idx_w_th1)*weights(idx_w_n1)'*d - ...
          coverage;
     R2 = 0;
     if n1<N, R2 = R2 + (profile_weights(f1+n1*F)-d)^2; end
@@ -115,7 +116,7 @@ while 1
     end  
     S1 = 2*sum(Rth2.^2) + 8; % quadratic term
     assert(S1>0); % condition for minimum (2nd derivative > 0)
-    S2 = 4*d - sum(Rth2'*R1); % linear term
+    S2 = 4*d - 2*sum(Rth2'*R1); % linear term
     % coupling constraints
     if n1<N, S2 = S2 - 2*profile_weights(f1+n1*F); end % theta_f1,n1+1
     if n2<N, S2 = S2 + 2*profile_weights(f2+n2*F); end % theta_f2,n2+1
@@ -132,27 +133,33 @@ while 1
     end
     theta1_new = d - theta2_new;
     % check if thetas have been changed
-    eps = 1e-3;
-    if abs(theta1_new-theta1)>eps | abs(theta2_new-theta2)>eps
+    eps = 1e-5;
+    if abs(theta1_new-theta1)>eps
       num_changed = num_changed + 1;
+      changed(p) = changed(p) + 1;
+    end 
+    if abs(theta2_new-theta2)>eps
+      num_changed = num_changed + 1;
+      changed(q) = changed(q) + 1;
     end
     % update thetas and objective value
     profile_weights(p) = theta1_new;
-    profile_weights(p+1) = theta2_new;
-    fval = quad_fun(theta2_new, S1/2, -S2, S3);
+    profile_weights(q) = theta2_new;
+    fval(end+1) = quad_fun(theta2_new, S1/2, -S2, S3);
     tmp_pw = reshape(profile_weights, F, N);
     tmp_profiles(idx) = tmp_pw(:,tscp_len_bin);
   end
+  end
   profile_weights = reshape(profile_weights, F, N);
-  %figure(iter); plot(profile_weights); ylim([0 10]);
+  figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
-  if iter>8, keyboard; end
   norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
-  if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 2*100*num_changed/(F*N)); end
+  if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:N*F-1])); end
   if norm(fval_old-fval)<1e-5 | norm_weights<1e-5
     break;
   end
+  %if iter>8, keyboard; end
   iter = iter + 1;
   %keyboard
 end
