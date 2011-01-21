@@ -32,7 +32,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-genes = genes(1:20);
+%genes = genes(1:2000);
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
 
@@ -48,7 +48,7 @@ else
   CFG.subsample_idx = 1:length(genes);
 end
 
-if isequal(CFG.gene_source, 'annotation')
+if 0%isequal(CFG.gene_source, 'annotation')
   tl = [genes.transcript_length];
   if ~isequal(CFG.organism, 'human')
     tlr = ceil([0 prctile(tl,20) prctile(tl,40) prctile(tl,60) prctile(tl,80) inf])
@@ -69,16 +69,21 @@ clear num_del;
 % initialise profiles and intron distances
 if CFG.load_profiles,
   fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
+  %load(CFG.profiles_fn, 'profile_weights');
   load(CFG.profiles_fn, 'RES');
   profile_weights = RES{end-1}.profile_weights;
   if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
     error('profiles have wrong dimensions');
   end
+  x = linspace(0, 0.5, CFG.num_intron_plifs);
+  intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));
+  if 0
   intron_dists = RES{end-1}.intron_dists;
   if ~(size(intron_dists,1)==CFG.num_intron_plifs && size(intron_dists,2)==CFG.num_intron_plifs)
     error('intron distance matrix has wrong dimensions');
   end
   clear RES;
+  end
 else
   profile_weights = ones(CFG.num_plifs,1);
   x = linspace(0, 0.5, CFG.num_intron_plifs);
@@ -112,8 +117,13 @@ while (1)
     end
   end
   
-  keyboard
-  [profiles, obj] = opt_profiles_smo(CFG, genes);
+  %keyboard
+  if 1
+    ridx = randperm(length(genes));
+    profile_genes = genes(ridx(1:end));
+    CFG.profile_genes = profile_genes;
+    [profile_weights, obj] = opt_profiles_smo(CFG, profile_genes);
+  end
   
   fprintf(1, '\n*** Iteration %i ***\n', iter);
   fprintf(1, '\nDetermining transcript weights...\n');
@@ -175,13 +185,14 @@ while (1)
     genes = opt_transcripts_caller(PAR);
   end
 
+  if 0
   tmp = [genes.loss]; tmp = [tmp(:)];
   loss.all = [tmp.all]; loss.exons = [tmp.exons]; loss.introns = [tmp.introns];
   RES{iter}.median_loss = median(loss.all(~isnan(loss.all)));
   RES{iter}.median_loss_frac = median(loss.all(~isnan(loss.introns))./loss.exons(~isnan(loss.exons)));
   fprintf(1, '\nMedian loss after iteration %i: %5.2f\n', iter, RES{iter}.median_loss);
   fprintf(1, '\nMedian ratio loss introns/exons after iteration %i: %1.3f\n', iter, RES{iter}.median_loss_frac);
-  
+  end
   %if DEBUG, keyboard; end
   
   if ~isfield(CFG, 'out_fn')
@@ -195,7 +206,8 @@ while (1)
   end
   genes_tmp = genes;
   %genes = rmfield(genes, 'eidx');
-  save(save_fname, 'CFG', 'RES', 'genes');
+  save(save_fname, 'CFG', 'genes', 'profile_weights');
+  %save(save_fname, 'CFG', 'RES', 'genes');
   genes = genes_tmp;
   clear genes_tmp;
 

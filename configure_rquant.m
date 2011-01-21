@@ -49,14 +49,15 @@ CFG.RR.lambda = 1e-2;
 % enables loading of profiles from CFG.profiles_fn
 CFG.load_profiles = 0;
 % number of plifs for profile functions
-CFG.num_plifs = 50;
+CFG.num_plifs = 100;
 % maximal number of positions to be considered at both transcript ends
 CFG.max_side_len = 5000;
 % bins for different expression levels
 exr = [-1 inf];
 CFG.expr_ranges = round([exr(1:end-1)'+1 exr(2:end)']);
 % bins for different transcript lengths % prctile(tlen,10) prctile(tlen,90)
-tlr = [0 649 1008 1379 1977 inf];
+%tlr = [0 649 1008 1379 1977 inf];
+tlr = [1 750 921 1092 1263 1434 1605 1776 1947 2118 2289 2461 2632 2803 2974 3145 3316 3487 3658 3829 4000 Inf];
 CFG.transcript_len_ranges = round([tlr(1:end-1)'+1 tlr(2:end)']);
 % bins for distances to closest intron
 CFG.num_intron_plifs = 5;

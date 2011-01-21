@@ -61,6 +61,7 @@ pw_nnz = reshape(pw_nnz, 1, F*N);
 
 
 %%%%% optimisation
+max_iter = 200;
 C_w = [genes.transcript_length]';
 % initialisation of variables
 weights_old = zeros(1,T);
@@ -87,7 +88,7 @@ while 1
   exon_mask = exon_feat*tmp_profiles;
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
-  [weights, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, [], [], C_w, 1, weights); % intron model missing -- to implement
+  [weights, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, [], [], C_w, 1, weights, 'L1'); % intron model missing -- to implement
   %corr(weights', [genes.expr_orig]')
   CFG.VERBOSE = tmp_VERBOSE;
     
@@ -97,12 +98,15 @@ while 1
   changed = zeros(1, F*N);
   % TODO: clever choice of theta1 and theta2
   pidx = find(pw_nnz(1:N*F-1));
+  ii = 0;
   for p = pidx,
     qidx = find(pw_nnz); 
     qidx(qidx<=p) = [];
     ridx = randperm(length(qidx));
     qidx = qidx(ridx);
     for q = qidx%p+1:N*F,
+      ii = ii + 1;
+      fprintf('%3.2f\r', 100*ii/sum([1:sum(pw_nnz)-1]));
       theta1 = profile_weights(p);
       theta2 = profile_weights(q);
       d = theta1 + theta2;
@@ -180,14 +184,13 @@ while 1
       tmp_profiles(idx) = tmp_pw(:,tscp_len_bin);
     end
   end
-  %keyboard
   profile_weights = reshape(profile_weights, F, N);
   %figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
   norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
   if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1])); end
-  if norm(fval_old-fval)<1e-5 | norm_weights<1e-5
+  if norm(fval_old-fval)<1e-5 | norm_weights<1e-5 | iter >= max_iter
     break;
   end
   %if iter>15, keyboard; end
@@ -195,7 +198,6 @@ while 1
   %keyboard
 end
 obj = fval(end);
-keyboard
 
 
 
