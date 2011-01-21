@@ -31,7 +31,7 @@ CFG.tracks_min_exon_len = -1;
 CFG.tracks_max_mismatches = 1e3;
 
 %%%%% result directory %%%%%
-date_exp = '2010-12-29';
+date_exp = '2011-01-10';
 %date_exp = datestr(now,'yyyy-mm-dd');
 %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
 CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
@@ -48,10 +48,10 @@ CFG.write_density_model = 1;
 CFG.optimizer = 'cplex';
 
 %%%%% number of iterations (1: no profile learning) %%%%%
-CFG.max_iter = 5;
+CFG.max_iter = 1;
 
 %%%%% pre-learned profiles %%%%%
-CFG.profiles_fn = '';
+CFG.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_weak_bias_seq_bias_2011-01-10/profiles.mat';
 
 %%%%% rproc settings for rquant subjobs %%%%%
 CFG.use_rproc = 0; % 1: cluster submission or 0: locally

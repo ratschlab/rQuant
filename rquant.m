@@ -22,8 +22,13 @@ function rquant(CFG)
 CFG = configure_rquant(CFG);
 
 %%%% determine read length and number of mapped reads %%%%
-CFG.read_len = 75;
-if 0
+if 1
+if isequal(CFG.organism, 'elegans')
+  CFG.read_len = 75;
+else
+  CFG.read_len = 36;
+end
+else
 CFG.read_len = 0;
 mapped_reads = zeros(1, length(CFG.tracks_fn));
 for c = 1:length(CFG.tracks_fn),
