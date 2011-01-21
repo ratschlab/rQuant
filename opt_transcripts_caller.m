@@ -276,7 +276,7 @@ for c = chr_num,
         %[weights(C1_idx,:), betas, xis, loss{end+1}] = opt_transcripts(CFG, gene, coverage, exon_mask, excluded_reads, intron_count, intron_mask, lpenv);
         %keyboard
         CFG.VERBOSE = 1;
-        weights = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
+        weights = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
       else
         weights(C1_idx,:) = nan;  
         loss{end+1} = [];

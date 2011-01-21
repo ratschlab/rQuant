@@ -88,7 +88,7 @@ while 1
   exon_mask = exon_feat*tmp_profiles;
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
-  [weights, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, [], [], C_w, 1, weights, 'L1'); % intron model missing -- to implement
+  [weights, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, [], [], C_w, 1, weights, 'L1'); % intron model missing -- to implement
   %corr(weights', [genes.expr_orig]')
   CFG.VERBOSE = tmp_VERBOSE;
     

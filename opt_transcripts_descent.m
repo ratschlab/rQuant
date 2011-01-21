@@ -1,5 +1,5 @@
-function [weights, obj, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter, weights0, reg)
-% [weights, obj, fval] = opt_transcripts_L2(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter)
+function [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter, weights0, reg)
+% [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, max_iter)
 %
 % -- input --
 % CFG: configuration struct
