@@ -4,14 +4,14 @@ addpath('~/svn/tools/genomes');
 
 %%%%% directories from which to load read data and genes %%%%%
 CFG.organism = 'elegans';
-CFG.exp = 'fs_weak_bias_seq_bias';
+CFG.exp = 'fs_strong_bias';
 CFG.gene_source = 'annotation';
 
 CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
 CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
 
 %%%%% genes %%%%% 
-CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2010-07-13/genes_expr.mat';
+CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2011-01-26/genes_expr.mat';
 
 %%%%% genome info %%%%%
 CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
@@ -31,7 +31,7 @@ CFG.tracks_min_exon_len = -1;
 CFG.tracks_max_mismatches = 1e3;
 
 %%%%% result directory %%%%%
-date_exp = '2011-01-10';
+date_exp = '2011-01-26';
 %date_exp = datestr(now,'yyyy-mm-dd');
 %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
 CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
@@ -51,7 +51,7 @@ CFG.optimizer = 'cplex';
 CFG.max_iter = 1;
 
 %%%%% pre-learned profiles %%%%%
-CFG.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_weak_bias_seq_bias_2011-01-10/profiles.mat';
+CFG.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_strong_bias_2011-01-26/profiles.mat';
 
 %%%%% rproc settings for rquant subjobs %%%%%
 CFG.use_rproc = 0; % 1: cluster submission or 0: locally
