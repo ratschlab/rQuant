@@ -47,8 +47,7 @@ end
 
 genes(1).mean_ec = [];
 genes(1).transcript_weights = [];
-genes(1).transcript_weights_all = [];
-genes(1).loss = struct;
+genes(1).obj = [];
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,
@@ -65,16 +64,6 @@ for c = chr_num,
       else
         [coverage excluded_reads reads_ok introns genes(g).num_read_starts] = get_coverage_per_read(CFG, gene);
       end
-      % plus strand
-      fidx = find(introns(:,4)==0);
-      intron_starts{1} = introns(fidx,1); 
-      intron_stops{1} = introns(fidx,2);
-      conf{1} = introns(fidx,3);
-      % minus strand
-      fidx = find(introns(:,4)==1);
-      intron_starts{2} = introns(fidx,1); 
-      intron_stops{2} = introns(fidx,2);
-      conf{2} = introns(fidx,3);
       if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
     catch
       reads_ok = 0;
@@ -82,10 +71,7 @@ for c = chr_num,
     if ~reads_ok,
       if CFG.VERBOSE>0, fprintf(1, 'coverage could not be loaded for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
-      genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = nan;
-      genes(g).loss.all = nan;
-      genes(g).loss.exons = nan;
-      genes(g).loss.introns = nan;
+      genes(g).obj = nan;
       continue;
     end
     genes(g).mean_ec = full(mean(sum(coverage,2)));
@@ -94,49 +80,11 @@ for c = chr_num,
     if isempty(coverage) || genes(g).mean_ec==0
       if CFG.VERBOSE>0, fprintf(1, 'no coverage for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = 0;
-      genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = 0;
-      genes(g).loss.all = nan;
-      genes(g).loss.exons = nan;
-      genes(g).loss.introns = nan;
+      genes(g).obj = 0;
       continue;
     end
-    %%%%% prepare intron list %%%%%
-    intron_list = zeros(0,4); 
-    num_transcripts(1) = length(gene.transcripts);
-    if CFG.both_strands && isfield(gene, 'strands') && ~isempty(gene.strands)
-      strand_str = unique(gene.strands);
-      num_transcripts(2) = sum(gene.strands=='+');
-      num_transcripts(3) = sum(gene.strands=='-');
-    else
-      strand_str = gene.strand;
-      if gene.strand=='+',
-        num_transcripts(2) = length(gene.transcripts);
-        num_transcripts(3) = 0;
-      else
-        num_transcripts(2) = 0;
-        num_transcripts(3) = length(gene.transcripts);
-      end
-    end
-    assert(length(strand_str)==1|length(strand_str)==2);
-    for s = 1:length(strand_str),
-      strand = (strand_str(s)=='-') + 1;
-      if ~isempty(intron_starts{strand})
-        idx = find(intron_starts{strand}>=gene.start & intron_stops{strand}<=gene.stop);
-        intron_list = [intron_list; ...
-                       double([intron_starts{strand}(idx), intron_stops{strand}(idx), ...
-                            conf{strand}(idx), ((strand_str(s)=='-')+1)*ones(length(idx),1)])];
-      end
-    end
-    if CFG.VERBOSE>=2,
-      fprintf(1, 'found %i transcripts, %i on + strand, %i on - strand\n', num_transcripts(1), num_transcripts(2), num_transcripts(3));
-      if exist('read_starts', 'var')
-        fprintf(1, 'found %i reads\n', sum(read_starts));
-      end
-      fprintf(1, 'found %i introns, %i on + strand, %i on - strand (%i ignored)\n', size(intron_list,1), sum(intron_list(:,4)==1), sum(intron_list(:,4)==2), size(introns,1)-size(intron_list,1));
-    end
-    %%%%% prepare exon and intron masks %%%%%
+    %%%%% prepare exon mask %%%%%
     exon_mask = zeros(gene.exonic_len, length(gene.transcripts));
-    intron_mask = zeros(size(intron_list,1), length(gene.transcripts));
     gene.intron_dists = zeros(gene.exonic_len, length(gene.transcripts));
     for t = 1:length(gene.transcripts),
       if isfield(gene, 'strands') && ~isempty(gene.strands),
@@ -152,7 +100,7 @@ for c = chr_num,
         if all(tmp_dist(:)==0),
           gene.intron_dists(p,t) = 0;
         else
-          if strand=='+'
+          if strand_str=='+'
             gene.intron_dists(p,t) = intron_dists(tmp_dist==1);
           else
             gene.intron_dists(p,t) = intron_dists(tmp_dist'==1);
@@ -166,7 +114,6 @@ for c = chr_num,
         rev_idx = size(profile_weights,1):-1:1;
       end
       exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
-
       % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
         tidx = [];
@@ -178,36 +125,13 @@ for c = chr_num,
         assert(isequal(tmp2,[1:length(tidx)]));
         exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t));
       end
-
-      % fill intron mask
-      exons = gene.exons{t};
-      num_found = 0;
-      for e = 1:size(exons,1)-1,
-        if ~isempty(intron_list)
-          idx = find(exons(e,2)+1==intron_list(:,1) & exons(e+1,1)-1==intron_list(:,2));
-          if CFG.both_strands && isfield(gene, 'strands') && ~isempty(idx)
-            assert(all(intron_list(idx,4)==(gene.strands(t)=='-')+1));
-          end
-        end
-        if ~isempty(intron_mask)
-          if ~isempty(idx),
-            num_found = num_found + 1;
-          end
-          intron_mask(idx,t) = 1;
-        end
-      end
-      if num_found==0,
-        if CFG.VERBOSE>0
-          fprintf(1, 'introns not found in gene %i, transcript %i \n', g, t);
-        end
-      else
-        if CFG.VERBOSE>=2
-          fprintf(1, 'found %i matching introns, gene %i, transcript %i\n', num_found, g, t)
-        end
-      end
     end
+    
+    %%%%% prepare intron mask %%%%%
+    [intron_mask intron_count] = get_intron_data(gene, CFG, introns, g);
+    
+    %%%%% prepare repeat mask %%%%%
     repeat_mask = false(gene.exonic_len, 1); 
-    % fill repeat mask
     fname = sprintf('%s%s_repeat', CFG.repeats_fn, gene.chr);
     if exist(sprintf('%s.pos', fname), 'file')
       [map.pos map.repeats] = interval_query(fname, {'repeats'}, [gene.start;gene.stop]);
@@ -249,43 +173,14 @@ for c = chr_num,
     if isempty(exon_mask)
       if CFG.VERBOSE>0, fprintf(1, 'no positions left for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
-      genes(g).transcript_weights_all(1:length(genes(g).transcripts)) = nan;
-      genes(g).loss.all = nan;
-      genes(g).loss.exons = nan;
-      genes(g).loss.introns = nan;
+      genes(g).obj = nan;
       continue;
     end
     
-    if ~isempty(intron_mask)
-      intron_count = intron_list(:,3);
-    else
-      intron_count = [];
-    end
-    
-    loss_frac = zeros(length(CFG.C1_set), 1);
-    weights = zeros(length(CFG.C1_set), length(gene.transcripts));
-    loss = {};
-    % optimise for different C1 settings
-    for C1_idx = 1:length(CFG.C1_set),
-      CFG.C1 = CFG.C1_set(C1_idx);
-      if size(exon_mask,2)<=10
-        %exon_mask = exon_mask - repmat(mean(exon_mask,1), size(exon_mask,1), 1);
-        %exon_mask = exon_mask./repmat(std(exon_mask)+eps, size(exon_mask,1), 1);
-        %y = full(coverage)-mean(full(coverage),1);
-        
-        %[weights(C1_idx,:), betas, xis, loss{end+1}] = opt_transcripts(CFG, gene, coverage, exon_mask, excluded_reads, intron_count, intron_mask, lpenv);
-        %keyboard
-        CFG.VERBOSE = 1;
-        weights = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
-      else
-        weights(C1_idx,:) = nan;  
-        loss{end+1} = [];
-      end
-    end
-    [tmp, midx] = min(abs(CFG.C1_loss_frac_target-loss_frac));
-    genes(g).transcript_weights = weights(midx,:);
-    genes(g).transcript_weights_all = weights;
-    genes(g).loss = loss{midx};
+    CFG.VERBOSE = 1;
+    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
+    genes(g).transcript_weights = weights;
+    genes(g).obj = obj;
   end
 end
 
