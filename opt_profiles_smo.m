@@ -15,12 +15,26 @@ P = sum([genes.exonic_len]);           % number of positions
 F = CFG.num_plifs;                     % number of supporting points
 N = size(CFG.transcript_len_ranges,1); % number of length bins
 
+I = 0; % upper bound for number of introns
+for g = 1:length(genes),
+  introns = zeros(0,2);
+  for t = 1:length(genes(g).transcripts),
+    introns = [introns; genes(g).exons{t}(1:end-1,2)+1, genes(g).exons{t}(2:end,1)-1];
+  end
+  introns = unique(introns, 'rows');
+  I = I + size(introns,1);
+end
 
 %%%%% pre-processing
 exon_feat = sparse(P, F*T); % stores exon features from all transcripts in profile gene set
 coverage = sparse(P, 1);
-ci = 0; cj = 0; ct = 0;
+read_starts = sparse(P, 1);
+intron_count = zeros(I, 1);
+intron_mask = zeros(I, T);
+ci = 0; cj = 0; ct = 0; cn = 0;
 weights = zeros(1,T);
+tmp_VERBOSE = CFG.VERBOSE;
+CFG.VERBOSE = 0;
 for g = 1:length(genes),
   for t = 1:length(genes(g).transcripts),
     tmp_feat = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
@@ -30,17 +44,34 @@ for g = 1:length(genes),
     cj = cj + F;
   end
   try
-    [tmp_coverage excluded_reads reads_ok] = get_coverage_per_read(CFG, genes(g), 1);
-    coverage(ci+[1:genes(g).exonic_len],1) = tmp_coverage;
+    [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
   catch
     reads_ok = 0;
   end
+  assert(reads_ok==1);
+  coverage(ci+[1:genes(g).exonic_len],1) = tmp_coverage;
   Tg = length(genes(g).transcripts);
   % initialisation of transcript weights to proportionate mean coverage
   weights(ct+[1:Tg]) = full(mean(coverage(ci+[1:genes(g).exonic_len]))/Tg*ones(1,Tg));
+  % number of read starts
+  read_starts(ci+[1:genes(g).exonic_len],1) = tmp_read_starts;
+  % introns
+  [tmp_intron_mask tmp_intron_count] = get_intron_data(genes(g), CFG, tmp_introns, g);
+  intron_mask(cn+[1:length(tmp_intron_count)], ct+[1:Tg]) = tmp_intron_mask; 
+  intron_count(cn+[1:length(tmp_intron_count)],1) = tmp_intron_count;
   ci = ci + genes(g).exonic_len;
   ct = ct + length(genes(g).transcripts);
-  %if ~reads_ok, continue; end  
+  cn = cn + length(tmp_intron_count);
+  clear tmp_coverage tmp_introns tmp_intron_mask tmp_intron_count;
+end
+CFG.VERBOSE = tmp_VERBOSE;
+% cut intron data to actual number of introns
+if I < cn
+  I = cn;
+  assert(sum(sum(intron_mask(I+1:end,:)))==0);
+  assert(sum(intron_count(I+1:end,1))==0);
+  intron_mask = intron_mask(1:I,:);
+  intron_count = intron_count(1:I,1);
 end
 tscp_len_bin = [genes.transcript_len_bin];
 % find thetas that do not need to be optimised (located in the body of the profile function)
@@ -57,21 +88,24 @@ for n = 1:N,
   fidx = find(CFG.transcript_len_ranges(n,2)/2>lmt, 1, 'last');
   pw_nnz([1:fidx, F-fidx+1:F],n) = true;
 end
-pw_nnz = reshape(pw_nnz, 1, F*N);
 
 
+% TODO: subsampling of positions
 %%%%% optimisation
 max_iter = 200;
+eps = 1e-3;
 C_w = [genes.transcript_length]';
 % initialisation of variables
 weights_old = zeros(1,T);
-profile_weights = ones(F, N);
+profile_weights = zeros(F, N);
+profile_weights(pw_nnz) = (F*N)/sum(sum(pw_nnz));
+pw_nnz = reshape(pw_nnz, 1, F*N);
 profile_weights_old = zeros(F, N);
 fval = 1e100; %1e100*ones(1,T+F*N);
 fval_old = 0;
 iter = 1;
 if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
-if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tNorm diff\n'); end
+if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tDelta norm\n'); end
 while 1
   weights_old = weights;
   fval_old = fval;
@@ -88,7 +122,7 @@ while 1
   exon_mask = exon_feat*tmp_profiles;
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
-  [weights, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, [], [], C_w, 1, weights, 'L1'); % intron model missing -- to implement
+  [weights, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, 1, weights, 'L1');
   %corr(weights', [genes.expr_orig]')
   CFG.VERBOSE = tmp_VERBOSE;
     
@@ -96,17 +130,16 @@ while 1
   profile_weights = reshape(profile_weights, 1, F*N);
   num_changed = 0; examine_all = true;
   changed = zeros(1, F*N);
-  % TODO: clever choice of theta1 and theta2
   pidx = find(pw_nnz(1:N*F-1));
   ii = 0;
   for p = pidx,
-    qidx = find(pw_nnz); 
+    qidx = find(pw_nnz);
     qidx(qidx<=p) = [];
     ridx = randperm(length(qidx));
     qidx = qidx(ridx);
-    for q = qidx%p+1:N*F,
+    for q = qidx,
       ii = ii + 1;
-      fprintf('%3.2f\r', 100*ii/sum([1:sum(pw_nnz)-1]));
+      %fprintf('%3.2f\r', 100*ii/sum([1:sum(pw_nnz)-1]));
       theta1 = profile_weights(p);
       theta2 = profile_weights(q);
       d = theta1 + theta2;
@@ -114,7 +147,7 @@ while 1
       f2 = mod(q,F); if f2==0, f2 = F; end
       n1 = ceil(p/F);
       n2 = ceil((q)/F);
-      if n1~=n2, continue; end
+      if n1~=n2, continue; end % theta pair is from same transcript length bin
       idx_w_n1 = find(tscp_len_bin==n1);  % all transcripts in length bin n1
       idx_w_n2 = find(tscp_len_bin==n2);  % all transcripts in length bin n2
       idx_w_th1 = f1+(idx_w_n1-1)*F;      % entries corresponding to theta1
@@ -167,7 +200,6 @@ while 1
       end
       theta1_new = d - theta2_new;
       % check if thetas have been changed
-      eps = 1e-5;
       if abs(theta1_new-theta1)>eps
         num_changed = num_changed + 1;
         changed(p) = changed(p) + 1;
@@ -189,13 +221,13 @@ while 1
   %plot(iter, fval(end), 'x');
   norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
-  if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1])); end
-  if norm(fval_old-fval)<1e-5 | norm_weights<1e-5 | iter >= max_iter
+  if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1])); end
+  %if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\n', iter, fval(end), norm_weights); end
+  if norm(fval_old-fval)<eps | norm_weights<eps | iter >= max_iter
     break;
   end
   %if iter>15, keyboard; end
   iter = iter + 1;
-  %keyboard
 end
 obj = fval(end);
 
