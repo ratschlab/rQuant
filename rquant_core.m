@@ -32,7 +32,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-%genes = genes(1:2000);
+genes = genes(1:1000);
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
 
@@ -48,7 +48,7 @@ else
   CFG.subsample_idx = 1:length(genes);
 end
 
-if 0%isequal(CFG.gene_source, 'annotation')
+if isequal(CFG.gene_source, 'annotation')
   tl = [genes.transcript_length];
   if ~isequal(CFG.organism, 'human')
     tlr = ceil([0 prctile(tl,20) prctile(tl,40) prctile(tl,60) prctile(tl,80) inf])
@@ -69,9 +69,9 @@ clear num_del;
 % initialise profiles and intron distances
 if CFG.load_profiles,
   fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
-  %load(CFG.profiles_fn, 'profile_weights');
-  load(CFG.profiles_fn, 'RES');
-  profile_weights = RES{end-1}.profile_weights;
+  load(CFG.profiles_fn, 'profile_weights');
+  %load(CFG.profiles_fn, 'RES');
+  %profile_weights = RES{end-1}.profile_weights;
   if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
     error('profiles have wrong dimensions');
   end
@@ -118,11 +118,11 @@ while (1)
   end
   
   %keyboard
-  if 1
+  if 0
     ridx = randperm(length(genes));
     profile_genes = genes(ridx(1:end));
     CFG.profile_genes = profile_genes;
-    [profile_weights, obj] = opt_profiles_smo(CFG, profile_genes);
+    [profile_weights, obj] = opt_profiles_smo(CFG, profile_genes(1:20));
   end
   
   fprintf(1, '\n*** Iteration %i ***\n', iter);
