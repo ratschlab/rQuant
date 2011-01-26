@@ -103,9 +103,6 @@ else
   coverage = sum(coverage_idx, 1);
   coverage = sparse(coverage(eidx(win_size+1:win_size+gene.exonic_len)-eidx(1)+1)');
 end
-if ~CFG.paired
-  coverage = sum(coverage, 2);
-end
   
 % process intron list (1: intron start, 2: intron stop, 3: confirmation, 4: strand)
 if nargout>3
@@ -154,6 +151,11 @@ else
  for t = 1:length(gene.transcripts),
    excluded_reads{t} = [];
  end
+end
+
+% collapse coverage if single reads are not required
+if ~CFG.paired
+  coverage = sum(coverage, 2);
 end
 
 % reverse for minus strand
