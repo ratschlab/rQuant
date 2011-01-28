@@ -31,7 +31,8 @@ clear PAR;
 addpath(CFG.paths);
 
 if CFG.VERBOSE>0, tic; end
-  
+
+if 0  
 switch CFG.optimizer
  case 'cplex'
   lpenv = cplex_license(0,1);
@@ -43,6 +44,7 @@ switch CFG.optimizer
   end
  otherwise
   lpenv = 0;
+end
 end
 
 genes(1).mean_ec = [];
@@ -113,7 +115,8 @@ for c = chr_num,
       else
         rev_idx = size(profile_weights,1):-1:1;
       end
-      exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
+      exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t));
+      %exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
       % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
         tidx = [];
@@ -125,6 +128,12 @@ for c = chr_num,
         assert(isequal(tmp2,[1:length(tidx)]));
         exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t));
       end
+    end
+    
+    if 0% ~all(any(exon_mask, 2)')
+      genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
+      genes(g).obj = nan;
+      continue;
     end
     
     %%%%% prepare intron mask %%%%%
@@ -184,7 +193,7 @@ for c = chr_num,
   end
 end
 
-if isequal(CFG.optimizer, 'cplex'),
+if 0 %isequal(CFG.optimizer, 'cplex'),
   fprintf(1, '\n');
   [lpenv, status] = cplex_quit(lpenv,0);
   lpenv = 0;
