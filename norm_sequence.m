@@ -8,43 +8,26 @@
 % Copyright (C) 2009-2010 Max Planck Society
 %
 
-function profile_norm = norm_sequence(CFG, gene, transcript_idx, profile)
-% profile_norm = norm_sequence(CFG, gene, coverage)
+function norm_cov = norm_sequence(CFG, X)
+% norm_cov = norm_sequence(CFG, X)
 %
 % -- input --
 % CFG: configuration struct
-% gene: struct defining a gene with start, stops, exons etc. 
+% X: input data (k-mer dim x number of positions) 
 %
 % -- output --
-% profile_norm: matrix of exonic positions x reads, normalised 
+% norm_cov: predicted normalised coverage
 
-exons = gene.exons{transcript_idx};
-exons(1,1) = exons(1,1) - CFG.RR.half_win_size; 
-exons(end,2) = exons(end,2) + CFG.RR.half_win_size;
-
-if ~isfield(gene, 'strands') || length(gene.strands)<transcript_idx,
-  gene.strands(transcript_idx) = gene.strands;
-end
-seq = load_genomic(gene.chr, gene.strands(transcript_idx), exons(:,1), exons(:,2), CFG.genome_info, 0);
-assert(length(seq)==length(profile)+2*CFG.RR.half_win_size);
-
-% input sequence data for regression
-X = char(zeros(CFG.RR.half_win_size*2, length(seq)-2*CFG.RR.half_win_size));
-for x = CFG.RR.half_win_size+1:length(seq)-CFG.RR.half_win_size,
-  X(:, x-CFG.RR.half_win_size) = upper(char(seq(x-CFG.RR.half_win_size:x+CFG.RR.half_win_size-1)));
-end
 if ~any(isnan(CFG.RR.seq_norm_weights)),
   Y_pred = predict_Ridge(CFG, X, CFG.RR.seq_norm_weights);
   num_read_starts_pred = exp(Y_pred);
 else
-  num_read_starts_pred = ones(1, length(seq)-2*CFG.RR.half_win_size-1);
+  num_read_starts_pred = ones(1, size(X,2));
 end
 
-coverage = zeros(1, length(num_read_starts_pred));
+norm_cov = zeros(length(num_read_starts_pred), 1);
 for n = 1:length(num_read_starts_pred),
   idx = n:min(n+CFG.read_len-1, length(num_read_starts_pred));
-  coverage(idx) = coverage(idx) + num_read_starts_pred(n);
+  norm_cov(idx, 1) = norm_cov(idx) + num_read_starts_pred(n);
 end
-coverage = coverage / mean(coverage);
-
-profile_norm = profile .* coverage';
+norm_cov = norm_cov / mean(norm_cov);

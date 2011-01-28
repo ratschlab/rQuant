@@ -13,21 +13,16 @@ function Y_pred = predict_Ridge(CFG, X, w)
 %
 % -- input --
 % CFG: configuration struct
-% X: input data (sequences of length 2*CFG.RR.half_win_size)
+% X: input data (k-mer dim x number of positions)
 % w: weight vector of trained Ridge regression
 %
 % -- output --
 % Y_pred: predicted target values
 
 
-% generate numerical kmer vectors from sequences
-if CFG.VERBOSE>1, tic; end
-X_num = seq_2_kmers(X, CFG.RR.order);
-if CFG.VERBOSE>1, fprintf(1, 'Feature generation for Ridge regression took %.1fs.\n', toc); end
-
-N = size(X_num,2);
-Y_pred = nan(1,N);
+N = size(X, 2);
+Y_pred = nan(1, N);
 for n = 1:N,
-  Y_pred(n) = w' * X_num(:,n);
+  Y_pred(n) = w' * X(:,n);
 end
 assert(~any(isnan(Y_pred)));

@@ -3,7 +3,7 @@ function [profile_weights, obj] = opt_profiles_smo(CFG, genes)
 %
 % -- input --
 % CFG: configuration struct
-% genes: struct defining genes with start, stops, exons etc. 
+% genes: struct defining genes with start, stops, exons etc.
 %
 % -- output --
 % profile_weights: weights of profile functions 
@@ -14,47 +14,75 @@ T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
 F = CFG.num_plifs;                     % number of supporting points
 N = size(CFG.transcript_len_ranges,1); % number of length bins
+if CFG.norm_seqbias
+  S = 0;
+  for o = 1:CFG.RR.order,
+    S = S + (CFG.RR.half_win_size*2-o+1) * 4^o;;
+  end
+end
 
 I = 0; % upper bound for number of introns
+%if norm_seqbias, Ps = 0; end % number of positions with sequence features
 for g = 1:length(genes),
   introns = zeros(0,2);
   for t = 1:length(genes(g).transcripts),
     introns = [introns; genes(g).exons{t}(1:end-1,2)+1, genes(g).exons{t}(2:end,1)-1];
+    if CFG.norm_seqbias,
+      %Ps = Ps + sum(genes(g).exons{t}(:,2)-genes(g).exons{t}(:,1)+1) - 2*CFG.RR.half_win_size;
+    end
   end
   introns = unique(introns, 'rows');
   I = I + size(introns,1);
 end
 
 %%%%% pre-processing
-exon_feat = sparse(P, F*T); % stores exon features from all transcripts in profile gene set
 coverage = sparse(P, 1);
-read_starts = sparse(P, 1);
+exon_feat = sparse(P, F*T); % stores exon features from all transcripts in profile gene set
 intron_count = zeros(I, 1);
 intron_mask = zeros(I, T);
 ci = 0; cj = 0; ct = 0; cn = 0;
+if CFG.norm_seqbias
+  seq_feat = sparse(S, P);
+  seq_target = sparse(1, P);
+  %cs = 0;
+end
 weights = zeros(1,T);
+if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
-  for t = 1:length(genes(g).transcripts),
-    tmp_feat = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
-    genes(g).transcript_len_bin(t) = find(CFG.transcript_len_ranges(:,1) <= genes(g).transcript_length(t) & ...
-                                          CFG.transcript_len_ranges(:,2) >= genes(g).transcript_length(t));
-    exon_feat(ci+[1:genes(g).exonic_len], cj+[1:F]) = tmp_feat;
-    cj = cj + F;
-  end
   try
-    [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
+    if CFG.norm_seqbias
+      [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
+    else
+      [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
+    end
   catch
     reads_ok = 0;
   end
   assert(reads_ok==1);
   coverage(ci+[1:genes(g).exonic_len],1) = tmp_coverage;
+  clear tmp_coverage;
   Tg = length(genes(g).transcripts);
   % initialisation of transcript weights to proportionate mean coverage
   weights(ct+[1:Tg]) = full(mean(coverage(ci+[1:genes(g).exonic_len]))/Tg*ones(1,Tg));
-  % number of read starts
-  read_starts(ci+[1:genes(g).exonic_len],1) = tmp_read_starts;
+  for t = 1:length(genes(g).transcripts),
+    % exon features
+    exon_feat(ci+[1:genes(g).exonic_len], cj+[1:F]) = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
+    genes(g).transcript_len_bin(t) = find(CFG.transcript_len_ranges(:,1) <= genes(g).transcript_length(t) & ...
+                                          CFG.transcript_len_ranges(:,2) >= genes(g).transcript_length(t));
+    cj = cj + F;
+  end
+  % sequence features
+  if CFG.norm_seqbias
+    genes(g).num_read_starts = tmp_read_starts;
+    [tmp_X tmp_Y] = gen_sequence_features(CFG, genes(g), t);
+    assert(size(tmp_X,1)==S);
+    assert(size(tmp_X,2)==genes(g).exonic_len);
+    seq_feat(:, ci+[1:size(tmp_X,2)]) = tmp_X;
+    seq_target(1, ci+[1:size(tmp_X,2)]) = tmp_Y;
+    clear tmp_read_starts tmp_X tmp_Y;
+  end
   % introns
   [tmp_intron_mask tmp_intron_count] = get_intron_data(genes(g), CFG, tmp_introns, g);
   intron_mask(cn+[1:length(tmp_intron_count)], ct+[1:Tg]) = tmp_intron_mask; 
@@ -62,9 +90,10 @@ for g = 1:length(genes),
   ci = ci + genes(g).exonic_len;
   ct = ct + length(genes(g).transcripts);
   cn = cn + length(tmp_intron_count);
-  clear tmp_coverage tmp_introns tmp_intron_mask tmp_intron_count;
+  clear tmp_introns tmp_intron_mask tmp_intron_count;
 end
-CFG.VERBOSE = tmp_VERBOSE;
+assert(P==size(exon_feat,1));
+if CFG.norm_seqbias, assert(P==size(seq_feat,2)); end
 % cut intron data to actual number of introns
 if I < cn
   I = cn;
@@ -73,26 +102,31 @@ if I < cn
   intron_mask = intron_mask(1:I,:);
   intron_count = intron_count(1:I,1);
 end
+CFG.VERBOSE = tmp_VERBOSE;
+if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
 tscp_len_bin = [genes.transcript_len_bin];
 % find thetas that do not need to be optimised (located in the body of the profile function)
 lmt = linspace(0, sqrt(CFG.max_side_len), (F/2)+1).^2;
 lmt(end) = inf;
 pw_nnz = false(F, N);
-max_tl = max([genes.transcript_length]);
-if max_tl<CFG.transcript_len_ranges(N,1)
-  CFG.transcript_len_ranges(N,2) = CFG.transcript_len_ranges(N,1) + 1;
-else
-  CFG.transcript_len_ranges(N,2) = max_tl;
-end
+%max_tl = max([genes.transcript_length]);
+%if max_tl<CFG.transcript_len_ranges(N,1)
+%  CFG.transcript_len_ranges(N,2) = CFG.transcript_len_ranges(N,1) + 1;
+%else
+%  CFG.transcript_len_ranges(N,2) = max_tl;
+%end
 for n = 1:N,
   fidx = find(CFG.transcript_len_ranges(n,2)/2>lmt, 1, 'last');
   pw_nnz([1:fidx, F-fidx+1:F],n) = true;
 end
 
 
-% TODO: subsampling of positions
+% TODO
+%   subsampling of positions (also repeat positions)
+%   add sequence bias model
+%   speed up
 %%%%% optimisation
-max_iter = 200;
+max_iter = 150;
 eps = 1e-3;
 C_w = [genes.transcript_length]';
 % initialisation of variables
@@ -101,22 +135,29 @@ profile_weights = zeros(F, N);
 profile_weights(pw_nnz) = (F*N)/sum(sum(pw_nnz));
 pw_nnz = reshape(pw_nnz, 1, F*N);
 profile_weights_old = zeros(F, N);
+if CFG.norm_seqbias
+  seq_norm_weights = ones(S, 1);
+  seq_norm_weights_old = ones(S, 1);
+end
 fval = 1e100; %1e100*ones(1,T+F*N);
 fval_old = 0;
 iter = 1;
+tp_idx = zeros(1,F*T);
+for n = 1:F,
+  tp_idx([1:F:length(tp_idx)]+n-1) = n+[0:(F*T+F):F*T*T];
+end
 if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tDelta norm\n'); end
 while 1
   weights_old = weights;
   fval_old = fval;
   profile_weights_old = profile_weights;
+  if CFG.norm_seqbias
+    seq_norm_weights_old = seq_norm_weights;
+  end
   % pre-computations
   tmp_profiles = sparse(zeros(F*T,T));
-  idx = zeros(1,F*T);
-  for n = 1:F,
-    idx([1:F:length(idx)]+n-1) = n+[0:(F*T+F):F*T*T];
-  end
-  tmp_profiles(idx) = profile_weights(:,tscp_len_bin);
+  tmp_profiles(tp_idx) = profile_weights(:,tscp_len_bin);
   
   % A. optimise transcript weights
   exon_mask = exon_feat*tmp_profiles;
@@ -213,22 +254,54 @@ while 1
       profile_weights(q) = theta2_new;
       fval(end+1) = quad_fun(theta2_new, S1/2, -S2, S3);
       tmp_pw = reshape(profile_weights, F, N);
-      tmp_profiles(idx) = tmp_pw(:,tscp_len_bin);
+      tmp_profiles(tp_idx) = tmp_pw(:,tscp_len_bin);
     end
   end
   profile_weights = reshape(profile_weights, F, N);
   %figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
-  norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
+  
+  % C. determine sequence bias
+  if CFG.norm_seqbias
+    exon_mask = exon_feat*tmp_profiles;
+    seq_target = log(exp(seq_target)./(sum(exon_mask,2)+1e-5)'+1e-5); % adapt number of reads starts according to profile
+    seq_norm_weights = train_norm_sequence(CFG, seq_feat, seq_target);
+    CFG.RR.seq_norm_weights = seq_norm_weights;
+    norm_cov = norm_sequence(CFG, seq_feat); % predicted normalised coverage
+    cj = 0; ci = 0;
+    norm_cov_sp = sparse(P,F*T);
+    for g = 1:length(genes),
+      for t = 1:length(genes(g).transcripts),
+        norm_cov_sp(ci+[1:genes(g).exonic_len], cj+[1:F]) = repmat(norm_cov(ci+[1:genes(g).exonic_len]),1,F);
+        cj = cj + F;
+      end
+      ci = ci + genes(g).exonic_len;
+    end
+    exon_feat = exon_feat .* norm_cov_sp;
+    %for n = 1:F*T,
+    %  fprintf('%i\r', n);
+    %  exon_feat(:,n) = exon_feat(:,n) .* norm_cov; 
+    %end
+    %exon_feat = exon_feat .* repmat(norm_cov, 1, F*T); % adapt exon features according to sequence normalisation
+  end
+  
+  if CFG.norm_seqbias
+    norm_weights = norm([weights_old, seq_norm_weights_old', reshape(profile_weights_old,1,F*N)] - [weights, seq_norm_weights', reshape(profile_weights,1,F*N)]);
+  else
+    norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
+  end
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
   if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1])); end
   %if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\n', iter, fval(end), norm_weights); end
   if norm(fval_old-fval)<eps | norm_weights<eps | iter >= max_iter
     break;
   end
+  keyboard
   %if iter>15, keyboard; end
   iter = iter + 1;
 end
+if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
+
 obj = fval(end);
 
 

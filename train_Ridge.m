@@ -13,7 +13,7 @@ function [w TR] = train_Ridge(CFG, X, Y)
 %
 % -- input --
 % CFG: configuration struct
-% X: input data (sequences of length 2*CFG.RR.half_win_size)
+% X: input data (k-mer dim x number of positions)
 % Y: target values (expression values)
 %
 % -- output --
@@ -21,27 +21,22 @@ function [w TR] = train_Ridge(CFG, X, Y)
 % TR: training errors of trained Ridge regression
 
 
-% generate numerical kmer vectors from sequences
-if CFG.VERBOSE>0, tic; end
-X_num = seq_2_kmers(X, CFG.RR.order);
-if CFG.VERBOSE>0, fprintf(1, 'Feature generation for Ridge regression took %.1fs.\n', toc); end
-
 if CFG.VERBOSE>0, tic; end
 % regularizer
-x_dim = size(X_num, 1);
+x_dim = size(X, 1);
 R = CFG.RR.lambda * eye(x_dim, x_dim);
 % number of training examples
-N = size(X_num,2);
-Q = X_num * X_num';
-b = X_num * Y';
+N = size(X,2);
+Q = X * X';
+b = X * Y';
 w = (R + Q)\b;
 assert(~any(isnan(w)));
-if CFG.VERBOSE>0, fprintf(1, 'Training for Ridge regression took %.1fs.\n', toc); end
+if CFG.VERBOSE>0, fprintf(1, 'Training for Ridge regression took %.1f s.\n', toc); end
 
 % training error
 Y_pred = nan(1,N);
 for n = 1:N,
-  Y_pred(n) = w' * X_num(:,n);
+  Y_pred(n) = w' * X(:,n);
 end
 
 if CFG.VERBOSE>0,

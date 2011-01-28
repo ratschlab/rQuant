@@ -38,7 +38,7 @@ CFG.C1_set = [0.001];
 CFG.C1_loss_frac_target = 0.3;
 
 %%%%% sequence bias normalisation
-CFG.norm_seqbias = 0;
+CFG.norm_seqbias = 1;
 CFG.RR.seq_norm_weights = [];
 CFG.RR.half_win_size = 20;
 CFG.RR.num_train_frac = 0.8;
