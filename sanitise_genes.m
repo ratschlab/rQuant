@@ -24,6 +24,7 @@ function [genes, num_del] = sanitise_genes(genes, CFG)
 % initialise expression bins
 % initialise transcript length bins
 genes(1).expr_bin = [];
+genes(1).transcript_length = [];
 genes(1).transcript_len_bin = [];
 genes(1).eidx = [];
 genes(1).exonic_len = 0;

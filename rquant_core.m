@@ -32,7 +32,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-genes = genes(1:1000);
+%genes = genes(1:40);
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
 
@@ -48,6 +48,7 @@ else
   CFG.subsample_idx = 1:length(genes);
 end
 
+% determine ranges of transcript length bins
 if isequal(CFG.gene_source, 'annotation')
   tl = [genes.transcript_length];
   if ~isequal(CFG.organism, 'human')
@@ -58,6 +59,13 @@ if isequal(CFG.gene_source, 'annotation')
                 prctile(tl,70) prctile(tl,80) prctile(tl,90) inf])
   end
   CFG.transcript_len_ranges = round([tlr(1:end-1)'+1 tlr(2:end)']);
+end
+% assign length bin to each transcript
+for g = 1:length(genes),
+  for t = 1:length(genes(g).transcripts),
+    genes(g).transcript_len_bin(t) = find(CFG.transcript_len_ranges(:,1) <= genes(g).transcript_length(t) & ...
+                                          CFG.transcript_len_ranges(:,2) >= genes(g).transcript_length(t));
+  end
 end
 CFG.transcript_len_ranges
 
@@ -85,7 +93,7 @@ if CFG.load_profiles,
   clear RES;
   end
 else
-  profile_weights = ones(CFG.num_plifs,1);
+  profile_weights = ones(CFG.num_plifs, size(CFG.transcript_len_ranges,1));
   x = linspace(0, 0.5, CFG.num_intron_plifs);
   intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));  
 end
@@ -118,11 +126,14 @@ while (1)
   end
   
   %keyboard
-  if 0
-    ridx = randperm(length(genes));
-    profile_genes = genes(ridx(1:end));
-    CFG.profile_genes = profile_genes;
-    [profile_weights, obj] = opt_profiles_smo(CFG, profile_genes(1:20));
+  if 1
+    fprintf(1, '\nDetermining profile...\n\n');
+    profile_genes = genes([genes.is_alt]==0);
+    ridx = randperm(length(profile_genes));
+    profile_genes = profile_genes(ridx(1:end));
+    profile_genes = profile_genes(ridx(1:200));
+    fprintf('using %i genes for profile learning\n', length(profile_genes));
+    [profile_weights, obj] = opt_profiles_smo(CFG, profile_genes);
   end
   
   fprintf(1, '\n*** Iteration %i ***\n', iter);
