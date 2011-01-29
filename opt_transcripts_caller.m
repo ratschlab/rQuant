@@ -126,14 +126,10 @@ for c = chr_num,
         end
         [tmp1 idx_exon_t tmp2]= intersect(gene.eidx, tidx);
         assert(isequal(tmp2,[1:length(tidx)]));
-        exon_mask(idx_exon_t, t) = norm_sequence(CFG, gene, t, exon_mask(idx_exon_t, t));
+        tmp_X = gen_sequence_features(CFG, genes(g), t);
+        exon_mask(idx_exon_t, t) = norm_sequence(CFG, tmp_X);
+        clear tmp_X;
       end
-    end
-    
-    if 0% ~all(any(exon_mask, 2)')
-      genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
-      genes(g).obj = nan;
-      continue;
     end
     
     %%%%% prepare intron mask %%%%%
@@ -169,7 +165,11 @@ for c = chr_num,
     elseif strcmp(CFG.method, 'pos') % position-wise
       % only consider regions in at least one exon
       if size(exon_mask,1)<2*(CFG.max_side_len-1)
-        assert(all(any(exon_mask, 2)'));
+        if ~all(any(exon_mask, 2)')
+          [mval midx] = max(gene.transcript_len_bin);
+          fprintf('gene inconsistent with profile (%i: %i)\n', mval, gene.transcript_length(midx));
+        end
+        %assert(all(any(exon_mask, 2)'));
       else
         assert(all(any(exon_mask([1:CFG.max_side_len-1, end-CFG.max_side_len+2:end],:),2)'));
       end  
