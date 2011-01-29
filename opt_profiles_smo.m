@@ -1,5 +1,5 @@
-function [profile_weights, obj] = opt_profiles_smo(CFG, genes)
-% [profile_weights, obj] = opt_profiles_smo(CFG, genes)
+function [profile_weights, obj, seq_norm_weights] = opt_profiles_smo(CFG, genes)
+% [profile_weights, obj, seq_norm_weights] = opt_profiles_smo(CFG, genes)
 %
 % -- input --
 % CFG: configuration struct
@@ -8,10 +8,12 @@ function [profile_weights, obj] = opt_profiles_smo(CFG, genes)
 % -- output --
 % profile_weights: weights of profile functions 
 % obj: objective evaluated with optimal parameters
+% seq_norm_weights: weight vector of trained Ridge regression for sequence normalisation
 
 
 T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
+P_all = P;
 F = CFG.num_plifs;                     % number of supporting points
 N = size(CFG.transcript_len_ranges,1); % number of length bins
 if CFG.norm_seqbias
@@ -40,11 +42,11 @@ coverage = sparse(P, 1);
 exon_feat = sparse(P, F*T); % stores exon features from all transcripts in profile gene set
 intron_count = zeros(I, 1);
 intron_mask = zeros(I, T);
+mask = true(P, 1); 
 ci = 0; cj = 0; ct = 0; cn = 0;
 if CFG.norm_seqbias
   seq_feat = sparse(S, P);
   seq_target = sparse(1, P);
-  %cs = 0;
 end
 weights = zeros(1,T);
 if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
@@ -87,6 +89,16 @@ for g = 1:length(genes),
   [tmp_intron_mask tmp_intron_count] = get_intron_data(genes(g), CFG, tmp_introns, g);
   intron_mask(cn+[1:length(tmp_intron_count)], ct+[1:Tg]) = tmp_intron_mask; 
   intron_count(cn+[1:length(tmp_intron_count)],1) = tmp_intron_count;
+  % repeat mask
+  fname = sprintf('%s%s_repeat', CFG.repeats_fn, genes(g).chr);
+  if exist(sprintf('%s.pos', fname), 'file')
+    [map.pos map.repeats] = interval_query(fname, {'repeats'}, [genes(g).start;genes(g).stop]);
+    if ~isempty(map.pos)
+      [tmp idx1 idx2] = intersect(map.pos, genes(g).eidx);
+      assert(length(idx2)<=length(map.pos));
+      mask(ci+idx2) = false;
+    end
+  end
   ci = ci + genes(g).exonic_len;
   ct = ct + length(genes(g).transcripts);
   cn = cn + length(tmp_intron_count);
@@ -120,13 +132,34 @@ for n = 1:N,
   pw_nnz([1:fidx, F-fidx+1:F],n) = true;
 end
 
+% subsample positions
+if CFG.subsample,
+  subsample_frac = min(CFG.subsample_frac, CFG.max_num_train_exm/sum(mask));
+  tmp_P = round(P*subsample_frac);
+  midx = find(mask);
+  ridx = randperm(length(midx));
+  mask(midx(ridx(tmp_P+1:end))) = false;
+  clear midx ridx;
+end
+
+% exclude positions that are repetitive or subsampled
+if any(~mask),
+  subs_idx = find(mask);
+  P = length(subs_idx);
+  coverage = coverage(subs_idx, :);
+  exon_feat = exon_feat(subs_idx, :);
+  if CFG.norm_seqbias
+    seq_feat = seq_feat(:, subs_idx);
+    seq_target = seq_target(:, subs_idx);
+  end
+  fprintf('subsampled from %i to %i positions\n', P_all, P);
+  clear P_old;
+end
 
 % TODO
 %   subsampling of positions (also repeat positions)
-%   add sequence bias model
 %   speed up
 %%%%% optimisation
-max_iter = 150;
 eps = 1e-3;
 C_w = [genes.transcript_length]';
 % initialisation of variables
@@ -138,6 +171,8 @@ profile_weights_old = zeros(F, N);
 if CFG.norm_seqbias
   seq_norm_weights = ones(S, 1);
   seq_norm_weights_old = ones(S, 1);
+else
+  seq_norm_weights = nan;
 end
 fval = 1e100; %1e100*ones(1,T+F*N);
 fval_old = 0;
@@ -149,6 +184,7 @@ end
 if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tDelta norm\n'); end
 while 1
+  tic
   weights_old = weights;
   fval_old = fval;
   profile_weights_old = profile_weights;
@@ -257,7 +293,7 @@ while 1
       tmp_profiles(tp_idx) = tmp_pw(:,tscp_len_bin);
     end
   end
-  profile_weights = reshape(profile_weights, F, N);
+  profile_weights = reshape(profile_weights, F, N)
   %figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
   
@@ -268,8 +304,15 @@ while 1
     seq_norm_weights = train_norm_sequence(CFG, seq_feat, seq_target);
     CFG.RR.seq_norm_weights = seq_norm_weights;
     norm_cov = norm_sequence(CFG, seq_feat); % predicted normalised coverage
+    
+    for n = 1:F*T,
+      %fprintf('%i\r', n);
+      exon_feat(:,n) = exon_feat(:,n) .* norm_cov; 
+    end
+    
+    if 0
     cj = 0; ci = 0;
-    norm_cov_sp = sparse(P,F*T);
+    norm_cov_sp = sparse(P_all, F*T);
     for g = 1:length(genes),
       for t = 1:length(genes(g).transcripts),
         norm_cov_sp(ci+[1:genes(g).exonic_len], cj+[1:F]) = repmat(norm_cov(ci+[1:genes(g).exonic_len]),1,F);
@@ -277,12 +320,15 @@ while 1
       end
       ci = ci + genes(g).exonic_len;
     end
-    exon_feat = exon_feat .* norm_cov_sp;
-    %for n = 1:F*T,
-    %  fprintf('%i\r', n);
-    %  exon_feat(:,n) = exon_feat(:,n) .* norm_cov; 
-    %end
-    %exon_feat = exon_feat .* repmat(norm_cov, 1, F*T); % adapt exon features according to sequence normalisation
+    if exist(subs_idx, 'var')
+      norm_cov_sp = norm_cov_sp(subs_idx, :);
+    end
+    exon_feat = exon_feat .* norm_cov_sp; % adapt exon features according to sequence normalisation
+    end
+    
+    %exon_feat = exon_feat .* repmat(norm_cov, 1, F*T);
+    
+    %plot_sequence_weights(CFG.RR.seq_norm_weights, CFG.RR.order, 2*CFG.RR.half_win_size);
   end
   
   if CFG.norm_seqbias
@@ -291,12 +337,11 @@ while 1
     norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
   end
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
-  if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\t%s\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1])); end
+  if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\t%s\t%.1f\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1]), toc); end
   %if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\n', iter, fval(end), norm_weights); end
-  if norm(fval_old-fval)<eps | norm_weights<eps | iter >= max_iter
+  if norm(fval_old-fval)<eps | norm_weights<eps | iter >= CFG.max_iter
     break;
   end
-  keyboard
   %if iter>15, keyboard; end
   iter = iter + 1;
 end

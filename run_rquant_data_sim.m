@@ -4,7 +4,7 @@ addpath('~/svn/tools/genomes');
 
 %%%%% directories from which to load read data and genes %%%%%
 CFG.organism = 'elegans';
-CFG.exp = 'fs_strong_bias';
+CFG.exp = 'fs_strong_bias_seq_bias';
 CFG.gene_source = 'annotation';
 
 CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
@@ -31,7 +31,7 @@ CFG.tracks_min_exon_len = -1;
 CFG.tracks_max_mismatches = 1e3;
 
 %%%%% result directory %%%%%
-date_exp = '2011-01-26';
+date_exp = '2011-01-29';
 %date_exp = datestr(now,'yyyy-mm-dd');
 %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
 CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s/', CFG.exp, date_exp);
@@ -47,8 +47,8 @@ CFG.write_density_model = 1;
 %%%%% optimizer %%%%%
 CFG.optimizer = 'cplex';
 
-%%%%% number of iterations (1: no profile learning) %%%%%
-CFG.max_iter = 1;
+%%%%% enables profile learning %%%%%
+CFG.learn_profiles = 1;
 
 %%%%% pre-learned profiles %%%%%
 CFG.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_strong_bias_2011-01-26/profiles.mat';
@@ -75,7 +75,7 @@ CFG
 
 %%%%% rproc settings for main job %%%%%
 if 0
-  rproc_memreq                = 10000;
+  rproc_memreq                = 8000;
   rproc_par.priority          = 8;
   rproc_par.express           = 0;
   rproc_par.immediately_bg    = 0;

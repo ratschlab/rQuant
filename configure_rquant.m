@@ -47,7 +47,9 @@ CFG.RR.lambda = 1e-2;
 
 %%%%% profile learning
 % enables loading of profiles from CFG.profiles_fn
-CFG.load_profiles = 1;
+CFG.load_profiles = 0;
+%%%%% number of iterations %%%%%
+CFG.max_iter = 50;
 % number of plifs for profile functions
 CFG.num_plifs = 50;
 % maximal number of positions to be considered at both transcript ends
@@ -64,15 +66,8 @@ CFG.num_intron_plifs = 5;
 % enables subsampling of data for learning profiles
 CFG.subsample = 1;
 % maximal number of examples for learning profiles
-CFG.max_num_train_exm = 4e6 * 5;
-% fraction of genes to be subsampled for learning profiles
-CFG.subsample_frac_global = 1;
-% fraction of profile_genes to be subsampled for learning profiles
-CFG.subsample_frac = 0.10;
-% regularisation strength in profile optimisation
-% will be weighted by the number of positions in profile_genes
-CFG.C2.tau   = 100;
-CFG.C2.kappa = 1;
-CFG.C2.theta = 10;
+CFG.max_num_train_exm = 1e6;
+% fraction of positions to be subsampled for learning profiles
+CFG.subsample_frac = 0.30;
 % more output to stdout
 CFG.VERBOSE = 1; % 0: no output, 1: more output, 2: debug output
