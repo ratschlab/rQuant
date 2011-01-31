@@ -23,16 +23,10 @@ if ~isfield(gene, 'strands') || length(gene.strands)<tscp_idx,
 end
 exons(1,1) = exons(1,1) - CFG.RR.half_win_size; 
 exons(end,2) = exons(end,2) + CFG.RR.half_win_size;
-seq = load_genomic(gene.chr, gene.strands(tscp_idx), exons(:,1), exons(:,2), CFG.genome_info, 0);
-
-% input sequence data for regression
-X_char = char(zeros(CFG.RR.half_win_size*2, length(seq)-2*CFG.RR.half_win_size));
-for x = CFG.RR.half_win_size+1:length(seq)-CFG.RR.half_win_size,
-  X_char(:, x-CFG.RR.half_win_size) = upper(char(seq(x-CFG.RR.half_win_size:x+CFG.RR.half_win_size-1)));
-end
+seq = upper(load_genomic(gene.chr, gene.strands(tscp_idx), exons(:,1), exons(:,2), CFG.genome_info, 0));
 
 % generate numerical kmer vectors from sequences
-X = seq_2_kmers(X_char, CFG.RR.order);
+X = seq_2_kmers(seq, CFG.RR.order, 2*CFG.RR.half_win_size);
 
 % target values for regression
 if nargout==2
