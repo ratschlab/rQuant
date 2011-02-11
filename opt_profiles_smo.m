@@ -45,8 +45,9 @@ intron_mask = zeros(I, T);
 mask = true(P, 1); 
 ci = 0; cj = 0; ct = 0; cn = 0;
 if CFG.norm_seqbias
-  seq_feat = sparse(S, P);
-  seq_target = sparse(1, P);
+  seq_feat = sparse(S, P); % encoded sequence features
+  seq_target = sparse(1, P); % target values (read starts normalised by background)
+  seq_target_bg = sparse(1, P); % background (average number of read starts)
 end
 weights = zeros(1,T);
 if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
@@ -78,12 +79,13 @@ for g = 1:length(genes),
   % sequence features
   if CFG.norm_seqbias
     genes(g).num_read_starts = tmp_read_starts;
-    [tmp_X tmp_Y] = gen_sequence_features(CFG, genes(g), t);
+    [tmp_X tmp_Y tmp_Y_bg] = gen_sequence_features(CFG, genes(g), t);
     assert(size(tmp_X,1)==S);
     assert(size(tmp_X,2)==genes(g).exonic_len);
     seq_feat(:, ci+[1:size(tmp_X,2)]) = tmp_X;
     seq_target(1, ci+[1:size(tmp_X,2)]) = tmp_Y;
-    clear tmp_read_starts tmp_X tmp_Y;
+    seq_target_bg(1, ci+[1:size(tmp_X,2)]) = tmp_Y_bg;
+    clear tmp_read_starts tmp_X tmp_Y tmp_Y_bg;
   end
   % introns
   [tmp_intron_mask tmp_intron_count] = get_intron_data(genes(g), CFG, tmp_introns, g);
@@ -151,13 +153,14 @@ if any(~mask),
   if CFG.norm_seqbias
     seq_feat = seq_feat(:, subs_idx);
     seq_target = seq_target(:, subs_idx);
+    seq_target_bg = seq_target_bg(:, subs_idx);
   end
-  fprintf('subsampled from %i to %i positions\n', P_all, P);
+  if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
 end
 
+
 % TODO
-%   subsampling of positions (also repeat positions)
 %   speed up
 %%%%% optimisation
 eps = 1e-3;
@@ -300,17 +303,16 @@ while 1
   % C. determine sequence bias
   if CFG.norm_seqbias
     exon_mask = exon_feat*tmp_profiles;
-    seq_target = log(exp(seq_target)./(sum(exon_mask,2)+1e-5)'+1e-5); % adapt number of reads starts according to profile
-    seq_norm_weights = train_norm_sequence(CFG, seq_feat, seq_target);
+    seq_target = seq_target - log(sum(exon_mask,2)+1e-10)'; % adapt number of reads start frequency according to profile
+    seq_norm_weights = train_norm_sequence(CFG, seq_feat, seq_target, seq_target_bg);
     CFG.RR.seq_norm_weights = seq_norm_weights;
-    norm_cov = norm_sequence(CFG, seq_feat); % predicted normalised coverage
-    
+    norm_cov = norm_sequence(CFG, seq_feat, seq_target); % predicted normalised coverage
     for n = 1:F*T,
       %fprintf('%i\r', n);
       exon_feat(:,n) = exon_feat(:,n) .* norm_cov; 
     end
     
-    if 0
+    if 0    
     cj = 0; ci = 0;
     norm_cov_sp = sparse(P_all, F*T);
     for g = 1:length(genes),
