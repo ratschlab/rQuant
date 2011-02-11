@@ -8,8 +8,8 @@
 % Copyright (C) 2007-2010 Max Planck Society
 %
 
-function [w TR] = train_Ridge(CFG, X, Y)
-% [w TR] = train_Ridge(CFG, X, Y)
+function w = train_Ridge(CFG, X, Y)
+% w = train_Ridge(CFG, X, Y)
 %
 % -- input --
 % CFG: configuration struct
@@ -18,7 +18,6 @@ function [w TR] = train_Ridge(CFG, X, Y)
 %
 % -- output --
 % w: weight vector of trained Ridge regression
-% TR: training errors of trained Ridge regression
 
 
 if CFG.VERBOSE>0, tic; end
@@ -32,16 +31,3 @@ b = X * Y';
 w = (R + Q)\b;
 assert(~any(isnan(w)));
 if CFG.VERBOSE>0, fprintf(1, 'Training for Ridge regression took %.1f s.\n', toc); end
-
-% training error
-Y_pred = nan(1,N);
-for n = 1:N,
-  Y_pred(n) = w' * X(:,n);
-end
-
-if CFG.VERBOSE>0,
-  % absolute variablity on training set
-  TR.Q1 = mean(abs(Y_pred - Y)) / mean(abs(Y - median(Y)));
-  % squared variablity on training set
-  TR.Q2 = mean((Y_pred - Y).^2) / mean((Y - mean(Y)).^2);
-end
