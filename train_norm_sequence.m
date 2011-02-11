@@ -8,13 +8,14 @@
 % Copyright (C) 2009-2010 Max Planck Society
 %
 
-function w = train_norm_sequence(CFG, X, Y)
-% w = train_norm_sequence(CFG, X, Y)
+function w = train_norm_sequence(CFG, X, Y, Y_bg)
+% w = train_norm_sequence(CFG, X, Y, Y_bg)
 %
 % -- input --
 % CFG: configuration struct
 % X: matrix of positional substring occurence (number of k-mers x positions)
 % Y: vector of target values for regression
+% Y_bg: vector of averaged number of read starts (background)
 %
 % -- output --
 % w: weight vector of trained Ridge regression
@@ -35,17 +36,22 @@ Y_train = Y(:,ridx(1:num_train));
 X_eval = X(:,ridx(num_train+1:end));
 Y_eval = Y(:,ridx(num_train+1:end));
 
+Y_bg_train = Y_bg(:,ridx(1:num_train));
+Y_bg_eval = Y_bg(:,ridx(num_train+1:end));
+
 % train weights of Ridge regression
 if CFG.VERBOSE>0, fprintf(1, '%i training examples for Ridge regression\n', size(X_train,2)); end
-[w TR] = train_Ridge(CFG, X_train, Y_train);
+w = train_Ridge(CFG, X_train, Y_train);
 % test on omitted examples
 if CFG.VERBOSE>0,
+  % calculate absolute and squared variablity
+  % on training set
+  Y_train_pred = predict_Ridge(CFG, X_train, w);
+  [TR.Q1 TR.Q2] = variability_coefficient(Y_train_pred, Y_train, Y_bg_train);
+  % on test test
   fprintf(1, '%i test examples for Ridge regression\n', size(X_eval,2));
-  Y_pred = predict_Ridge(CFG, X_eval, w);
-  % absolute variablity on test set
-  TE.Q1 = mean(abs(Y_pred - Y_eval)) / mean(abs(Y_eval - median(Y_eval)));
-  % squared variablity on test set
-  TE.Q2 = mean((Y_pred - Y_eval).^2) / mean((Y_eval - mean(Y_eval)).^2);
+  Y_eval_pred = predict_Ridge(CFG, X_eval, w);
+  [TE.Q1 TE.Q2] = variability_coefficient(Y_eval_pred, Y_eval, Y_bg_eval);
   fprintf(1, 'relative variability (Q1): training %.3f, test %.3f\n', TR.Q1, TE.Q1);
   fprintf(1, 'relative variability (Q2): training %.3f, test %.3f\n', TR.Q2, TE.Q2);
 end
