@@ -54,6 +54,7 @@ if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
+  fprintf('%i\r', g);
   try
     if CFG.norm_seqbias
       [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
@@ -246,31 +247,58 @@ while 1
            exon_feat(:,idx_w_th1)*weights(idx_w_n1)'*d - ...
            coverage;
       R2 = 0;
-      if n1<N, R2 = R2 + (profile_weights(f1+n1*F)-d)^2; end
+      if n1<N, R2 = R2 + (d-profile_weights(f1+n1*F))^2; end
+      if n1>1, R2 = R2 + (d-profile_weights(f1+(n1-2)*F))^2; end
       if n2<N, R2 = R2 + profile_weights(f2+n2*F)^2; end
+      if n2>1, R2 = R2 + profile_weights(f2+(n2-2)*F)^2; end
       for f = 1:F,
+        if f==f1 | f==f2, continue; end
         for n = 1:N-1,
-          if n~=n1 & n~=n2, R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+n*F))^2; end
+          R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+n*F))^2;
         end
       end
-      R3 = 0;
-      if f1<F, R3 = R3 + (profile_weights(f1+1+(n1-1)*F)-d)^2; end
-      if f2<F, R3 = R3 + profile_weights(f2+1+(n2-1)*F)^2; end
-      for n = 1:N,
-        for f = 1:F-1,
-          if f~=f1 & f~=f2, R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+1+(n-1)*F))^2; end
+      for f = [f1 f2],
+        for n = 1:N-1,
+          if n~=n1 & n~=n1-1 & n~=n2 & n~=n2-1, R2 = R2 + (profile_weights(f+(n-1)*F) - profile_weights(f+n*F))^2; end
         end
-      end  
-      S1 = 2*sum(Rth2.^2) + 8; % quadratic term
+      end
+      if 0
+      idx1 = setdiff([1:F*N], [f1:F:F*N, f2:F:F*N]);
+      idx2 = [f1:F:F*N, f2:F:F*N];
+      idx3 = setdiff(idx2, [(N-1)*F+[1:F], f1+(n1-1)*F, f1+(n2-1)*F, f1+(n1-2)*F, f1+(n2-2)*F, f2+(n1-1)*F, f2+(n2-1)*F, f2+(n1-2)*F, f2+(n2-2)*F]);
+      idx4 = setdiff(idx2, [[1:F], f1+n1*F, f1+n2*F, f1+(n1-1)*F, f1+(n2-1)*F, f2+n1*F, f2+n2*F, f2+(n1-1)*F, f2+(n2-1)*F]);
+      R2 = R2 + sum((profile_weights(setdiff(idx1,(N-1)*F+[1:F])) - profile_weights(setdiff(idx1,[1:F]))).^2) + sum((profile_weights(idx3) - profile_weights(idx4)).^2);
+      end
+      R3 = 0;
+      if f1<F, R3 = R3 + (d-profile_weights(f1+1+(n1-1)*F))^2; end
+      if f1>1, R3 = R3 + (d-profile_weights(f1-1+(n1-1)*F))^2; end
+      if f2<F, R3 = R3 + profile_weights(f2+1+(n2-1)*F)^2; end
+      if f2>1, R3 = R3 + profile_weights(f2-1+(n2-1)*F)^2; end
+      for n = 1:N,
+        if n==n1 | n==n2, continue; end
+        for f = 1:F-1,
+          R3 = R3 + (profile_weights(f+(n-1)*F) - profile_weights(f+1+(n-1)*F))^2;
+        end
+      end
+      for n = [n1 n2],
+        for f = 1:F-1,
+          if f~=f1 & f~=f2 & f~=f1-1 & f~=f2-1, R3 = R3 + (profile_weights(f+(n-1)*F) - profile_weights(f+1+(n-1)*F))^2; end
+        end
+      end
+      S1 = sum(Rth2.^2) + 8; % quadratic term
       assert(S1>0); % condition for minimum (2nd derivative > 0)
-      S2 = 4*d - 2*sum(Rth2'*R1); % linear term
+      S2 = sum(Rth2'*R1) - 4*d; % linear term
       % coupling constraints
-      if n1<N, S2 = S2 - 2*profile_weights(f1+n1*F); end % theta_f1,n1+1
-      if n2<N, S2 = S2 + 2*profile_weights(f2+n2*F); end % theta_f2,n2+1
-      if f1<F, S2 = S2 - 2*profile_weights(f1+1+(n1-1)*F); end % theta_f1+1,n1
-      if f2<F, S2 = S2 + 2*profile_weights(f2+1+(n2-1)*F); end % theta_f2+1,n2
+      if n1<N, S2 = S2 + profile_weights(f1+n1*F); end       % theta_f1,n1+1
+      if n1>1, S2 = S2 + profile_weights(f1+(n1-2)*F); end   % theta_f1,n1-1
+      if f1<F, S2 = S2 + profile_weights(f1+1+(n1-1)*F); end % theta_f1+1,n1
+      if f1>1, S2 = S2 + profile_weights(f1-1+(n1-1)*F); end % theta_f1-1,n1
+      if n2<N, S2 = S2 - profile_weights(f2+n2*F); end       % theta_f2,n2+1
+      if n2>1, S2 = S2 - profile_weights(f2+(n2-2)*F); end   % theta_f2,n2-1
+      if f2<F, S2 = S2 - profile_weights(f2+1+(n2-1)*F); end % theta_f2+1,n2
+      if f2>1, S2 = S2 - profile_weights(f2-1+(n2-1)*F); end % theta_f2-1,n2
       S3 = sum(R1.^2) + R2 + R3; % constant term
-      theta2_new = S2/S1;
+      theta2_new = -S2/S1;
       % clipping of theta2
       if theta2_new<0
         theta2_new = 0.0;
@@ -296,7 +324,7 @@ while 1
       tmp_profiles(tp_idx) = tmp_pw(:,tscp_len_bin);
     end
   end
-  profile_weights = reshape(profile_weights, F, N)
+  profile_weights = reshape(profile_weights, F, N);
   %figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
   
