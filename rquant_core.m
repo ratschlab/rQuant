@@ -93,14 +93,33 @@ if CFG.learn_profiles
   else
     fprintf(1, '...\n\n');
   end
-  profile_genes = genes([genes.is_alt]==0);
+  profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
+  tscp_len_bin = zeros(1, length(genes));
+  for g = 1:length(profile_genes),
+    ridx = randperm(length(profile_genes(g).transcripts));
+    tscp_len_bin(g) = profile_genes(g).transcript_len_bin(ridx(1));
+  end
+  % minimal number of examples in one transcript length bin
+  min_bin_num = inf;
+  for r = 1:size(CFG.transcript_len_ranges,1),
+    min_bin_num = min(min_bin_num, sum(tscp_len_bin==r));
+  end
+  % take equal number of examples in each bin
+  profile_genes_idx = [];
+  for r = 1:size(CFG.transcript_len_ranges,1),
+    fidx = find(tscp_len_bin==r);
+    ridx = randperm(length(fidx));
+    profile_genes_idx = [profile_genes_idx, fidx(ridx(1:min_bin_num))];
+  end
+  profile_genes = profile_genes(profile_genes_idx);
   ridx = randperm(length(profile_genes));
-  num_exm = min(length(profile_genes), 200);
+  num_exm = min(length(profile_genes), 20);
   profile_genes = profile_genes(ridx(1:num_exm));
   fprintf('using %i genes for profile learning\n', length(profile_genes));
-  [profile_weights, obj, CFG.RR.seq_norm_weights] = opt_profiles_smo(CFG, profile_genes);
+  [profile_weights, obj, seq_weights] = opt_profiles_smo(CFG, profile_genes);
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
-  save(save_fname, 'profile_genes', 'profile_weights', 'CFG');
+  save(save_fname, 'profile_genes', 'profile_weights', 'seq_weights', 'CFG');
+  return
 end
   
 fprintf(1, '\nDetermining transcript weights...\n');
