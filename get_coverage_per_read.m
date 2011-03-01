@@ -122,7 +122,7 @@ if nargout>4
   for c = 1:size(coverage, 2),
     fidx = find(coverage(:,c)~=0, 1, 'first');
     if ~isempty(fidx),
-      if fidx==1 & sum(coverage(:,c),1)<CFG.read_len, continue; end
+      if fidx==1 && sum(coverage(:,c),1)<CFG.read_len, continue; end
       read_starts(fidx) = read_starts(fidx) + 1;
     end
   end

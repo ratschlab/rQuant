@@ -100,7 +100,7 @@ else
       fval(t) = quad_fun(weights(t), S1, S2, S3);
     end
     if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\n', iter, fval(end), norm(weights_old-weights)); end
-    if norm(fval_old-fval)<1e-5 | norm(weights_old-weights)<1e-5 | iter>=max_iter,
+    if norm(fval_old-fval)<1e-5 || norm(weights_old-weights)<1e-5 || iter>=max_iter,
       break;
     end
     iter = iter + 1;
@@ -108,5 +108,5 @@ else
 end
 if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
 
-assert(all(fval(1:end-1)-fval(2:end)>0));
+assert(all(fval(1:end-1)-fval(2:end)>-1e-3));
 obj = fval(end);

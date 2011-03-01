@@ -11,6 +11,7 @@ function [profile_weights, obj, seq_weights] = opt_profiles_smo(CFG, genes)
 % seq_weights: weights for sequence normalisation
 
 
+if 1
 T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
 P_all = P;
@@ -19,7 +20,7 @@ N = size(CFG.transcript_len_ranges,1); % number of length bins
 if CFG.norm_seqbias
   S = 0;
   for o = 1:CFG.RR.order,
-    S = S + (CFG.RR.half_win_size*2-o+1) * 4^o;;
+    S = S + (CFG.RR.half_win_size*2-o+1) * 4^o;
   end
 end
 
@@ -35,6 +36,7 @@ for g = 1:length(genes),
   end
   introns = unique(introns, 'rows');
   I = I + size(introns,1);
+  clear introns;
 end
 
 %%%%% pre-processing %%%%%
@@ -55,7 +57,7 @@ if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
-  %fprintf('%i\r', g);
+  fprintf('%i\r', g);
   try
     if CFG.norm_seqbias
       [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
@@ -164,6 +166,10 @@ if any(~mask),
   if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
 end
+save('~/tmp/test_workspace.mat');
+else
+load('~/tmp/test_workspace.mat');
+end
 
 
 % TODO
@@ -171,7 +177,7 @@ end
 %%%%% optimisation %%%%%
 eps = 1e-3;
 C_w = [genes.transcript_length]';
-% initialisation of variables
+%%% initialisation of variables
 weights_old = zeros(1,T);
 profile_weights = zeros(F, N);
 profile_weights(pw_nnz) = (F*N)/sum(sum(pw_nnz));
@@ -180,10 +186,12 @@ profile_weights_old = zeros(F, N);
 if CFG.norm_seqbias
   seq_weights = ones(S, 1);
   seq_weights_old = zeros(S, 1);
+  num_opt_steps = 1+sum([1:sum(pw_nnz)-1])+sum([1:S-1]);
 else
   seq_weights = nan;
+  num_opt_steps = 1+sum([1:sum(pw_nnz)-1]);
 end
-fval = 1e100; %1e100*ones(1,T+F*N);
+fval = 1e100*ones(1, num_opt_steps);
 fval_old = 0;
 iter = 1;
 tp_idx = zeros(1,F*T);
@@ -225,7 +233,7 @@ while 1
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
   R_const = sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2));
-  [weights, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, 1, weights, 'L1');
+  [weights, fval(1)] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, 1, weights, 'L1');
   assert(fval_old(end)-fval(1)>-1e-3);
   %corr(weights', [genes.expr_orig]')
   CFG.VERBOSE = tmp_VERBOSE;
@@ -236,15 +244,16 @@ while 1
   if size(intron_mask,1)>0, R_const = R_const + sum((intron_mask*weights'-intron_count).^2); end
   num_changed = 0;
   pidx = find(pw_nnz(1:N*F-1));
-  %ii = 0;
+  cnt = 1;
+  ii = 0;
   for p = pidx,
     qidx = find(pw_nnz);
     qidx(qidx<=p) = [];
     ridx = randperm(length(qidx));
     qidx = qidx(ridx);
     for q = qidx,
-      %ii = ii + 1;
-      %fprintf('%3.2f\r', 100*ii/sum([1:sum(pw_nnz)-1]));
+      ii = ii + 1;
+      fprintf('%3.2f\r', 100*ii/sum([1:sum(pw_nnz)-1]));
       theta1 = profile_weights(q);
       theta2 = profile_weights(p);
       d = theta1 + theta2;
@@ -278,92 +287,92 @@ while 1
       end
       %%% R2: residue for coupling transcript length bins
       R2 = 0;
-      if n1<N & ~(f1==f2 & n1+1==n2), R2 = R2 + (d-profile_weights(f1+n1*F))^2; end
+      if n1<N && ~(f1==f2 && n1+1==n2), R2 = R2 + (d-profile_weights(f1+n1*F))^2; end
       if n2<N
-        if f1==f2 & n1==n2+1
+        if f1==f2 && n1==n2+1
           R2 = R2 + d^2;
         else
           R2 = R2 + profile_weights(f2+n2*F)^2;
         end
       end
-      if n1>1 & ~(f1==f2 & n1==n2+1), R2 = R2 + (d-profile_weights(f1+(n1-2)*F))^2; end
+      if n1>1 && ~(f1==f2 && n1==n2+1), R2 = R2 + (d-profile_weights(f1+(n1-2)*F))^2; end
       if n2>1
-        if f1==f2 & n1+1==n2
+        if f1==f2 && n1+1==n2
           R2 = R2 + d^2;
         else
           R2 = R2 + profile_weights(f2+(n2-2)*F)^2;
         end
       end
       for f = 1:F,
-        if f==f1 | f==f2, continue; end
+        if f==f1 || f==f2, continue; end
         for n = 1:N-1,
           R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+n*F))^2;
         end
       end
       for f = unique([f1 f2]),
         for n = 1:N-1,
-          if f==f1 & (n==n1 | n==n1-1) | f==f2 & (n==n2 | n==n2-1), continue; end
+          if f==f1 && (n==n1 || n==n1-1) || f==f2 && (n==n2 || n==n2-1), continue; end
           R2 = R2 + (profile_weights(f+(n-1)*F) - profile_weights(f+n*F))^2;
         end
       end
       %%% R3: residue for coupling supporting points
       R3 = 0;
-      if f1<F & ~(n1==n2 & f1+1==f2), R3 = R3 + (d-profile_weights(f1+1+(n1-1)*F))^2; end
+      if f1<F && ~(n1==n2 && f1+1==f2), R3 = R3 + (d-profile_weights(f1+1+(n1-1)*F))^2; end
       if f2<F,
-        if n1==n2 & f1==f2+1
+        if n1==n2 && f1==f2+1
           R3 = R3 + d^2;
         else
           R3 = R3 + profile_weights(f2+1+(n2-1)*F)^2;
         end
       end
-      if f1>1 & ~(n1==n2 & f1==f2+1), R3 = R3 + (d-profile_weights(f1-1+(n1-1)*F))^2; end
+      if f1>1 && ~(n1==n2 && f1==f2+1), R3 = R3 + (d-profile_weights(f1-1+(n1-1)*F))^2; end
       if f2>1,
-        if n1==n2 & f1+1==f2
+        if n1==n2 && f1+1==f2
           R3 = R3 + d^2;
         else
           R3 = R3 + profile_weights(f2-1+(n2-1)*F)^2;
         end
       end
       for n = 1:N,
-        if n==n1 | n==n2, continue; end
+        if n==n1 || n==n2, continue; end
         for f = 1:F-1,
           R3 = R3 + (profile_weights(f+(n-1)*F) - profile_weights(f+1+(n-1)*F))^2;
         end
       end
       for n = unique([n1 n2]),
         for f = 1:F-1,
-          if n==n1 & (f==f1 | f==f1-1) | n==n2 & (f==f2 | f==f2-1), continue; end
+          if n==n1 && (f==f1 || f==f1-1) || n==n2 && (f==f2 || f==f2-1), continue; end
           R3 = R3 + (profile_weights(f+(n-1)*F) - profile_weights(f+1+(n-1)*F))^2;
         end
       end
       %%% S1: residue of quadratic term
       S1 = sum(Rth2.^2);
       if f1==f2
-        if n1+1==n2, S1 = S1 + 6; elseif n1==n2+1, S1 = S1 + 6; else, S1 = S1 + 4; end
+        if n1+1==n2, S1 = S1 + 6; elseif n1==n2+1, S1 = S1 + 6; else S1 = S1 + 4; end
       else
         S1 = S1 + 4;
       end
       if n1==n2
-        if f1+1==f2, S1 = S1 + 6; elseif f1==f2+1, S1 = S1 + 6; else, S1 = S1 + 4; end
+        if f1+1==f2, S1 = S1 + 6; elseif f1==f2+1, S1 = S1 + 6; else S1 = S1 + 4; end
       else
         S1 = S1 + 4;
       end
-      if n1==1 | n1==N, S1 = S1 - 1; end
-      if n2==1 | n2==N, S1 = S1 - 1; end
-      if f1==1 | f1==F, S1 = S1 - 1; end
-      if f2==1 | f2==F, S1 = S1 - 1; end
+      if n1==1 || n1==N, S1 = S1 - 1; end
+      if n2==1 || n2==N, S1 = S1 - 1; end
+      if f1==1 || f1==F, S1 = S1 - 1; end
+      if f2==1 || f2==F, S1 = S1 - 1; end
       assert(S1>0); % condition for minimum (2nd derivative > 0)
       %%% S2: residue of linear term
       S2 = sum(Rth2'*R1);
       % coupling constraints
-      if n1<N & ~(f1==f2 & n1+1==n2), S2 = S2 + profile_weights(f1+n1*F) - d; end       % theta_f1,n1+1
-      if n1>1 & ~(f1==f2 & n1==n2+1), S2 = S2 + profile_weights(f1+(n1-2)*F) -d ; end   % theta_f1,n1-1
-      if f1<F & ~(n1==n2 & f1+1==f2), S2 = S2 + profile_weights(f1+1+(n1-1)*F) - d; end % theta_f1+1,n1
-      if f1>1 & ~(n1==n2 & f1==f2+1), S2 = S2 + profile_weights(f1-1+(n1-1)*F) - d; end % theta_f1-1,n1
-      if n2<N, if f1==f2 & n1==n2+1, S2 = S2 - 2*d; else, S2 = S2 - profile_weights(f2+n2*F); end; end       % theta_f2,n2+1
-      if n2>1, if f1==f2 & n1+1==n2, S2 = S2 - 2*d; else, S2 = S2 - profile_weights(f2+(n2-2)*F); end; end   % theta_f2,n2-1
-      if f2<F, if n1==n2 & f1==f2+1, S2 = S2 - 2*d; else, S2 = S2 - profile_weights(f2+1+(n2-1)*F); end; end % theta_f2+1,n2
-      if f2>1, if n1==n2 & f1+1==f2, S2 = S2 - 2*d; else, S2 = S2 - profile_weights(f2-1+(n2-1)*F); end; end % theta_f2-1,n2
+      if n1<N && ~(f1==f2 && n1+1==n2), S2 = S2 + profile_weights(f1+n1*F) - d; end       % theta_f1,n1+1
+      if n1>1 && ~(f1==f2 && n1==n2+1), S2 = S2 + profile_weights(f1+(n1-2)*F) -d ; end   % theta_f1,n1-1
+      if f1<F && ~(n1==n2 && f1+1==f2), S2 = S2 + profile_weights(f1+1+(n1-1)*F) - d; end % theta_f1+1,n1
+      if f1>1 && ~(n1==n2 && f1==f2+1), S2 = S2 + profile_weights(f1-1+(n1-1)*F) - d; end % theta_f1-1,n1
+      if n2<N, if f1==f2 && n1==n2+1, S2 = S2 - 2*d; else S2 = S2 - profile_weights(f2+n2*F); end; end       % theta_f2,n2+1
+      if n2>1, if f1==f2 && n1+1==n2, S2 = S2 - 2*d; else S2 = S2 - profile_weights(f2+(n2-2)*F); end; end   % theta_f2,n2-1
+      if f2<F, if n1==n2 && f1==f2+1, S2 = S2 - 2*d; else S2 = S2 - profile_weights(f2+1+(n2-1)*F); end; end % theta_f2+1,n2
+      if f2>1, if n1==n2 && f1+1==f2, S2 = S2 - 2*d; else S2 = S2 - profile_weights(f2-1+(n2-1)*F); end; end % theta_f2-1,n2
       %%% S3: constant term
       S3 = sum(R1.^2) + R2 + R3 + R_const;
       %%% calculation and clipping of theta2 and theta1
@@ -385,14 +394,15 @@ while 1
       % update thetas and objective value
       profile_weights(q) = theta1_new;
       profile_weights(p) = theta2_new;
-      fval(end+1) = quad_fun(theta2_new, S1, 2*S2, S3);
+      cnt = cnt + 1;
+      fval(cnt) = quad_fun(theta2_new, S1, 2*S2, S3);
       tmp_pw = reshape(profile_weights, F, N);
       tmp_profiles(tp_idx) = tmp_pw(:,tscp_len_bin);
       obj_alt = sum((exon_feat*tmp_profiles.*seq_coeff*weights'-coverage).^2) + R_const + sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
-      assert(abs(fval(end)-obj_alt)<1e-3); % objective should be indentical to not-expanded objective
+      assert(abs(fval(cnt)-obj_alt)<1e-3); % objective should be indentical to not-expanded objective
     end
   end
-  assert(all(fval(1:end-1)-fval(2:end)>-1e-3)); % objective should decrease at every step
+  assert(all(fval(1:cnt-1)-fval(2:cnt)>-1e-3)); % objective should decrease at every step
   profile_weights = reshape(profile_weights, F, N);
   %figure(iter); plot(profile_weights); ylim([0 10]);
   %plot(iter, fval(end), 'x');
@@ -409,7 +419,7 @@ while 1
       %midx = midx(ridx);
       for m = midx,
         ii = ii + 1;
-        %fprintf('%3.2f\r', 100*ii/sum([1:S-1]));
+        fprintf('%3.2f\r', 100*ii/sum([1:S-1]));
         beta1 = seq_weights(m);
         beta2 = seq_weights(k);
         d = beta1 + beta2;
@@ -446,16 +456,18 @@ while 1
         % update betas and objective value
         seq_weights(m) = beta1_new;
         seq_weights(k) = beta2_new;
-        fval(end+1) = quad_fun(beta2_new, S1, 2*S2, S3);
+        cnt = cnt + 1;
+        fval(cnt) = quad_fun(beta2_new, S1, 2*S2, S3);
         tmp_seq_weights(ts_idx) = repmat(seq_weights, T, 1);
         obj_alt = sum((exon_mask.*(seq_feat*tmp_seq_weights)*weights'-coverage).^2) + R_const;
         %%% CHECK THIS! %%%
-        assert(abs(fval(end)-obj_alt)<1); % objective should be indentical to not-expanded objective
+        assert(abs(fval(cnt)-obj_alt)<1); % objective should be indentical to not-expanded objective
       end
     end
-    assert(all(fval(1:end-1)-fval(2:end)>-1e-3)); % objective should decrease at every step
+    assert(all(fval(1:cnt-1)-fval(2:cnt)>-1e-3)); % objective should decrease at every step
     %plot_sequence_weights(seq_weights, CFG.RR.order, 2*CFG.RR.half_win_size);
   end
+  assert(cnt==num_opt_steps);
   
   if CFG.norm_seqbias
     norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N), seq_weights_old'] - [weights, reshape(profile_weights,1,F*N), seq_weights']);
@@ -463,9 +475,10 @@ while 1
     norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N)] - [weights, reshape(profile_weights,1,F*N)]);
   end
   if fval_old(end)>=fval(end), sg = '-'; else sg = '+'; end
-  if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\t%s\t%.1f\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/sum([1:sum(pw_nnz)-1]), toc); end
+  if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\t%s\t%.1f\t%.1f\n', iter, fval(end), norm_weights, sg, 100/2*num_changed/num_opt_steps, toc); end
+  
   %if CFG.VERBOSE>1, fprintf(1, '%i\t%.3d\t%.3d\n', iter, fval(end), norm_weights); end
-  if norm(fval_old-fval)<eps | norm_weights<eps | iter >= CFG.max_iter
+  if norm(fval_old-fval)<eps || norm_weights<eps || iter >= CFG.max_iter
     break;
   end
   %if iter>15, keyboard; end
