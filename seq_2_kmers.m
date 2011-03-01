@@ -26,7 +26,7 @@ acgt = 'ACGT';
 num_nt = length(acgt);
 
 % determine number of k-mer occurences in whole sequence
-offset_all = 0;
+offset_all = zeros(1, order+1);
 for o = 1:order,
   offset_all(o+1) = offset_all(o) + num_nt^o;
 end
@@ -43,7 +43,7 @@ for o = 2:order,
 end
 
 % save number of k-mer occurences per subsequence for each position
-offset = 0;
+offset = zeros(1, order+1);
 for o = 1:order,
   offset(o+1) = offset(o) + (win_size-o+1) * num_nt^o;
 end
