@@ -1,5 +1,5 @@
-function [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, max_iter, weights0, reg)
-%[weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, max_iter, weights0, reg)
+function [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, C_I, R_const, max_iter, weights0, reg)
+%[weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, C_I, R_const, max_iter, weights0, reg)
 %
 % -- input --
 % CFG: configuration struct
@@ -8,6 +8,7 @@ function [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask
 % intron_count: vector of observed intron confirmation
 % intron_mask: IxT matrix defining whether an intron belongs to a particular transcript
 % C_w: regularisation parameter per transcript (T x 1)
+% C_I: paremeter weighting intron deviation
 % R_const: constant residue
 % max_iter: maximal number of iterations (optional)
 % weights0: initialisation values of the weights (optional)
@@ -55,13 +56,13 @@ if T==1
   RI = -intron_count;
   switch reg
    case 'L1'
-    S1 = sum(exon_mask(:,1).^2); if I>0, S1 = S1 + sum(intron_mask(:,1).^2); end
-    S2 = 2*sum(exon_mask(:,1)'*RE) + C_w(1); if I>0, S2 = S2+2*sum(intron_mask(:,1)'*RI); end
-    S3 = sum(RE.^2) + R_const; if I>0, S3 = S3 + sum(RI.^2); end
+    S1 = sum(exon_mask(:,1).^2); if I>0, S1 = S1 + C_I*sum(intron_mask(:,1).^2); end
+    S2 = 2*sum(exon_mask(:,1)'*RE) + C_w(1); if I>0, S2 = S2+2*C_I*sum(intron_mask(:,1)'*RI); end
+    S3 = sum(RE.^2) + R_const; if I>0, S3 = S3 + C_I*sum(RI.^2); end
    case 'L2'
-    S1 = sum(exon_mask(:,1).^2) + C_w(1); if I>0, S1 = S1 + sum(intron_mask(:,1).^2); end
-    S2 = 2*sum(exon_mask(:,1)'*RE); if I>0, S2 = S2+2*sum(intron_mask(:,1)'*RI); end
-    S3 = sum(RE.^2) + R_const; if I>0, S3 = S3 + sum(RI.^2); end
+    S1 = sum(exon_mask(:,1).^2) + C_w(1); if I>0, S1 = S1 + C_I*sum(intron_mask(:,1).^2); end
+    S2 = 2*sum(exon_mask(:,1)'*RE); if I>0, S2 = S2+2*C_I*sum(intron_mask(:,1)'*RI); end
+    S3 = sum(RE.^2) + R_const; if I>0, S3 = S3 + C_I*sum(RI.^2); end
   end
   w_new = -0.5*S2/S1;
   % clipping of w_t
@@ -82,13 +83,13 @@ else
       if I>0, RI = intron_mask(:,idx_wo_t)*weights(idx_wo_t)'-intron_count; end
       switch reg
        case 'L1'
-        S1 = sum(exon_mask(:,t).^2); if I>0, S1 = S1 + sum(intron_mask(:,t).^2); end
-        S2 = 2*sum(exon_mask(:,t)'*RE) + C_w(t); if I>0, S2 = S2+2*sum(intron_mask(:,t)'*RI); end
-        S3 = sum(RE.^2) + R_const + abs(weights(idx_wo_t))*C_w(idx_wo_t); if I>0, S3 = S3 + sum(RI.^2); end
+        S1 = sum(exon_mask(:,t).^2); if I>0, S1 = S1 + C_I*sum(intron_mask(:,t).^2); end
+        S2 = 2*sum(exon_mask(:,t)'*RE) + C_w(t); if I>0, S2 = S2+2*C_I*sum(intron_mask(:,t)'*RI); end
+        S3 = sum(RE.^2) + R_const + abs(weights(idx_wo_t))*C_w(idx_wo_t); if I>0, S3 = S3 + C_I*sum(RI.^2); end
        case 'L2'
-        S1 = sum(exon_mask(:,t).^2) + C_w(t); if I>0, S1 = S1 + sum(intron_mask(:,t).^2); end
-        S2 = 2*sum(exon_mask(:,t)'*RE); if I>0, S2 = S2+2*sum(intron_mask(:,t)'*RI); end
-        S3 = sum(RE.^2) + R_const + weights(idx_wo_t).^2*C_w(idx_wo_t); if I>0, S3 = S3 + sum(RI.^2); end
+        S1 = sum(exon_mask(:,t).^2) + C_w(t); if I>0, S1 = S1 + C_I*sum(intron_mask(:,t).^2); end
+        S2 = 2*sum(exon_mask(:,t)'*RE); if I>0, S2 = S2+2*C_I*sum(intron_mask(:,t)'*RI); end
+        S3 = sum(RE.^2) + R_const + weights(idx_wo_t).^2*C_w(idx_wo_t); if I>0, S3 = S3 + C_I*sum(RI.^2); end
       end
       w_new = -0.5*S2/S1;
       % clipping of w_t

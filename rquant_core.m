@@ -31,7 +31,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-%genes = genes(1:40);
+%genes = genes(1:200);
 
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
@@ -57,6 +57,7 @@ for g = 1:length(genes),
 end
 CFG.transcript_len_ranges
 
+
 CFG
 fprintf(1,'using %i genes (deleted %i)\n\n', length(genes), num_del);
 clear num_del;
@@ -65,6 +66,9 @@ clear num_del;
 if CFG.load_profiles,
   fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
   load(CFG.profiles_fn, 'profile_weights');
+  if CFG.norm_seqbias
+    load(CFG.profiles_fn, 'seq_weights');
+  end
   %load(CFG.profiles_fn, 'RES');
   %profile_weights = RES{end-1}.profile_weights;
   if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
@@ -84,9 +88,11 @@ else
   x = linspace(0, 0.5, CFG.num_intron_plifs);
   intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));  
 end
-  
-%keyboard
-if CFG.learn_profiles
+profile_weights(profile_weights(:,end)==0, end) = 1; % fixes 0-weights in last bin that were not learned because of too little data
+profile_weights
+
+
+if CFG.learn_profiles & ~CFG.load_profiles
   fprintf(1, '\nDetermining profile');
   if CFG.norm_seqbias
     fprintf(1, ' and sequence bias...\n\n');
@@ -113,12 +119,16 @@ if CFG.learn_profiles
   end
   profile_genes = profile_genes(profile_genes_idx);
   ridx = randperm(length(profile_genes));
-  num_exm = min(length(profile_genes), 20);
+  num_exm = min(length(profile_genes), 500);
   profile_genes = profile_genes(ridx(1:num_exm));
   fprintf('using %i genes for profile learning\n', length(profile_genes));
   [profile_weights, obj, seq_weights] = opt_profiles_smo(CFG, profile_genes);
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
-  save(save_fname, 'profile_genes', 'profile_weights', 'seq_weights', 'CFG');
+  if CFG.norm_seqbias
+    save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
+  else
+    save(save_fname, 'CFG', 'profile_genes', 'profile_weights');
+  end
   return
 end
   
@@ -127,6 +137,9 @@ fprintf(1, '\nDetermining transcript weights...\n');
 PAR.CFG = CFG;
 PAR.profile_weights = profile_weights;
 PAR.intron_dists = intron_dists;
+if CFG.norm_seqbias
+  PAR.seq_weights = seq_weights;
+end
 if CFG.use_rproc
   num_genes_per_job = ceil(length(genes)/CFG.rproc_num_jobs);
   JOB_INFO = rproc_empty(CFG.rproc_num_jobs);
@@ -190,6 +203,10 @@ else
     save_fname = strrep(CFG.out_fn, '.mat', '_rquant.mat');
   end
 end
-save(save_fname, 'CFG', 'genes', 'profile_weights');
+if CFG.norm_seqbias
+  save(save_fname, 'CFG', 'genes', 'profile_weights', 'seq_weights');
+else
+  save(save_fname, 'CFG', 'genes', 'profile_weights');
+end
 
 fprintf(1, '\n\nFinished transcript quantitation.\n');

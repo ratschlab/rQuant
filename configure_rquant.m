@@ -33,23 +33,22 @@ end
 CFG.method = 'pos'; % 'pos' or 'seg'
 CFG.paired = 0;
 % regularisation strength in transcript weight optimisation
-CFG.C1 = 1;
-CFG.C1_set = [0.001];
-CFG.C1_loss_frac_target = 0.3;
+CFG.C_I = 10*75/2;
+CFG.C_F = 100;
+CFG.C_N = 1;
 
 %%%%% sequence bias normalisation
 CFG.norm_seqbias = 1;
-CFG.RR.seq_norm_weights = [];
-CFG.RR.half_win_size = 20;
+CFG.RR.half_win_size = 10;
 CFG.RR.num_train_frac = 0.8;
-CFG.RR.order = 2;
+CFG.RR.order = 1;
 CFG.RR.lambda = 1e-2;
 
 %%%%% profile learning
 % enables loading of profiles from CFG.profiles_fn
 CFG.load_profiles = 0;
 %%%%% number of iterations %%%%%
-CFG.max_iter = 50;
+CFG.max_iter = 10;
 % number of plifs for profile functions
 CFG.num_plifs = 50;
 % maximal number of positions to be considered at both transcript ends
