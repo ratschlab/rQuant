@@ -17,35 +17,25 @@ function genes = opt_transcripts_caller(PAR)
 %     genes: struct defining genes with start, stops, exons etc.
 %     profile_weights: weights of profile functions
 %     intron_dists: distances to closest intron
+%     seq_weights: weights for sequence normalisation
 %
 % -- output --
 % genes: struct with additional fields of eg. estimated transcript weights
+
 
 CFG = PAR.CFG;
 genes = PAR.genes;
 profile_weights = PAR.profile_weights;
 intron_dists = PAR.intron_dists;
+if CFG.norm_seqbias
+  seq_weights = PAR.seq_weights;
+end
 clear PAR;
 
 %%%% paths
 addpath(CFG.paths);
 
 if CFG.VERBOSE>0, tic; end
-
-if 0  
-switch CFG.optimizer
- case 'cplex'
-  lpenv = cplex_license(0,1);
-  if lpenv==0
-    fprintf(1, '\n no cplex licence, using mosek\n');
-    CFG.optimizer = 'mosek';
-  else
-    CFG.optimizer = 'cplex';
-  end
- otherwise
-  lpenv = 0;
-end
-end
 
 genes(1).mean_ec = [];
 genes(1).transcript_weights = [];
@@ -115,10 +105,8 @@ for c = chr_num,
       else
         rev_idx = size(profile_weights,1):-1:1;
       end
-      exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t));
-      %exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
       % normalise profile for sequence biases (depending on transcript sequence)
-      if CFG.norm_seqbias && ~isempty(CFG.RR.seq_norm_weights),
+      if CFG.norm_seqbias
         tidx = [];
         for e = 1:size(gene.exons{t},1),
           tidx = [tidx, gene.exons{t}(e,1):gene.exons{t}(e,2)];
@@ -126,10 +114,13 @@ for c = chr_num,
         end
         [tmp1 idx_exon_t tmp2]= intersect(gene.eidx, tidx);
         assert(isequal(tmp2,[1:length(tidx)]));
-        tmp_X = gen_sequence_features(CFG, genes(g), t);
-        exon_mask(idx_exon_t, t) = norm_sequence(CFG, tmp_X);
-        clear tmp_X;
+        seq_coeff = ones(gene.exonic_len, 1);
+        seq_coeff(idx_exon_t, 1) = gen_sequence_features(CFG, genes(g), t)' * seq_weights;
+        exon_mask(:,t) = (gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t))) .* seq_coeff;
+      else
+        exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t));
       end
+      %exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
     end
     
     %%%%% prepare intron mask %%%%%
@@ -187,7 +178,7 @@ for c = chr_num,
     end
     
     CFG.VERBOSE = 1;
-    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length');
+    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length', CFG.C_I);
     genes(g).transcript_weights = weights;
     genes(g).obj = obj;
   end
