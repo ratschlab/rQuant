@@ -25,15 +25,15 @@ I = size(intron_mask,1); % number of introns
 
 exon_count = sum(coverage,2);
 
-if nargin<7
+if nargin<8
   R_const = 0;
 end
 
-if nargin<8
+if nargin<9
   max_iter = 1e100;
 end
 
-if nargin<9
+if nargin<10
   weights = full(mean(coverage)/T*ones(1,T));
 else
   weights = weights0;
