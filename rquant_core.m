@@ -31,7 +31,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-%genes = genes(1:200);
+genes = genes(1:1000);
 
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
@@ -122,7 +122,8 @@ if CFG.learn_profiles & ~CFG.load_profiles
   num_exm = min(length(profile_genes), 500);
   profile_genes = profile_genes(ridx(1:num_exm));
   fprintf('using %i genes for profile learning\n', length(profile_genes));
-  [profile_weights, obj, seq_weights] = opt_profiles_smo(CFG, profile_genes);
+  [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes);
+  %[profile_weights, obj, seq_weights] = opt_density_smo(CFG, profile_genes);
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
   if CFG.norm_seqbias
     save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
