@@ -95,18 +95,18 @@ while 1
     % coupling constraints
     if n1<N, S1 = S1 + CFG.C_N; end
     if n1>1, S1 = S1 + CFG.C_N; end
-    if f1<F, S1 = S1 + CGF.C_F; end
-    if f1>1, S1 = S1 + CGF.C_F; end
+    if f1<F, S1 = S1 + CFG.C_F; end
+    if f1>1, S1 = S1 + CFG.C_F; end
     assert(S1>0); % condition for minimum (2nd derivative > 0)
     %%% S2: residue of linear term
     S2 = 2*sum(Rth'*R1);
     % coupling constraints
     if n1<N, S2 = S2 - 2*CFG.C_N*profile_weights(f1+n1*F); end
     if n1>1, S2 = S2 - 2*CFG.C_N*profile_weights(f1+(n1-2)*F); end
-    if f1<F, S2 = S2 - 2*CGF.C_F*profile_weights(f1+1+(n1-1)*F); end
-    if f1>1, S2 = S2 - 2*CGF.C_F*profile_weights(f1-1+(n1-1)*F); end
+    if f1<F, S2 = S2 - 2*CFG.C_F*profile_weights(f1+1+(n1-1)*F); end
+    if f1>1, S2 = S2 - 2*CFG.C_F*profile_weights(f1-1+(n1-1)*F); end
     %%% S3: constant term
-    S3 = sum(R1.^2) + CFG.C_N*R2 + CGF.C_F*R3 + R_const;
+    S3 = sum(R1.^2) + CFG.C_N*R2 + CFG.C_F*R3 + R_const;
     %%% calculation and clipping of theta
     th_new = -0.5*S2/S1;
     if th_new < 0
@@ -118,9 +118,9 @@ while 1
     tmp_pw = reshape(profile_weights, F, N);
     tmp_profiles(tp_idx) = tmp_pw(:,tscp_len_bin);
     if CFG.norm_seqbias
-      obj_alt = sum((exon_feat*tmp_profiles.*seq_coeff*weights'-coverage).^2) + R_const + CFG.C_N*sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + CGF.C_F*sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
+      obj_alt = sum((exon_feat*tmp_profiles.*seq_coeff*weights'-coverage).^2) + R_const + CFG.C_N*sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + CFG.C_F*sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
     else
-      obj_alt = sum((exon_feat*tmp_profiles*weights'-coverage).^2) + R_const + CFG.C_N*sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + CGF.C_F*sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
+      obj_alt = sum((exon_feat*tmp_profiles*weights'-coverage).^2) + R_const + CFG.C_N*sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + CFG.C_F*sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
     end
     assert(abs(fval(cnt)-obj_alt)<1e-3); % objective should be indentical to not-expanded objective
     cnt = cnt + 1;
