@@ -32,10 +32,6 @@ end
 % method to determine transcript weights 
 CFG.method = 'pos'; % 'pos' or 'seg'
 CFG.paired = 0;
-% regularisation strength in transcript weight optimisation
-CFG.C_I = 10*75/2;
-CFG.C_F = 100;
-CFG.C_N = 1;
 
 %%%%% sequence bias normalisation
 CFG.norm_seqbias = 1;
@@ -48,7 +44,7 @@ CFG.RR.lambda = 1e-2;
 % enables loading of profiles from CFG.profiles_fn
 CFG.load_profiles = 0;
 %%%%% number of iterations %%%%%
-CFG.max_iter = 10;
+CFG.max_iter = 100;
 % number of plifs for profile functions
 CFG.num_plifs = 50;
 % maximal number of positions to be considered at both transcript ends
