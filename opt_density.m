@@ -11,6 +11,7 @@ function [profile_weights, obj, seq_weights] = opt_density(CFG, genes)
 % seq_weights: weights for sequence normalisation
 
 
+if 0
 T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
 P_all = P;
@@ -39,12 +40,15 @@ for g = 1:length(genes),
 end
 
 %%%%% pre-processing %%%%%
-coverage = sparse(P, 1);
-exon_feat = sparse(P, F*T); % stores exon features from all transcripts in profile gene set
+coverage = zeros(P, 1);
+exon_feat = sparse(P, T); % stores exon features from all transcripts in profile gene set
+exon_feat_val = zeros(P, 1);
+exon_feat_row = [1:P]';
+exon_feat_col = zeros(P, 1);
 intron_count = zeros(I, 1);
 intron_mask = zeros(I, T);
 mask = true(P, 1); 
-ci = 0; cj = 0; ct = 0; cn = 0;
+ci = 0; ct = 0; cn = 0;
 if CFG.norm_seqbias
   cs = 0;
   seq_feat = sparse(P, S*T); % encoded sequence features
@@ -56,7 +60,7 @@ if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
-  %fprintf('%i\r', g);
+  fprintf('%i\r', g);
   try
     if CFG.norm_seqbias
       [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
@@ -74,10 +78,12 @@ for g = 1:length(genes),
   weights(ct+[1:Tg]) = full(mean(coverage(ci+[1:genes(g).exonic_len]))/Tg*ones(1,Tg));
   for t = 1:length(genes(g).transcripts),
     % exon features
-    exon_feat(ci+[1:genes(g).exonic_len], cj+[1:F]) = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
+    [exon_feat(ci+[1:genes(g).exonic_len], ct+1), tmp_exon_feat_val] = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
+    exon_feat_val(ci+[1:genes(g).exonic_len]) = tmp_exon_feat_val + F*ct; % transformation to linear indices
+    exon_feat_col(ci+[1:genes(g).exonic_len]) = ct+1;
     genes(g).transcript_len_bin(t) = find(CFG.transcript_len_ranges(:,1) <= genes(g).transcript_length(t) & ...
                                           CFG.transcript_len_ranges(:,2) >= genes(g).transcript_length(t));
-    cj = cj + F;
+    clear tmp_exon_feat_val;
   end
   % sequence features
   if CFG.norm_seqbias
@@ -86,7 +92,7 @@ for g = 1:length(genes),
       tmp_X = gen_sequence_features(CFG, genes(g), t);
       %[tmp_X tmp_Y tmp_Y_bg] = gen_sequence_features(CFG, genes(g), t);
       assert(size(tmp_X,1)==S);
-      assert(size(tmp_X,2)==genes(g).exonic_len);
+      assert(size(tmp_X,2)<=genes(g).exonic_len);
       seq_feat(ci+[1:size(tmp_X,2)], cs+[1:S]) = tmp_X';
       cs = cs + S;
     end
@@ -127,8 +133,7 @@ CFG.VERBOSE = tmp_VERBOSE;
 if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
 tscp_len_bin = [genes.transcript_len_bin];
 % find thetas that do not need to be optimised (located in the body of the profile function)
-lmt = linspace(0, sqrt(CFG.max_side_len), (F/2)+1).^2;
-lmt(end) = inf;
+lmt = get_limits(CFG.max_side_len, F/2);
 pw_nnz = false(F, N);
 %max_tl = max([genes.transcript_length]);
 %if max_tl<CFG.transcript_len_ranges(N,1)
@@ -157,6 +162,9 @@ if any(~mask),
   P = length(subs_idx);
   coverage = coverage(subs_idx, :);
   exon_feat = exon_feat(subs_idx, :);
+  exon_feat_val = exon_feat_val(subs_idx, 1);
+  exon_feat_row = [1:P]';
+  exon_feat_col = exon_feat_col(subs_idx, 1);
   if CFG.norm_seqbias
     seq_feat = seq_feat(subs_idx, :);
     %seq_target = seq_target(:, subs_idx);
@@ -164,6 +172,17 @@ if any(~mask),
   end
   if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
+end
+save('~/tmp/test_workspace4.mat');
+else
+CFG_tmp = CFG;
+load('~/tmp/test_workspace4.mat');
+CFG = CFG_tmp;
+CFG.norm_seqbias = CFG_tmp.norm_seqbias;
+CFG.C_I = CFG_tmp.C_I;
+CFG.C_F = CFG_tmp.C_F;
+CFG.C_N = CFG_tmp.C_N;
+clear CFG_tmp;
 end
 
 if 0
@@ -182,9 +201,20 @@ tmp2 = repmat([diff diff(end:-1:1)]', 1, N);
 tmp3 = tmp1./tmp2;
 pw_nnz(tmp3<(median(tmp3(tmp3>0))-std(tmp3(tmp3>0))) & tmp1>0) = false;
 clear tmp1 tmp2 tmp3 diff;
-pw_nnz
+else
+pw_nnz = false(F, N);
+for n = 1:N,
+  fidx = find(CFG.transcript_len_ranges(n,2)/2>lmt, 1, 'last');
+  pw_nnz([1:fidx+1, F-fidx:F],n) = true;
 end
+end
+pw_nnz
 
+out_dir = sprintf('%s/tmp/', CFG.out_dir);
+if ~exist(out_dir ,'dir'),
+  [s m mid] = mkdir(out_dir);
+  assert(s);
+end
 
 %%%%% optimisation %%%%%
 eps = 1e-2;
@@ -194,10 +224,10 @@ weights_old = zeros(1,T);
 if CFG.norm_seqbias
   seq_weights = ones(S,1);
   seq_weights_old = zeros(S, 1);
-  num_opt_steps = 4;
+  num_opt_steps = 3;
 else
   seq_weights = nan;
-  num_opt_steps = 3;
+  num_opt_steps = 2;
 end
 profile_weights = zeros(F, N);
 profile_weights(pw_nnz) = 1;
@@ -230,8 +260,6 @@ while 1
   end
   lambda_old = lambda;
   % pre-computations
-  tmp_profiles = sparse(F*T,T);
-  tmp_profiles(tp_idx) = profile_weights(:,tscp_len_bin);
   if CFG.norm_seqbias
     tmp_seq_weights = sparse(S*T,T);
     tmp_seq_weights(ts_idx) = repmat(seq_weights, T, 1);
@@ -239,13 +267,12 @@ while 1
   else
     seq_coeff = [];
   end
-  cnt = 1;  
-    
+  cnt = 1;
+  
   %%%%% A. optimise transcript weights
+  exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col);
   if CFG.norm_seqbias
-    exon_mask = exon_feat*tmp_profiles.*seq_coeff;
-  else
-    exon_mask = exon_feat*tmp_profiles;
+    exon_mask = exon_mask.*seq_coeff;
   end
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
@@ -263,16 +290,14 @@ while 1
   CFG.VERBOSE = 0;
   CFG.C_F = 1/lambda^2*CFG.C_F;
   CFG.C_N = 1/lambda^2*CFG.C_N;
-  [profile_weights, fval(cnt)] = opt_profiles_descent(CFG, profile_weights, exon_feat, tmp_profiles, weights, coverage, seq_coeff, R_const, tscp_len_bin);
+  [profile_weights, fval(cnt)] = opt_profiles_descent(CFG, profile_weights, pw_nnz, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const);
   assert(fval(cnt-1)-fval(cnt)>-1e-3);
   cnt = cnt + 1;
   CFG.VERBOSE = tmp_VERBOSE;
-  tmp_profiles = sparse(F*T,T);
-  tmp_profiles(tp_idx) = profile_weights(:,tscp_len_bin);
   
   %%%%% C. optimise sequence weights
   if CFG.norm_seqbias
-    exon_mask = exon_feat*tmp_profiles;
+    exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col);
     R_const = abs(weights)*(lambda*C_w) + 1/lambda^2*(CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
     if size(intron_mask,1)>0, R_const = R_const + CFG.C_I*sum((lambda*intron_mask*weights'-intron_count).^2); end
     tmp_VERBOSE = CFG.VERBOSE;
@@ -284,6 +309,7 @@ while 1
     %plot_sequence_weights(seq_weights, CFG.RR.order, 2*CFG.RR.half_win_size);
   end
   
+  if 0
   %%%% D. optimise regularisation parameters
   R1 = abs(weights)*C_w;
   R2 = CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2));
@@ -304,6 +330,7 @@ while 1
   end
   fval(cnt) = fval(cnt) + abs(weights)*(lambda*C_w) + 1/lambda^2*(CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
   if size(intron_mask,1)>0, fval(cnt) = fval(cnt) + CFG.C_I*sum((lambda*intron_mask*weights'-intron_count).^2); end
+  end
   
   %%%%% convergence criteria
   if CFG.norm_seqbias
@@ -317,10 +344,19 @@ while 1
   if norm(fval_old-fval)<eps || norm_weights<eps || iter >= CFG.max_iter
     break;
   end
-  %if iter>50, keyboard; end
-  save(sprintf('~/tmp/test2/iter%i.mat', iter), 'profile_weights', 'weights', 'lambda', 'seq_weights');
+  profile_weights
+  if iter>10, keyboard; end
+  %save(sprintf('%siter%i.mat', out_dir, iter), 'profile_weights', 'weights', 'lambda', 'seq_weights');
   iter = iter + 1;
 end
 if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
+
+% normalise weights
+if 0
+for n = 1:N,
+  profile_weights(:,n) = profile_weights(:,n)./norm(profile_weights(:,n));
+end
+seq_weights  = seq_weights./norm(seq_weights);
+end
 
 obj = fval(end);

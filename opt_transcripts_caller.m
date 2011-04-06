@@ -105,6 +105,12 @@ for c = chr_num,
       else
         rev_idx = size(profile_weights,1):-1:1;
       end
+      % evaluate profile PLiFs for each exonic position
+      [feat feat_val] = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len);
+      fidx = find(feat_val>0);
+      feat = feat(fidx,:);
+      feat_val = feat_val(fidx,:);
+      exon_mask(fidx,t) = gen_exon_mask(profile_weights(rev_idx,:), gene.transcript_len_bin(t), feat, feat_val, [1:length(fidx)]', ones(length(fidx),1));
       % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias
         tidx = [];
@@ -116,9 +122,7 @@ for c = chr_num,
         assert(isequal(tmp2,[1:length(tidx)]));
         seq_coeff = ones(gene.exonic_len, 1);
         seq_coeff(idx_exon_t, 1) = gen_sequence_features(CFG, genes(g), t)' * seq_weights;
-        exon_mask(:,t) = (gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t))) .* seq_coeff;
-      else
-        exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * profile_weights(rev_idx, gene.transcript_len_bin(t));
+        exon_mask(:,t) = exon_mask(:,t) .* seq_coeff;
       end
       %exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
     end

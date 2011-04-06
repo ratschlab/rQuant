@@ -1,17 +1,18 @@
-function [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, exon_feat, tmp_profiles, weights, coverage, seq_coeff, R_const, tscp_len_bin)
-% [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, exon_feat, tmp_profiles, weights, coverage, seq_coeff, R_const, tscp_len_bin)
+function [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, pw_nnz, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const)
+% [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const)
 %
 % -- input --
 % CFG: configuration struct
 % profile_weights: weights of profile functions
+% tscp_len_bin: vector of length bins for each transcript
 % exon_feat: P x num_bins matrix of features for P exonic positions
-% tmp_profiles: F*T x T matrix of profile weights for each transcript
+% exon_feat_val: vector of indices to supporting points
+% exon_feat_row: vector of row indices for sparse P x T matrix (position index)
+% exon_feat_col: vector column indices for sparse P x T matrix (transcript index)
 % weights: weights of transcripts
 % coverage: vector of observed exon coverage
 % seq_coeff: vector of sequence correction
 % R_const: constant residue
-% tscp_len_bin: vector of length bins for each transcript
-% 
 %
 % -- output --
 % profile_weights: weights of profile functions
@@ -32,7 +33,27 @@ max_iter = 1;
 profile_weights = reshape(profile_weights, 1, F*N);
 profile_weights_old = zeros(1, F*N);
 
-pidx = find(profile_weights(1:N*F));
+pidx = find(pw_nnz);
+
+% adjacent supporting points
+p_adj_f = zeros(2, F*N);
+p_adj_f(1,:) = 0:F*N-1;
+p_adj_f(1,1+F*[0:N-1]) = p_adj_f(1,2+F*[0:N-1]);
+fidx = find((~pw_nnz))+1;
+for f = 1:length(fidx),
+  p_adj_f(1,fidx(f)) = p_adj_f(1,fidx(f)-1);
+end
+p_adj_f(2,:) = 2:F*N+1;
+p_adj_f(2,F+F*[0:N-1]) = p_adj_f(2,F-1+F*[0:N-1]);
+fidx = find(~pw_nnz)-1;
+for f = length(fidx):-1:1,
+  p_adj_f(2,fidx(f)) = p_adj_f(2,fidx(f)+1);
+end
+
+% adjacent transcript length bins
+%p_adj_n = zeros(2, F*N);
+%p_adj_n(2,:) = (F+1):F*(N+1);
+%p_adj_n(2,F*N-F+1:F*N) = p_adj_n(2,F*(N-2)+1:F*(N-1)); 
 
 fval = 1e100*ones(1, length(pidx));
 fval_old = zeros(1, length(pidx));
@@ -45,68 +66,96 @@ while 1
   profile_weights_old = profile_weights;
   fval_old = fval;
   for p = pidx,
+    %fprintf('%i\r', p);
     f1 = mod(p,F); if f1==0, f1 = F; end
     n1 = ceil(p/F);
-    idx_w_n = find(tscp_len_bin==n1);         % all transcripts in length bin n
-    idx_w_th = f1+(idx_w_n-1)*F;              % entries corresponding to theta
-    idx_wo_n = find(tscp_len_bin~=n1);        % all transcripts not in 1
-    idx_w_th_wo_n = f1+(idx_wo_n-1)*F;        % entries corresponding to theta_f_notn
-    idx_wo_th = setdiff([1:F*T], [f1:F:F*T]); % entries corresponding to theta_notf 
-    %%% Rth: residue for theta
-    if CFG.norm_seqbias
-      Rth = exon_feat(:,idx_w_th).*seq_coeff(:,idx_w_n)*weights(idx_w_n)';
+    % entries corresponding to theta_f_n
+    if f1==F
+      idx_w_th1 = find(mod(exon_feat_val,F)==0 & tscp_len_bin(exon_feat_col)'==n1);
     else
-      Rth = exon_feat(:,idx_w_th)*weights(idx_w_n)';
+      idx_w_th1 = find(mod(exon_feat_val,F)==f1 & tscp_len_bin(exon_feat_col)'==n1);
     end
-    %%% R1: residue for theta independent variables
-    if CFG.norm_seqbias
-      R1 = exon_feat(:,idx_w_th_wo_n)*tmp_profiles(idx_w_th_wo_n,idx_wo_n).*seq_coeff(:,idx_wo_n)*weights(idx_wo_n)' + ...
-           exon_feat(:,idx_wo_th)*tmp_profiles(idx_wo_th,:).*seq_coeff*weights' - ...
-           coverage;
+    % entries corresponding to theta_f-1_n
+    if f1==1
+      idx_w_th2 = zeros(0,1);
     else
-      R1 = exon_feat(:,idx_w_th_wo_n)*tmp_profiles(idx_w_th_wo_n,idx_wo_n)*weights(idx_wo_n)' + ...
-           exon_feat(:,idx_wo_th)*tmp_profiles(idx_wo_th,:)*weights' - ...
-           coverage;
+      idx_w_th2 = find(mod(exon_feat_val,F)==f1-1 & tscp_len_bin(exon_feat_col)'==n1);
     end
-    %%% R2: residue for coupling transcript length bins
-    R2 = 0;
-    if n1<N, R2 = R2 + profile_weights(f1+n1*F)^2; end
-    if n1>1, R2 = R2 + profile_weights(f1+(n1-2)*F)^2; end
+    % entries corresponding to theta_not(f/f-1,n)
+    idx_wo_th = setdiff(1:length(exon_feat_val), [idx_w_th1; idx_w_th2])';
+    exon_feat_ones = sparse(exon_feat_row, exon_feat_col, 1, length(exon_feat_col), T);
+    [exon_mask, exon_mask_part1, exon_mask_part2] = gen_exon_mask(reshape(profile_weights, F, N), tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col);
+    %%% Rth1: residue for theta_f_n
+    if CFG.norm_seqbias
+      Rth1 = nan;
+    else
+      Rth1 = (exon_feat_ones(idx_w_th1,:)-exon_feat(idx_w_th1,:))*weights';
+    end
+    %%% Rth2: residue for theta_f-1_n
+    if CFG.norm_seqbias
+      Rth2 = nan;
+    else
+      Rth2 = exon_feat(idx_w_th2,:)*weights';
+    end
+    %%% R1: residue for theta_f_n independent variables
+    if CFG.norm_seqbias
+      R1 = nan;
+    else
+      R1 = exon_mask_part2(idx_w_th1,:)*weights' - coverage(idx_w_th1);
+    end
+    %%% R2: residue for theta_f-1_n independent variables
+    if CFG.norm_seqbias
+      R2 = nan;
+    else
+      R2 = exon_mask_part1(idx_w_th2,:)*weights' - coverage(idx_w_th2);
+    end
+    %%% R3: residue for theta_f/f-1_n independent variables
+    if CFG.norm_seqbias
+      R3 = nan;
+    else
+      R3 = exon_mask(idx_wo_th,:)*weights' - coverage(idx_wo_th);
+    end
+    clear exon_mask exon_mask_part1 exon_mask_part2;
+    %%% R4: residue for coupling transcript length bins
+    R4 = 0;
+    if n1<N && pw_nnz(f1+n1*F), R4 = R4 + profile_weights(f1+n1*F)^2; end
+    if n1>1 && pw_nnz(f1+(n1-2)*F), R4 = R4 + profile_weights(f1+(n1-2)*F)^2; end
     for f = 1:F,
       for n = 1:N-1,
-        if f~=f1 || (f==f1 && n~=n1 && n~=n1-1)
-          R2 = R2 + (profile_weights(f+(n-1)*F)-profile_weights(f+n*F))^2;
+        if (f~=f1 || (f==f1 && n~=n1 && n~=n1-1)) && pw_nnz(f+(n-1)*F) && pw_nnz(f+n*F)
+          R4 = R4 + (profile_weights(f+(n-1)*F)-profile_weights(f+n*F))^2;
         end
       end
     end
-    %%% R3: residue for coupling supporting points
-    R3 = 0;
-    if f1<F, R3 = R3 + profile_weights(f1+1+(n1-1)*F)^2; end
-    if f1>1, R3 = R3 + profile_weights(f1-1+(n1-1)*F)^2;; end
+    %%% R5: residue for coupling supporting points
+    R5 = 0;
+    if f1<F, R5 = R5 + profile_weights(p_adj_f(2,f1+(n1-1)*F))^2; end
+    if f1>1, R5 = R5 + profile_weights(p_adj_f(1,f1+(n1-1)*F))^2; end
     for n = 1:N,
       for f = 1:F-1,
-        if n~=n1 || (n==n1 && f~=f1 && f~=f1-1)
-          R3 = R3 + (profile_weights(f+(n-1)*F)-profile_weights(f+1+(n-1)*F))^2;
+        if (n~=n1 || (n==n1 && f~=f1 && p_adj_f(2,f+(n-1)*F)~=(f1+(n-1)*F))) && pw_nnz(f+(n-1)*F)
+          %ii =[ii, [f+(n-1)*F; p_adj_f(2,f+(n-1)*F)]];
+          R5 = R5 + (profile_weights(f+(n-1)*F)-profile_weights(p_adj_f(2,f+(n-1)*F)))^2;
         end
       end
     end
     %%% S1: residue of quadratic term
-    S1 = sum(Rth.^2);
+    S1 = sum(Rth1.^2) + sum(Rth2.^2);
     % coupling constraints
-    if n1<N, S1 = S1 + CFG.C_N; end
-    if n1>1, S1 = S1 + CFG.C_N; end
+    if n1<N && pw_nnz(f1+n1*F), S1 = S1 + CFG.C_N; end
+    if n1>1 && pw_nnz(f1+(n1-2)*F), S1 = S1 + CFG.C_N; end
     if f1<F, S1 = S1 + CFG.C_F; end
     if f1>1, S1 = S1 + CFG.C_F; end
     assert(S1>0); % condition for minimum (2nd derivative > 0)
     %%% S2: residue of linear term
-    S2 = 2*sum(Rth'*R1);
+    S2 = 2*sum(Rth1'*R1) + 2*sum(Rth2'*R2);
     % coupling constraints
-    if n1<N, S2 = S2 - 2*CFG.C_N*profile_weights(f1+n1*F); end
-    if n1>1, S2 = S2 - 2*CFG.C_N*profile_weights(f1+(n1-2)*F); end
-    if f1<F, S2 = S2 - 2*CFG.C_F*profile_weights(f1+1+(n1-1)*F); end
-    if f1>1, S2 = S2 - 2*CFG.C_F*profile_weights(f1-1+(n1-1)*F); end
+    if n1<N && pw_nnz(f1+n1*F), S2 = S2 - 2*CFG.C_N*profile_weights(f1+n1*F); end
+    if n1>1 && pw_nnz(f1+(n1-2)*F), S2 = S2 - 2*CFG.C_N*profile_weights(f1+(n1-2)*F); end
+    if f1<F, S2 = S2 - 2*CFG.C_F*profile_weights(p_adj_f(2,f1+(n1-1)*F)); end
+    if f1>1, S2 = S2 - 2*CFG.C_F*profile_weights(p_adj_f(1,f1+(n1-1)*F)); end
     %%% S3: constant term
-    S3 = sum(R1.^2) + CFG.C_N*R2 + CFG.C_F*R3 + R_const;
+    S3 = sum(R1.^2) + sum(R2.^2) + sum(R3.^2) + CFG.C_N*R4 + CFG.C_F*R5 + R_const;
     %%% calculation and clipping of theta
     th_new = -0.5*S2/S1;
     if th_new < 0
@@ -116,11 +165,14 @@ while 1
     end
     fval(cnt) = quad_fun(profile_weights(p), S1, S2, S3);
     tmp_pw = reshape(profile_weights, F, N);
-    tmp_profiles(tp_idx) = tmp_pw(:,tscp_len_bin);
+    exon_mask = gen_exon_mask(reshape(profile_weights, F, N), tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col);
+    pw_nnz1 = pw_nnz; pw_nnz1(F*(N-1)+1:end) = false;
+    pw_nnz2 = pw_nnz; pw_nnz2(1:F) = false;
+    fidx = find(pw_nnz1(1:F*(N-1)) & pw_nnz2(F+1:end));
     if CFG.norm_seqbias
-      obj_alt = sum((exon_feat*tmp_profiles.*seq_coeff*weights'-coverage).^2) + R_const + CFG.C_N*sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + CFG.C_F*sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
+      obj_alt = nan;
     else
-      obj_alt = sum((exon_feat*tmp_profiles*weights'-coverage).^2) + R_const + CFG.C_N*sum(sum((tmp_pw(:,1:end-1)-tmp_pw(:,2:end)).^2)) + CFG.C_F*sum(sum((tmp_pw(1:end-1,:)-tmp_pw(2:end,:)).^2));
+      obj_alt = sum((exon_mask*weights'-coverage).^2) + R_const + CFG.C_N*sum((profile_weights(fidx)-profile_weights(fidx+F)).^2) + CFG.C_F*sum((profile_weights(pw_nnz)-profile_weights(p_adj_f(2,pw_nnz))).^2);
     end
     assert(abs(fval(cnt)-obj_alt)<1e-3); % objective should be indentical to not-expanded objective
     cnt = cnt + 1;
