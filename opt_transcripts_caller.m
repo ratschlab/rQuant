@@ -166,7 +166,7 @@ for c = chr_num,
         end
         %assert(all(any(exon_mask, 2)'));
       else
-        assert(all(any(exon_mask([1:CFG.max_side_len-1, end-CFG.max_side_len+2:end],:),2)'));
+        %assert(all(any(exon_mask([1:CFG.max_side_len-1, end-CFG.max_side_len+2:end],:),2)'));
       end  
       mask = (any(exon_mask, 2) & ~repeat_mask)';
       exon_mask = exon_mask(mask, :);

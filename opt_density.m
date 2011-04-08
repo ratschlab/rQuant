@@ -11,7 +11,6 @@ function [profile_weights, obj, seq_weights] = opt_density(CFG, genes)
 % seq_weights: weights for sequence normalisation
 
 
-if 0
 T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
 P_all = P;
@@ -62,11 +61,7 @@ CFG.VERBOSE = 0;
 for g = 1:length(genes),
   fprintf('%i\r', g);
   try
-    if CFG.norm_seqbias
-      [tmp_coverage excluded_reads reads_ok tmp_introns tmp_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
-    else
-      [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
-    end
+    [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
   catch
     reads_ok = 0;
   end
@@ -76,9 +71,9 @@ for g = 1:length(genes),
   Tg = length(genes(g).transcripts);
   % initialisation of transcript weights to proportionate mean coverage
   weights(ct+[1:Tg]) = full(mean(coverage(ci+[1:genes(g).exonic_len]))/Tg*ones(1,Tg));
-  for t = 1:length(genes(g).transcripts),
+  for t = 1:length(genes(g).transcripts), % only works for tscp_len=1
     % exon features
-    [exon_feat(ci+[1:genes(g).exonic_len], ct+1), tmp_exon_feat_val] = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
+    [exon_feat(ci+[1:genes(g).exonic_len], ct+1), tmp_exon_feat_val, feat_del_idx] = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
     exon_feat_val(ci+[1:genes(g).exonic_len]) = tmp_exon_feat_val + F*ct; % transformation to linear indices
     exon_feat_col(ci+[1:genes(g).exonic_len]) = ct+1;
     genes(g).transcript_len_bin(t) = find(CFG.transcript_len_ranges(:,1) <= genes(g).transcript_length(t) & ...
@@ -114,10 +109,11 @@ for g = 1:length(genes),
       mask(ci+idx2) = false;
     end
   end
+  mask(ci+feat_del_idx) = false;
   ci = ci + genes(g).exonic_len;
   ct = ct + length(genes(g).transcripts);
   cn = cn + length(tmp_intron_count);
-  clear tmp_introns tmp_intron_mask tmp_intron_count;
+  clear tmp_introns tmp_intron_mask tmp_intron_count feat_del_idx;
 end
 assert(P==size(exon_feat,1));
 if CFG.norm_seqbias, assert(P==size(seq_feat,1)); end
@@ -156,7 +152,7 @@ if CFG.subsample,
   clear midx ridx;
 end
 
-% exclude positions that are repetitive or subsampled
+% exclude positions that are repetitive or subsampled or not representable by PLiFs
 if any(~mask),
   subs_idx = find(mask);
   P = length(subs_idx);
@@ -172,17 +168,6 @@ if any(~mask),
   end
   if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
-end
-save('~/tmp/test_workspace4.mat');
-else
-CFG_tmp = CFG;
-load('~/tmp/test_workspace4.mat');
-CFG = CFG_tmp;
-CFG.norm_seqbias = CFG_tmp.norm_seqbias;
-CFG.C_I = CFG_tmp.C_I;
-CFG.C_F = CFG_tmp.C_F;
-CFG.C_N = CFG_tmp.C_N;
-clear CFG_tmp;
 end
 
 if 0
@@ -344,9 +329,9 @@ while 1
   if norm(fval_old-fval)<eps || norm_weights<eps || iter >= CFG.max_iter
     break;
   end
-  profile_weights
-  if iter>10, keyboard; end
-  %save(sprintf('%siter%i.mat', out_dir, iter), 'profile_weights', 'weights', 'lambda', 'seq_weights');
+  %profile_weights
+  if iter>15, keyboard; end
+  save(sprintf('%siter%i.mat', out_dir, iter), 'profile_weights', 'weights', 'lambda', 'seq_weights');
   iter = iter + 1;
 end
 if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end

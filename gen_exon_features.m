@@ -8,8 +8,8 @@
 % Copyright (C) 2009-2010 Max Planck Society
 %
 
-function [feat, idx] = gen_exon_features(gene, t, num_plifs, max_side_len, reverse_ret)
-% [feat, idx] = gen_exon_features(gene, t, num_plifs, max_side_len, reverse_ret)
+function [feat, idx, del_idx] = gen_exon_features(gene, t, num_plifs, max_side_len, reverse_ret)
+% [feat, idx, del_idx] = gen_exon_features(gene, t, num_plifs, max_side_len, reverse_ret)
 %
 % -- input --
 % gene: struct defining a gene with start, stops, exons etc.
@@ -21,6 +21,7 @@ function [feat, idx] = gen_exon_features(gene, t, num_plifs, max_side_len, rever
 % -- output --
 % feat: vector of features for P exonic positions
 % idx: vector of indices to supporting points
+% del_idx: vector of position that do not cover a whole bin
 
 if nargin<5
   reverse_ret = 0;
@@ -83,6 +84,16 @@ for b = 1:num_bins,
   end
   idx(tidx(length(tidx)-fidx+1),1) = num_bins*2+1-b+1;
 end
+
+% correct features for bins that are only partly covered by transcript positions
+midx = ceil(length(tidx)*0.5);
+bin1 = idx(midx);
+bin2 = idx(midx+1);
+idx1 = find(idx==bin1, 1, 'first');
+idx2 = find(idx==bin2, 1, 'last');
+%feat(idx1:idx2) = mean([feat(idx1:idx2), (([idx1:idx2]-idx1)./(idx2-idx1))'], 2);
+feat(idx1:idx2) = ([idx1:idx2]-idx1)./(idx2-idx1);
+del_idx = idx1:idx2;
 
 assert(all(sum(feat<=1 & feat>0, 2)==1 | sum(feat,2)==0));
 assert(size(feat,1)==length(eidx));
