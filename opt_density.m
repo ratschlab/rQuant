@@ -38,10 +38,13 @@ for g = 1:length(genes),
   clear introns;
 end
 
+profile_weights_adj = get_adj_bins(CFG);
+
 %%%%% pre-processing %%%%%
 coverage = zeros(P, 1);
 exon_feat = sparse(P, T); % stores exon features from all transcripts in profile gene set
 exon_feat_val = zeros(P, 1);
+exon_feat_val_next = zeros(P, 1);
 exon_feat_row = [1:P]';
 exon_feat_col = zeros(P, 1);
 intron_count = zeros(I, 1);
@@ -73,16 +76,16 @@ for g = 1:length(genes),
   weights(ct+[1:Tg]) = full(mean(coverage(ci+[1:genes(g).exonic_len]))/Tg*ones(1,Tg));
   for t = 1:length(genes(g).transcripts), % only works for tscp_len=1
     % exon features
-    [exon_feat(ci+[1:genes(g).exonic_len], ct+1), tmp_exon_feat_val, feat_del_idx] = gen_exon_features(genes(g), t, F, CFG.max_side_len, 1);
+    [exon_feat(ci+[1:genes(g).exonic_len], ct+1), tmp_exon_feat_val, tmp_exon_feat_val_next, feat_del_idx] = gen_exon_features(CFG, genes(g), t, 1);
     exon_feat_val(ci+[1:genes(g).exonic_len]) = tmp_exon_feat_val + F*ct; % transformation to linear indices
+    exon_feat_val_next(ci+[1:genes(g).exonic_len]) = tmp_exon_feat_val_next + F*ct;
     exon_feat_col(ci+[1:genes(g).exonic_len]) = ct+1;
     genes(g).transcript_len_bin(t) = find(CFG.transcript_len_ranges(:,1) <= genes(g).transcript_length(t) & ...
                                           CFG.transcript_len_ranges(:,2) >= genes(g).transcript_length(t));
-    clear tmp_exon_feat_val;
+    clear tmp_exon_feat_val tmp_exon_feat_val_next;
   end
   % sequence features
   if CFG.norm_seqbias
-    genes(g).num_read_starts = tmp_read_starts;
     for t = 1:length(genes(g).transcripts),
       tmp_X = gen_sequence_features(CFG, genes(g), t);
       %[tmp_X tmp_Y tmp_Y_bg] = gen_sequence_features(CFG, genes(g), t);
@@ -93,7 +96,7 @@ for g = 1:length(genes),
     end
     %seq_target(1, ci+[1:size(tmp_X,2)]) = tmp_Y;
     %seq_target_bg(1, ci+[1:size(tmp_X,2)]) = tmp_Y_bg;
-    clear tmp_read_starts tmp_X tmp_Y tmp_Y_bg;
+    clear tmp_X tmp_Y tmp_Y_bg;
   end
   % introns
   [tmp_intron_mask tmp_intron_count] = get_intron_data(genes(g), CFG, tmp_introns, g);
@@ -129,18 +132,7 @@ CFG.VERBOSE = tmp_VERBOSE;
 if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
 tscp_len_bin = [genes.transcript_len_bin];
 % find thetas that do not need to be optimised (located in the body of the profile function)
-lmt = get_limits(CFG.max_side_len, F/2);
-pw_nnz = false(F, N);
-%max_tl = max([genes.transcript_length]);
-%if max_tl<CFG.transcript_len_ranges(N,1)
-%  CFG.transcript_len_ranges(N,2) = CFG.transcript_len_ranges(N,1) + 1;
-%else
-%  CFG.transcript_len_ranges(N,2) = max_tl;
-%end
-for n = 1:N,
-  fidx = find(CFG.transcript_len_ranges(n,2)/2>lmt, 1, 'last');
-  pw_nnz([1:fidx, F-fidx+1:F],n) = true;
-end
+pw_nnz = get_included_thetas(CFG);
 
 % subsample positions
 if CFG.subsample,
@@ -159,6 +151,7 @@ if any(~mask),
   coverage = coverage(subs_idx, :);
   exon_feat = exon_feat(subs_idx, :);
   exon_feat_val = exon_feat_val(subs_idx, 1);
+  exon_feat_val_next = exon_feat_val_next(subs_idx, 1);
   exon_feat_row = [1:P]';
   exon_feat_col = exon_feat_col(subs_idx, 1);
   if CFG.norm_seqbias
@@ -169,31 +162,6 @@ if any(~mask),
   if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
 end
-
-if 0
-% exclude thetas that have too little example data
-lmt(end) = max([genes.transcript_length]);
-tmp1 = zeros(F,N);
-for n = 1:N,
-  for f = 1:F,
-    idx_w_n = find(tscp_len_bin==n);
-    idx_w_th = f+(idx_w_n-1)*F;
-    tmp1(f,n) = sum(sum(exon_feat(:,idx_w_th)));
-  end
-end
-diff = lmt(2:end)-lmt(1:end-1);
-tmp2 = repmat([diff diff(end:-1:1)]', 1, N);
-tmp3 = tmp1./tmp2;
-pw_nnz(tmp3<(median(tmp3(tmp3>0))-std(tmp3(tmp3>0))) & tmp1>0) = false;
-clear tmp1 tmp2 tmp3 diff;
-else
-pw_nnz = false(F, N);
-for n = 1:N,
-  fidx = find(CFG.transcript_len_ranges(n,2)/2>lmt, 1, 'last');
-  pw_nnz([1:fidx+1, F-fidx:F],n) = true;
-end
-end
-pw_nnz
 
 out_dir = sprintf('%s/tmp/', CFG.out_dir);
 if ~exist(out_dir ,'dir'),
@@ -217,7 +185,6 @@ end
 profile_weights = zeros(F, N);
 profile_weights(pw_nnz) = 1;
 profile_weights_old = zeros(F, N);
-pw_nnz = reshape(pw_nnz, 1, F*N);
 fval = 1e100*ones(1, num_opt_steps); % objective values
 fval_old = 0;
 iter = 1;
@@ -255,9 +222,9 @@ while 1
   cnt = 1;
   
   %%%%% A. optimise transcript weights
-  exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col);
+  exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col);
   if CFG.norm_seqbias
-    exon_mask = exon_mask.*seq_coeff;
+    exon_mask = seq_coeff.*exon_mask;
   end
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
@@ -275,14 +242,14 @@ while 1
   CFG.VERBOSE = 0;
   CFG.C_F = 1/lambda^2*CFG.C_F;
   CFG.C_N = 1/lambda^2*CFG.C_N;
-  [profile_weights, fval(cnt)] = opt_profiles_descent(CFG, profile_weights, pw_nnz, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const);
+  [profile_weights, fval(cnt)] = opt_profiles_descent(CFG, profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const);
   assert(fval(cnt-1)-fval(cnt)>-1e-3);
   cnt = cnt + 1;
   CFG.VERBOSE = tmp_VERBOSE;
   
   %%%%% C. optimise sequence weights
   if CFG.norm_seqbias
-    exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_row, exon_feat_col);
+    exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col);
     R_const = abs(weights)*(lambda*C_w) + 1/lambda^2*(CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
     if size(intron_mask,1)>0, R_const = R_const + CFG.C_I*sum((lambda*intron_mask*weights'-intron_count).^2); end
     tmp_VERBOSE = CFG.VERBOSE;
@@ -330,7 +297,7 @@ while 1
     break;
   end
   %profile_weights
-  if iter>15, keyboard; end
+  %if iter>15, keyboard; end
   save(sprintf('%siter%i.mat', out_dir, iter), 'profile_weights', 'weights', 'lambda', 'seq_weights');
   iter = iter + 1;
 end
