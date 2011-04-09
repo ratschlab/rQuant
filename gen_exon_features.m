@@ -8,23 +8,23 @@
 % Copyright (C) 2009-2010 Max Planck Society
 %
 
-function [feat, idx, del_idx] = gen_exon_features(gene, t, num_plifs, max_side_len, reverse_ret)
-% [feat, idx, del_idx] = gen_exon_features(gene, t, num_plifs, max_side_len, reverse_ret)
+function [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
+% [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
 %
 % -- input --
 % gene: struct defining a gene with start, stops, exons etc.
 % t: index of transcript
-% num_plifs: number of supporting points for PLiFs
-% max_side_len: maximal number of positions to be considered at both transcript parts
+% CFG: configuration struct with num_plifs: number of supporting points for PLiFs and
+%      max_side_len: maximal number of positions to be considered at both transcript parts
 % reverse_ret: reverse output for reverse strand
 %
 % -- output --
 % feat: vector of features for P exonic positions
-% idx: vector of indices to supporting points
+% idx: vector of indices to supporting points f
+% idx_next: vector of indices to supporting points f+1
 % del_idx: vector of position that do not cover a whole bin
 
-if nargin<5
-  reverse_ret = 0;
+if nargin<4  reverse_ret = 0;
 end
 
 offset = gene.start-1;
@@ -54,10 +54,13 @@ if reverse_ret && gene.strand=='-'
   tidx = sort(rev_idx(tidx));
 end
 
+eidx2tidx = zeros(1, length(eidx));
+eidx2tidx(tidx) = 1:length(tidx);
+
 feat = sparse(length(eidx), 1);
 idx = zeros(length(eidx), 1);
-num_bins = num_plifs/2 - 1;
-lmt = get_limits(max_side_len, num_bins+1);
+num_bins = CFG.num_plifs/2 - 1;
+lmt = get_limits(CFG.max_side_len, num_bins+1);
 
 % left transcript part
 dist = 1:ceil(length(tidx)*0.5);
@@ -87,13 +90,21 @@ end
 
 % correct features for bins that are only partly covered by transcript positions
 midx = ceil(length(tidx)*0.5);
-bin1 = idx(midx);
-bin2 = idx(midx+1);
-idx1 = find(idx==bin1, 1, 'first');
-idx2 = find(idx==bin2, 1, 'last');
+bin1 = idx(tidx(midx));
+bin2 = idx(tidx(midx+1));
+idx1 = eidx2tidx(find(idx==bin1, 1, 'first'));
+idx2 = eidx2tidx(find(idx==bin2, 1, 'last'));
 %feat(idx1:idx2) = mean([feat(idx1:idx2), (([idx1:idx2]-idx1)./(idx2-idx1))'], 2);
-feat(idx1:idx2) = ([idx1:idx2]-idx1)./(idx2-idx1);
-del_idx = idx1:idx2;
+feat(tidx(idx1:idx2)) = ([idx1:idx2]-idx1)./(idx2-idx1);
+del_idx = tidx(idx1:idx2);
+idx(del_idx) = bin1;
+if nargout>=3,
+  profile_weights_adj = get_adj_bins(CFG);
+  idx_next = zeros(length(eidx), 1);
+  tmp_pw = profile_weights_adj(2,idx(tidx)+CFG.num_plifs*(gene.transcript_len_bin(t)-1));
+  idx_next(tidx) = tmp_pw - CFG.num_plifs*(gene.transcript_len_bin(t)-1);
+  idx_next(del_idx) = bin2+1;
+end
 
 assert(all(sum(feat<=1 & feat>0, 2)==1 | sum(feat,2)==0));
 assert(size(feat,1)==length(eidx));

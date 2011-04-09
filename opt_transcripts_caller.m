@@ -106,11 +106,12 @@ for c = chr_num,
         rev_idx = size(profile_weights,1):-1:1;
       end
       % evaluate profile PLiFs for each exonic position
-      [feat feat_val] = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len);
+      [feat feat_val feat_val_next] = gen_exon_features(CFG, gene, t);
       fidx = find(feat_val>0);
       feat = feat(fidx,:);
       feat_val = feat_val(fidx,:);
-      exon_mask(fidx,t) = gen_exon_mask(profile_weights(rev_idx,:), gene.transcript_len_bin(t), feat, feat_val, [1:length(fidx)]', ones(length(fidx),1));
+      feat_val_next = feat_val_next(fidx,:);
+      exon_mask(fidx,t) = gen_exon_mask(profile_weights(rev_idx,:), gene.transcript_len_bin(t), feat, feat_val, feat_val_next, [1:length(fidx)]', ones(length(fidx),1));
       % normalise profile for sequence biases (depending on transcript sequence)
       if CFG.norm_seqbias
         tidx = [];
