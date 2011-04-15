@@ -49,7 +49,7 @@ LB = 0.0;
 UB = full(mean(coverage));
 
 cnt = 0;
-if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
+if CFG.VERBOSE>0, fprintf(1, '\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tNorm diff\n'); end
 if T==1
   RE = -exon_count;
@@ -133,6 +133,6 @@ else
 end
 if CFG.VERBOSE>0 && cnt>0, fprintf(1, 'objectives differ for %i transcripts\n', cnt); end
 assert(all(fval(1:end-1)-fval(2:end)>-1e-3));
-if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
+if CFG.VERBOSE>0, fprintf(1, 'Took %.1fs.\n', toc); end
 
 obj = fval(end);
