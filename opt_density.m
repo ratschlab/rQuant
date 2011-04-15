@@ -11,6 +11,7 @@ function [profile_weights, obj, seq_weights] = opt_density(CFG, genes)
 % seq_weights: weights for sequence normalisation
 
 
+if 1
 T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
 P_all = P;
@@ -162,6 +163,17 @@ if any(~mask),
   if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
 end
+save('~/tmp/test_workspace4.mat');
+else
+CFG_tmp = CFG;
+load('~/tmp/test_workspace4.mat');
+CFG = CFG_tmp;
+CFG.norm_seqbias = CFG_tmp.norm_seqbias;
+CFG.C_I = CFG_tmp.C_I;
+CFG.C_F = CFG_tmp.C_F;
+CFG.C_N = CFG_tmp.C_N;
+clear CFG_tmp;
+end
 
 out_dir = sprintf('%s/tmp/', CFG.out_dir);
 if ~exist(out_dir ,'dir'),
@@ -185,6 +197,7 @@ end
 profile_weights = zeros(F, N);
 profile_weights(pw_nnz) = 1;
 profile_weights_old = zeros(F, N);
+norm_pw = ones(1, N);
 fval = 1e100*ones(1, num_opt_steps); % objective values
 fval_old = 0;
 iter = 1;
@@ -230,7 +243,10 @@ while 1
   CFG.VERBOSE = 0;
   R_const = 1/lambda^2*(CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
   [weights, fval(cnt)] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, lambda*intron_mask, lambda*C_w, R_const, 1, weights, 'L1');
-  assert(fval_old(end)-fval(cnt)>-1e-3);
+  if ~(fval_old(end)-fval(cnt)>-1e-3)
+    %fval_old(end)-fval(cnt)
+  end
+  %assert(fval_old(end)-fval(cnt)>-1e-3);
   cnt = cnt + 1;
   CFG.VERBOSE = tmp_VERBOSE;
     
@@ -243,7 +259,31 @@ while 1
   CFG.C_F = 1/lambda^2*CFG.C_F;
   CFG.C_N = 1/lambda^2*CFG.C_N;
   [profile_weights, fval(cnt)] = opt_profiles_descent(CFG, profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const);
-  assert(fval(cnt-1)-fval(cnt)>-1e-3);
+  % normalisation of weights
+  profile_weights_unnorm = profile_weights;
+  norm_pw = median(profile_weights(pw_nnz))*ones(1, N);
+  profile_weights_unnorm = profile_weights;
+  for n = 1:N,
+    %norm_pw(n) = norm(profile_weights(:,n));
+    profile_weights(:,n) = profile_weights(:,n)./norm_pw(n);
+  end
+  weights = weights.*norm_pw(tscp_len_bin);
+  % recompute objective value
+  exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col);
+  p_adj_f = get_adj_bins(CFG);
+  pw_nnz = get_included_thetas(CFG);
+  pw_nnz1 = pw_nnz; pw_nnz1(F*(N-1)+1:end) = false;
+  pw_nnz2 = pw_nnz; pw_nnz2(1:F) = false;
+  fidx = find(pw_nnz1(1:F*(N-1)) & pw_nnz2(F+1:end));
+  profile_weights = reshape(profile_weights, 1, F*N);
+  R_const = abs(weights)*(lambda*C_w);
+  if size(intron_mask,1)>0, R_const = R_const + CFG.C_I*sum((lambda*intron_mask*weights'-intron_count).^2); end
+  fval(cnt) = sum((exon_mask*weights'-coverage).^2) + R_const + CFG.C_N*sum((profile_weights(fidx)-profile_weights(fidx+F)).^2) + CFG.C_F*sum((profile_weights(pw_nnz)-profile_weights(p_adj_f(2,pw_nnz))).^2);
+  profile_weights = reshape(profile_weights, F, N);
+  if ~(fval(cnt-1)-fval(cnt)>-1e-3)
+    %fval(cnt-1)-fval(cnt)
+  end
+  %assert(fval(cnt-1)-fval(cnt)>-1e-3);
   cnt = cnt + 1;
   CFG.VERBOSE = tmp_VERBOSE;
   
@@ -255,6 +295,7 @@ while 1
     tmp_VERBOSE = CFG.VERBOSE;
     CFG.VERBOSE = 0;
     [seq_weights, fval(cnt)] = opt_seq_descent(CFG, seq_weights, seq_feat, exon_mask, tmp_seq_weights, weights, coverage, R_const);
+    seq_weights = seq_weights./median(seq_weights); % normalisation
     assert(fval(cnt-1)-fval(cnt)>-1e-3);
     cnt = cnt + 1;
     CFG.VERBOSE = tmp_VERBOSE;
@@ -272,14 +313,14 @@ while 1
   else
     lambda = solve_lambda(R1, R2);
   end
+  exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col);
   if CFG.norm_seqbias
     tmp_seq_weights = sparse(S*T,T);
     tmp_seq_weights(ts_idx) = repmat(seq_weights, T, 1);
     seq_coeff = seq_feat*tmp_seq_weights;
-    fval(cnt) = sum(((exon_feat*tmp_profiles).*seq_coeff*weights'-coverage).^2);
-  else
-    fval(cnt) = sum((exon_feat*tmp_profiles*weights'-coverage).^2);
+    exon_mask = seq_coeff.*exon_mask;
   end
+  fval(cnt) = sum((exon_mask*weights'-coverage).^2);
   fval(cnt) = fval(cnt) + abs(weights)*(lambda*C_w) + 1/lambda^2*(CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2)) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
   if size(intron_mask,1)>0, fval(cnt) = fval(cnt) + CFG.C_I*sum((lambda*intron_mask*weights'-intron_count).^2); end
   end
@@ -296,19 +337,10 @@ while 1
   if norm(fval_old-fval)<eps || norm_weights<eps || iter >= CFG.max_iter
     break;
   end
-  %profile_weights
   %if iter>15, keyboard; end
   save(sprintf('%siter%i.mat', out_dir, iter), 'profile_weights', 'weights', 'lambda', 'seq_weights');
   iter = iter + 1;
 end
 if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
-
-% normalise weights
-if 0
-for n = 1:N,
-  profile_weights(:,n) = profile_weights(:,n)./norm(profile_weights(:,n));
-end
-seq_weights  = seq_weights./norm(seq_weights);
-end
 
 obj = fval(end);
