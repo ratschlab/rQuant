@@ -48,6 +48,7 @@ end
 LB = 0.0;
 UB = full(mean(coverage));
 
+cnt = 0;
 if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tNorm diff\n'); end
 if T==1
@@ -71,6 +72,18 @@ if T==1
     weights(1) = w_new;
   end
   fval(1) = quad_fun(weights(1), S1, S2, S3);
+  obj_alt = sum((exon_mask*weights'-coverage).^2) + R_const;
+  if I>0, obj_alt = obj_alt + CFG.C_I*sum((intron_mask*weights'-intron_count).^2); end
+  switch reg
+   case 'L1'
+    obj_alt = obj_alt + abs(weights*C_w);
+   case 'L2'
+    obj_alt = obj_alt + weights.^2*C_w;
+  end
+  if ~(abs(fval(t)-obj_alt)<1e-3) % objective should be indentical to not-expanded objective
+    cnt = cnt + 1;
+    if CFG.VERBOSE>1, fprintf(1, 'objectives differ %.6f (tscp %i)\n', abs(fval(t)-obj_alt), t); end
+  end
 else
   iter = 1;
   while 1
@@ -98,6 +111,18 @@ else
         weights(t) = w_new;
       end
       fval(t) = quad_fun(weights(t), S1, S2, S3);
+      obj_alt = sum((exon_mask*weights'-coverage).^2) + R_const;
+      if I>0, obj_alt = obj_alt + CFG.C_I*sum((intron_mask*weights'-intron_count).^2); end
+      switch reg
+       case 'L1'
+        obj_alt = obj_alt + abs(weights*C_w);
+       case 'L2'
+        obj_alt = obj_alt + weights.^2*C_w;
+      end
+      if ~(abs(fval(t)-obj_alt)<1e-3) % objective should be indentical to not-expanded objective
+        cnt = cnt + 1;
+        if CFG.VERBOSE>1, fprintf(1, 'objectives differ %.6f (tscp %i)\n', abs(fval(t)-obj_alt), t); end
+      end
     end
     if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\n', iter, fval(end), norm(weights_old-weights)); end
     if norm(fval_old-fval)<1e-5 || norm(weights_old-weights)<1e-5 || iter>=max_iter,
@@ -106,6 +131,7 @@ else
     iter = iter + 1;
   end
 end
+if CFG.VERBOSE>0 && cnt>0, fprintf(1, 'objectives differ for %i transcripts\n', cnt); end
 assert(all(fval(1:end-1)-fval(2:end)>-1e-3));
 if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
 
