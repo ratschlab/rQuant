@@ -49,7 +49,7 @@ p_adj_f = get_adj_bins(CFG);
 fval = 1e100*ones(1, length(pidx));
 fval_old = zeros(1, length(pidx));
 
-if CFG.VERBOSE>0, fprintf('\nStarting optimising...\n'); tic; end
+if CFG.VERBOSE>0, fprintf(1, '\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tNorm diff\n'); end
 iter = 1;
 while 1
@@ -165,7 +165,9 @@ while 1
     else
       obj_alt = sum((exon_mask*weights'-coverage).^2) + R_const + CFG.C_N*sum((profile_weights(fidx)-profile_weights(fidx+F)).^2) + CFG.C_F*sum((profile_weights(pw_nnz)-profile_weights(p_adj_f(2,pw_nnz))).^2);
     end
-    assert(abs(fval(cnt)-obj_alt)<1e-3); % objective should be indentical to not-expanded objective
+    if ~(abs(fval(cnt)-obj_alt)<1e-3) % objective should be indentical to not-expanded objective
+      if CFG.VERBOSE>1, fprintf(1, 'objectives differ %.6f (theta %i)\n', abs(fval(cnt)-obj_alt), p); end
+    end
     cnt = cnt + 1;
   end
   if CFG.VERBOSE>1, fprintf(1, '%i\t%.5d\t%.5d\n', iter, fval(end), norm(profile_weights_old-profile_weights)); end
@@ -175,7 +177,7 @@ while 1
   iter = iter + 1;
 end
 assert(all(fval(1:end-1)-fval(2:end)>-1e-3)); % objective should decrease at every step
-if CFG.VERBOSE>0, fprintf('Took %.1fs.\n', toc); end
+if CFG.VERBOSE>0, fprintf(1, 'Took %.1fs.\n', toc); end
 
 profile_weights = reshape(profile_weights, F, N);
 obj = fval(end);
