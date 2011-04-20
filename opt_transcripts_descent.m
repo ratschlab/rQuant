@@ -80,7 +80,7 @@ if T==1
    case 'L2'
     obj_alt = obj_alt + weights.^2*C_w;
   end
-  if ~(abs(fval(t)-obj_alt)<1e-3) % objective should be indentical to not-expanded objective
+  if ~(abs(fval(1)-obj_alt)<1e-3) % objective should be indentical to not-expanded objective
     cnt = cnt + 1;
     if CFG.VERBOSE>1, fprintf(1, 'objectives differ %.6f (tscp %i)\n', abs(fval(t)-obj_alt), t); end
   end

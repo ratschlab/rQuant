@@ -34,10 +34,10 @@ CFG.method = 'pos'; % 'pos' or 'seg'
 CFG.paired = 0;
 
 %%%%% sequence bias normalisation
-CFG.norm_seqbias = 1;
+CFG.norm_seqbias = 0;
 CFG.RR.half_win_size = 10;
 CFG.RR.num_train_frac = 0.8;
-CFG.RR.order = 1;
+CFG.RR.order = 2;
 CFG.RR.lambda = 1e-2;
 
 %%%%% profile learning
@@ -49,9 +49,6 @@ CFG.max_iter = 100;
 CFG.num_plifs = 50;
 % maximal number of positions to be considered at both transcript ends
 CFG.max_side_len = 5000;
-% bins for different expression levels
-exr = [-1 inf];
-CFG.expr_ranges = round([exr(1:end-1)'+1 exr(2:end)']);
 % bins for different transcript lengths % prctile(tlen,10) prctile(tlen,90)
 tlr = [0 649 1008 1379 1977 inf];
 %tlr = [1 750 921 1092 1263 1434 1605 1776 1947 2118 2289 2461 2632 2803 2974 3145 3316 3487 3658 3829 4000 Inf];
@@ -63,6 +60,6 @@ CFG.subsample = 1;
 % maximal number of examples for learning profiles
 CFG.max_num_train_exm = 1e6;
 % fraction of positions to be subsampled for learning profiles
-CFG.subsample_frac = 0.30;
+CFG.subsample_frac = 0.23;
 % more output to stdout
 CFG.VERBOSE = 1; % 0: no output, 1: more output, 2: debug output

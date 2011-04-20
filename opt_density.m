@@ -11,7 +11,6 @@ function [profile_weights, obj, seq_weights] = opt_density(CFG, genes)
 % seq_weights: weights for sequence normalisation
 
 
-if 1
 T = length([genes.transcripts]);       % number of transcripts
 P = sum([genes.exonic_len]);           % number of positions
 P_all = P;
@@ -63,7 +62,7 @@ if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
-  fprintf('%i\r', g);
+  %fprintf('%i\r', g);
   try
     [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
   catch
@@ -162,17 +161,6 @@ if any(~mask),
   end
   if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
-end
-save('~/tmp/test_workspace4.mat');
-else
-CFG_tmp = CFG;
-load('~/tmp/test_workspace4.mat');
-CFG = CFG_tmp;
-CFG.norm_seqbias = CFG_tmp.norm_seqbias;
-CFG.C_I = CFG_tmp.C_I;
-CFG.C_F = CFG_tmp.C_F;
-CFG.C_N = CFG_tmp.C_N;
-clear CFG_tmp;
 end
 
 out_dir = sprintf('%s/tmp/', CFG.out_dir);

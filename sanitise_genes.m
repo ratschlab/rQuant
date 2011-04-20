@@ -21,9 +21,7 @@ function [genes, num_del] = sanitise_genes(genes, CFG)
 
 
 % add exonic length
-% initialise expression bins
 % initialise transcript length bins
-genes(1).expr_bin = [];
 genes(1).transcript_length = [];
 genes(1).transcript_len_bin = [];
 genes(1).eidx = [];
@@ -42,7 +40,6 @@ for g = 1:length(genes),
   if genes(g).start>genes(g).stop || genes(g).start<1 || genes(g).stop<1
     del_idx(g) = true;
   end
-  genes(g).expr_bin = ones(1, length(genes(g).transcripts));
   genes(g).transcript_len_bin = ones(1, length(genes(g).transcripts));
   for t = 1:length(genes(g).transcripts),
     tidx = [];
