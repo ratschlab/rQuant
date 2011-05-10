@@ -110,9 +110,9 @@ then
 
 	MATLAB_BIN_PATH=
 
-	echo Which optimizer should be used \(available options are \"loqo\" or \"mosek\", currently set to \"$OPTIMIZER\"\)?
+	echo Which optimizer should be used \(available options is \"mosek\", currently set to \"$OPTIMIZER\"\)?
 	read OPTIMIZER
-	if [ "$OPTIMIZER" != 'loqo' -a "$OPTIMIZER" != 'mosek'];
+	if [ "$OPTIMIZER" != 'mosek'];
 		then
 		echo Unrecognized choice: \"$OPTIMIZER\"
 		echo Aborting
