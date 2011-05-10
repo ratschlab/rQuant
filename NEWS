@@ -1,0 +1,27 @@
+Release 1.1 (March 11, 2011)
+----------------------------------------
+
+New features:
+- tool ReadStats: generates a statistic about the read alignments and
+the covered genes
+
+Other changes:
+- prctiles.m: replaced function by own implementation
+- ParseGFF.py: now parses also non-coding transcripts; exons
+coordinates always in ascending order (for both strands)
+
+Bug fixes:
+- get_reads: fixed a memory leak and segmentation faults
+- sanitise_genes.m: adapted to closed intervals in gene structure from
+ParseGFF.py
+- rquant_core.m: corrected initialisation of transcript length bins
+
+
+Release 1.0 (December 17, 2010)
+----------------------------------------
+
+This is the first release of the quantitation tool rQuant, which
+determines abundances of multiple transcripts per gene locus from
+RNA-Seq measurements.
+Please also visit http://fml.mpg.de/raetsch/suppl/rquant for more
+information about this software.

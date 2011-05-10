@@ -1,0 +1,16 @@
+*** number of reads ***
+contig I: 42035
+total: 42035
+
+*** Read coverage in 55 genes ***
+25th percentile: 0.04 
+50th percentile: 0.08 
+75th percentile: 0.25 
+
+*** Number of covered introns ***
+27 out of 266
+
+*** Intron coverage of 266 introns***
+25th percentile: 0.00 
+50th percentile: 0.00 
+75th percentile: 0.00 

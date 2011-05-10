@@ -1,0 +1,11 @@
+To use Mosek with rQuant, please follow these steps:
+
+1. Download the Mosek distribution from http://www.mosek.com -> Download (tested with Mosek version 6).
+
+2. Copy the content of the folders 'mosek/6/tools/platform/*/bin' and 'mosek/6/tools/platform/*/h' in the archive to this directory.
+
+3a. If you want to use Mosek in Matlab, copy the Matlab interface files for Mosek in the archive at 'mosek/6/toolbox/r2009b' into the subdirectory './matlab'.
+
+3b. If you want to use Mosek in Octave, go to the subdirectory 'octave' and run 'make'. It may be necessary to adapt the Makefile (in particular, depending on the platform, -lmosek may need to be replaced by -lmosek64).
+
+4. Add the license file (mosek.lic) to this directory. It can be obtained either by purchasing a mosek license or by using the trial license part of the download archive in 'mosek/6/licenses/mosek.lic'.
