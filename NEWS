@@ -1,4 +1,4 @@
-Release 1.1 (March 11, 2011)
+rQuant version 1.1 (March 11, 2011)
 ----------------------------------------
 
 New features:
@@ -17,7 +17,7 @@ ParseGFF.py
 - rquant_core.m: corrected initialisation of transcript length bins
 
 
-Release 1.0 (December 17, 2010)
+rQuant version 1.0 (December 17, 2010)
 ----------------------------------------
 
 This is the first release of the quantitation tool rQuant, which

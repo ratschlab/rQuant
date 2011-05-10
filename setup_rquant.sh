@@ -15,7 +15,7 @@ set -e
 . ./bin/rquant_config.sh
 
 echo =====================================
-echo  rQuant setup script \(version 1.0\) 
+echo  rQuant setup script \(version 1.1\) 
 echo =====================================
 echo
 

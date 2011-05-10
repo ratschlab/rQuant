@@ -16,7 +16,7 @@ PROG=`basename $0`
 DIR=`dirname $0`
 
 echo
-echo ${PROG}: This program is part of the rQuant version 1.0.
+echo ${PROG}: This program is part of the rQuant version 1.1.
 echo
 echo ReadStats generates a statistic about the read alignments
 echo and the covered genes.
