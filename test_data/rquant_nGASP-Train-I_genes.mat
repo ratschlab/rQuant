@@ -1,0 +1,5979 @@
+# Created by Octave 3.0.3, Wed May 11 10:53:23 2011 MEST <bohnert@congo>
+# name: genes
+# type: struct
+# length: 11
+# name: chr
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+I
+
+# name: exons
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2851998 2852297
+ 2852541 2852665
+ 2853159 2853260
+ 2853316 2853389
+ 2853727 2853856
+
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2851999 2852386
+ 2852500 2852750
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2468789 2469168
+ 2470852 2471063
+ 2471870 2471936
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2489977 2490191
+ 2490238 2490858
+ 2492609 2492968
+ 2494937 2495353
+ 2496669 2497372
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2418467 2418849
+ 2419572 2420039
+ 2420300 2420356
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2418054 2418060
+ 2418476 2418849
+ 2419572 2420039
+ 2420300 2420354
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2420832 2421439
+ 2421500 2421606
+ 2421665 2421736
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2438802 2438923
+ 2439584 2439821
+ 2442668 2442949
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2434005 2434223
+ 2434281 2434553
+ 2434606 2434852
+ 2434894 2435017
+ 2435533 2435637
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2853979 2854141
+ 2854192 2854404
+ 2854453 2855250
+ 2855573 2855735
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2854052 2854141
+ 2854192 2854404
+ 2854453 2855250
+ 2855573 2855733
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2854052 2854141
+ 2854192 2854404
+ 2854453 2855250
+ 2855573 2855716
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 4
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2776434 2776550
+ 2776988 2777099
+ 2777149 2777450
+ 2778518 2778649
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2776413 2776550
+ 2776988 2777099
+ 2777149 2777450
+ 2777885 2777932
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2776434 2776550
+ 2776988 2777099
+ 2777149 2777450
+ 2778518 2778697
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2775908 2775914
+ 2776368 2776550
+ 2776988 2777099
+ 2777149 2777450
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2304546 2304845
+ 2304900 2305580
+ 2305632 2306420
+ 2306471 2306656
+ 2306704 2306793
+
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2304717 2304845
+ 2304900 2305580
+ 2305632 2306420
+ 2306471 2306656
+ 2306704 2306791
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2823469 2823938
+ 2824878 2825430
+ 2828481 2828599
+ 2830120 2830294
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 10
+# columns: 2
+ 2571784 2572040
+ 2572094 2572301
+ 2572357 2572520
+ 2572571 2572737
+ 2573742 2573942
+ 2574000 2574268
+ 2574314 2574445
+ 2574522 2574585
+ 2575440 2575630
+ 2575842 2576021
+
+# name: <cell-element>
+# type: matrix
+# rows: 10
+# columns: 2
+ 2571789 2572040
+ 2572090 2572301
+ 2572357 2572520
+ 2572571 2572737
+ 2573742 2573942
+ 2574000 2574268
+ 2574314 2574445
+ 2574522 2574585
+ 2575440 2575630
+ 2575842 2576021
+
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2571783 2572040
+ 2572094 2572301
+ 2572357 2572520
+ 2572571 2572737
+ 2573742 2574268
+ 2574314 2574445
+ 2574522 2574585
+ 2575440 2575630
+ 2575842 2576021
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 10
+# columns: 2
+ 2907723 2907936
+ 2907983 2908236
+ 2910382 2910597
+ 2911988 2912224
+ 2913776 2914108
+ 2919516 2919720
+ 2921374 2921951
+ 2923046 2923168
+ 2923818 2924537
+ 2924603 2924716
+
+# name: <cell-element>
+# type: matrix
+# rows: 10
+# columns: 2
+ 2907728 2907936
+ 2907983 2908236
+ 2910382 2910597
+ 2911988 2912224
+ 2913776 2914108
+ 2919516 2919720
+ 2921374 2921951
+ 2923046 2923168
+ 2923818 2924537
+ 2924603 2924714
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2071354 2071756
+ 2071826 2071942
+ 2071992 2072551
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 13
+# columns: 2
+ 2949610 2950119
+ 2950199 2950494
+ 2951200 2951460
+ 2951518 2951626
+ 2951673 2951770
+ 2951883 2951950
+ 2952183 2952348
+ 2953080 2953972
+ 2954834 2954944
+ 2955332 2955779
+ 2956543 2956697
+ 2956775 2956973
+ 2957793 2957877
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2297281 2297920
+ 2302827 2302975
+ 2303028 2303114
+ 2303161 2304200
+ 2304249 2304394
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2302738 2302975
+ 2303028 2303114
+ 2303161 2304200
+ 2304249 2304396
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2302799 2302975
+ 2303028 2303114
+ 2303161 2304200
+ 2304249 2304394
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2279835 2279916
+ 2280388 2280868
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2312495 2312699
+ 2312751 2313009
+
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2312497 2312699
+ 2312751 2312897
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2735346 2736272
+ 2737442 2737735
+ 2738019 2738264
+ 2738492 2738643
+ 2741401 2741511
+ 2742398 2742509
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2730003 2730237
+ 2730922 2731454
+
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2730005 2730237
+ 2730922 2731283
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2707600 2707695
+ 2708103 2708207
+ 2709921 2710067
+ 2711122 2711406
+ 2712440 2712549
+ 2713852 2714073
+ 2714121 2714409
+ 2714729 2715055
+ 2717231 2717550
+
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2707565 2707695
+ 2708103 2708207
+ 2709921 2710067
+ 2711122 2711406
+ 2712440 2712549
+ 2713852 2714073
+ 2714121 2714409
+ 2714729 2715059
+ 2717231 2717526
+
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2707600 2707695
+ 2708103 2708207
+ 2709921 2710067
+ 2711122 2711406
+ 2712440 2712549
+ 2713852 2714073
+ 2714121 2714409
+ 2714729 2715059
+ 2717231 2717346
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2928394 2928452
+ 2928510 2928650
+ 2928707 2928834
+ 2928903 2929658
+
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2928394 2928452
+ 2928510 2928650
+ 2928707 2928834
+ 2928903 2929612
+ 2929862 2929885
+ 2929947 2930089
+ 2930175 2930367
+ 2931224 2931254
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2928396 2928452
+ 2928510 2928650
+ 2928707 2928834
+ 2928903 2929352
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2219487 2219713
+ 2220560 2220929
+ 2222083 2222201
+ 2222243 2222310
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 10
+# columns: 2
+ 2128592 2128775
+ 2134789 2134922
+ 2135050 2135145
+ 2136533 2136904
+ 2138636 2139240
+ 2141032 2141218
+ 2142455 2143092
+ 2144880 2144985
+ 2145041 2145136
+ 2145689 2145763
+
+# name: <cell-element>
+# type: matrix
+# rows: 11
+# columns: 2
+ 2128592 2128775
+ 2133854 2133874
+ 2134789 2134922
+ 2135050 2135145
+ 2136533 2136904
+ 2138636 2139240
+ 2141032 2141218
+ 2142455 2143092
+ 2144880 2144985
+ 2145041 2145136
+ 2145689 2145973
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2113650 2113932
+ 2115255 2115611
+ 2116154 2116405
+ 2116452 2116582
+ 2116743 2116861
+ 2116983 2117070
+ 2117123 2117344
+ 2117937 2118090
+ 2118461 2118552
+
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2113786 2113932
+ 2115255 2115611
+ 2116154 2116405
+ 2116452 2116582
+ 2116743 2116861
+ 2116983 2117070
+ 2117123 2117344
+ 2117937 2118090
+ 2118461 2118532
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2072679 2072808
+ 2073421 2073968
+ 2074709 2074957
+ 2075989 2076394
+ 2076693 2076908
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2072682 2072808
+ 2073421 2073968
+ 2074709 2074957
+ 2075989 2076102
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 4
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2069683 2069839
+ 2070054 2070209
+ 2070442 2070611
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2069681 2069839
+ 2070054 2070209
+ 2070442 2070609
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2069723 2069839
+ 2070054 2070209
+ 2070428 2070576
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2069681 2069839
+ 2070054 2070209
+ 2070442 2070609
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2078961 2079028
+ 2079266 2079359
+ 2080746 2080902
+ 2081115 2081311
+ 2082816 2083031
+ 2084341 2084418
+ 2084481 2084552
+ 2085253 2085614
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 2
+ 2692095 2692470
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 8
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2668168 2668260
+ 2668409 2668527
+ 2668794 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670603
+ 2671913 2672435
+
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2668168 2668260
+ 2668409 2668527
+ 2668794 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670798
+ 2671913 2672409
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2668168 2668249
+ 2668409 2668527
+ 2668794 2669117
+
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2668161 2668260
+ 2668409 2668527
+ 2668862 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670603
+ 2671913 2672012
+
+# name: <cell-element>
+# type: matrix
+# rows: 7
+# columns: 2
+ 2668407 2668527
+ 2668794 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670603
+ 2671913 2672012
+
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2668168 2668260
+ 2668409 2668527
+ 2668794 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670603
+ 2671913 2672012
+
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2668168 2668249
+ 2668409 2668527
+ 2668794 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670603
+ 2671913 2672012
+
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2668794 2669212
+ 2669632 2669748
+ 2670050 2670199
+ 2670248 2670429
+ 2670484 2670603
+ 2671913 2672012
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2064302 2064400
+ 2064452 2064690
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2929785 2929885
+ 2929947 2930089
+ 2930175 2930367
+ 2931224 2931344
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2929834 2929885
+ 2929947 2930089
+ 2930175 2930367
+ 2931224 2931362
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2064976 2065171
+ 2065235 2065483
+
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2064978 2065171
+ 2065235 2065483
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 14
+# columns: 2
+ 2761173 2761514
+ 2762148 2762393
+ 2763443 2764399
+ 2765093 2765678
+ 2765739 2765897
+ 2767171 2767830
+ 2768649 2768872
+ 2769762 2769873
+ 2770802 2771371
+ 2772771 2772985
+ 2775425 2775567
+ 2775615 2775702
+ 2775762 2775895
+ 2775946 2776104
+
+# name: <cell-element>
+# type: matrix
+# rows: 14
+# columns: 2
+ 2761319 2761514
+ 2762148 2762393
+ 2763443 2764399
+ 2765093 2765678
+ 2765739 2765897
+ 2767171 2767830
+ 2768649 2768872
+ 2769762 2769873
+ 2770802 2771371
+ 2772771 2772985
+ 2775425 2775567
+ 2775615 2775702
+ 2775762 2775895
+ 2775946 2776098
+
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2761187 2761344
+ 2768668 2768872
+ 2769762 2769873
+ 2770802 2771371
+ 2772771 2772985
+ 2775425 2775567
+ 2775615 2775702
+ 2775762 2775895
+ 2775946 2776098
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2755625 2756121
+ 2756168 2756611
+ 2756660 2757094
+ 2757385 2757497
+ 2757546 2757837
+ 2757894 2758205
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2451909 2452178
+ 2452943 2453353
+ 2454659 2454895
+ 2455020 2455093
+ 2456055 2456464
+ 2463347 2463462
+
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2451975 2452178
+ 2452943 2453353
+ 2454659 2454895
+ 2455020 2455093
+ 2456055 2456471
+ 2464541 2464638
+
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2451975 2452178
+ 2452943 2453353
+ 2454659 2454895
+ 2455020 2455093
+ 2456055 2456464
+ 2463347 2463462
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2069088 2069295
+ 2069345 2069589
+
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2069084 2069295
+ 2069345 2069577
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 11
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875394 2875602
+ 2875651 2875972
+ 2876146 2876313
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2875394 2875602
+ 2875651 2875972
+ 2876146 2876311
+ 2876626 2876637
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875432 2875602
+ 2875651 2875972
+ 2876146 2876309
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875432 2875602
+ 2875651 2875968
+ 2876146 2876287
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875425 2875602
+ 2875651 2875972
+ 2876021 2876309
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875426 2875602
+ 2875651 2875971
+ 2876146 2876178
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875432 2875602
+ 2875651 2875972
+ 2876028 2876308
+
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2875432 2875602
+ 2875651 2875975
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875432 2875602
+ 2875651 2875972
+ 2876146 2876309
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875432 2875602
+ 2875651 2875972
+ 2876145 2876309
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2875432 2875602
+ 2875651 2875972
+ 2876147 2876309
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2580942 2581287
+ 2582567 2582929
+ 2583982 2584378
+ 2585942 2586127
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2581204 2581287
+ 2582567 2582929
+ 2583982 2584378
+ 2585942 2586125
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2581016 2581287
+ 2582567 2582929
+ 2583982 2584378
+ 2585942 2586127
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2895330 2895840
+ 2895903 2896761
+ 2896815 2897122
+ 2897651 2898852
+ 2899699 2900704
+ 2900757 2900861
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2306992 2307039
+ 2307405 2307493
+ 2307537 2307891
+ 2307963 2308542
+ 2308596 2308913
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2313271 2313321
+ 2313376 2313464
+ 2313509 2313714
+ 2313772 2314162
+ 2314997 2315605
+ 2315657 2315985
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 8
+# columns: 2
+ 2333327 2333486
+ 2333767 2333847
+ 2333899 2333994
+ 2334161 2334293
+ 2334641 2334792
+ 2335420 2335766
+ 2337184 2337543
+ 2338365 2338646
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 4
+# name: <cell-element>
+# type: matrix
+# rows: 20
+# columns: 2
+ 2160044 2160201
+ 2163019 2163291
+ 2164020 2164104
+ 2164828 2164986
+ 2165977 2166131
+ 2172005 2172171
+ 2173755 2173867
+ 2173926 2174023
+ 2174890 2174985
+ 2185740 2185919
+ 2186632 2186714
+ 2192845 2192906
+ 2195400 2196667
+ 2197190 2197285
+ 2200011 2200150
+ 2201731 2202169
+ 2203575 2203865
+ 2204926 2205309
+ 2207321 2207839
+ 2209095 2209630
+
+# name: <cell-element>
+# type: matrix
+# rows: 7
+# columns: 2
+ 2197980 2198012
+ 2200011 2200150
+ 2201731 2202169
+ 2203575 2203865
+ 2204926 2205309
+ 2207321 2207839
+ 2209095 2209334
+
+# name: <cell-element>
+# type: matrix
+# rows: 18
+# columns: 2
+ 2160044 2160201
+ 2163019 2163291
+ 2164020 2164104
+ 2164828 2164986
+ 2165977 2166131
+ 2172005 2172171
+ 2173755 2173867
+ 2173926 2174023
+ 2174890 2174985
+ 2185740 2185919
+ 2186632 2186714
+ 2192845 2192906
+ 2195400 2196667
+ 2197190 2197285
+ 2200011 2200150
+ 2201731 2202169
+ 2203575 2203865
+ 2204926 2205351
+
+# name: <cell-element>
+# type: matrix
+# rows: 16
+# columns: 2
+ 2160044 2160201
+ 2163019 2163291
+ 2164020 2164104
+ 2164828 2164986
+ 2165977 2166131
+ 2172005 2172171
+ 2173755 2173867
+ 2173926 2174023
+ 2174890 2174985
+ 2185740 2185919
+ 2186632 2186714
+ 2192845 2192906
+ 2195400 2196667
+ 2197190 2197285
+ 2200011 2200150
+ 2201731 2202639
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2300087 2300170
+ 2300466 2300567
+ 2300721 2302824
+
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2299850 2299855
+ 2300100 2300170
+ 2300466 2300567
+ 2300721 2302806
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2759031 2759245
+ 2759314 2759683
+ 2759730 2759971
+ 2760327 2760459
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 2
+ 2562659 2563018
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2645283 2645399
+ 2645484 2645660
+ 2646439 2647124
+ 2647958 2648058
+ 2657173 2657234
+
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2645310 2645399
+ 2645484 2645660
+ 2646439 2647124
+ 2647958 2648128
+ 2657173 2657242
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 6
+# columns: 2
+ 2866509 2866612
+ 2867245 2867307
+ 2867427 2867598
+ 2867836 2867931
+ 2868969 2869074
+ 2869195 2869374
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2784647 2784763
+ 2784815 2785476
+ 2785596 2785854
+ 2786029 2786069
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 4
+# columns: 2
+ 2415190 2415280
+ 2415843 2415950
+ 2417183 2417575
+ 2418372 2418522
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 2
+# columns: 2
+ 2727013 2727147
+ 2727201 2727546
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2281544 2281812
+ 2284729 2284801
+ 2284860 2284981
+ 2286071 2286181
+ 2286232 2286339
+ 2287564 2287743
+ 2289487 2289588
+ 2289644 2289754
+ 2290953 2291092
+
+# name: <cell-element>
+# type: matrix
+# rows: 9
+# columns: 2
+ 2281538 2281812
+ 2284729 2284801
+ 2284860 2284981
+ 2286071 2286181
+ 2286232 2286339
+ 2287564 2287743
+ 2289487 2289588
+ 2289644 2289754
+ 2291045 2291184
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2880920 2881025
+ 2882029 2882362
+ 2883325 2883441
+
+# name: <cell-element>
+# type: matrix
+# rows: 3
+# columns: 2
+ 2880922 2881025
+ 2882029 2882362
+ 2883325 2883455
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: matrix
+# rows: 5
+# columns: 2
+ 2686656 2687120
+ 2687691 2687894
+ 2687951 2687974
+ 2689087 2689211
+ 2689271 2689468
+
+
+# name: gene_info
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+W10C8.4
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021127
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y74C10AL.2
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022280
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y23H5B.6
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021277
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+F23C8.5
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017734
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+F23C8.6
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017735
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+F23C8.3
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017732
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+ubxn-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017733
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+W10C8.5
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021128
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+Y71F9B.13
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022131
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+icp-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00002047
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+pop-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004077
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+aat-5
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00000006
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+pme-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004049
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+phb-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004014
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+bam-2
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00000237
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+tpxl-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021470
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y39G10AL.1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021458
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+Y39G10AR.20
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021475
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y71F9B.8
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022129
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y71F9B.3
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022127
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+lin-17
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00003006
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+Y71F9AM.6
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022122
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+W03F11.1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021005
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y37E3.17
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021355
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y37E3.16
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021354
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y37E3.10
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021351
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+Y37E3.8
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021350
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y37E3.11
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021352
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+F32B5.4
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017978
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+F32B5.6
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017979
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+Y37E3.3
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021347
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+nxt-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00003836
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+Y37E3.4
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021348
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+sop-3
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004946
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+plk-2
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004043
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+inx-19
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00002141
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+rpa-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004409
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+rpl-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004412
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+fbp-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00001404
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y71F9AL.17
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022119
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y39G10AR.9
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021467
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y39G10AR.8
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021466
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+ugt-31
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021464
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+afd-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021009
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+Y39G10AR.10
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00021468
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+Y71F9B.9
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022130
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+ssp-19
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00006047
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+F40E3.5
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00018232
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y71F9AL.10
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022115
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+W03D8.9
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00020990
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+F23C8.13
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00017741
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+snr-7
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00004920
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+cdk-7
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00000408
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+Y71F9AL.14
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00022118
+
+
+# name: <cell-element>
+# type: struct
+# length: 2
+# name: Alias
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+cpz-1
+
+# name: Name
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+WBGene00000788
+
+
+# name: id
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: scalar
+1
+
+# name: <cell-element>
+# type: scalar
+2
+
+# name: <cell-element>
+# type: scalar
+3
+
+# name: <cell-element>
+# type: scalar
+4
+
+# name: <cell-element>
+# type: scalar
+5
+
+# name: <cell-element>
+# type: scalar
+6
+
+# name: <cell-element>
+# type: scalar
+7
+
+# name: <cell-element>
+# type: scalar
+8
+
+# name: <cell-element>
+# type: scalar
+9
+
+# name: <cell-element>
+# type: scalar
+10
+
+# name: <cell-element>
+# type: scalar
+11
+
+# name: <cell-element>
+# type: scalar
+12
+
+# name: <cell-element>
+# type: scalar
+13
+
+# name: <cell-element>
+# type: scalar
+14
+
+# name: <cell-element>
+# type: scalar
+15
+
+# name: <cell-element>
+# type: scalar
+16
+
+# name: <cell-element>
+# type: scalar
+17
+
+# name: <cell-element>
+# type: scalar
+18
+
+# name: <cell-element>
+# type: scalar
+19
+
+# name: <cell-element>
+# type: scalar
+20
+
+# name: <cell-element>
+# type: scalar
+21
+
+# name: <cell-element>
+# type: scalar
+22
+
+# name: <cell-element>
+# type: scalar
+23
+
+# name: <cell-element>
+# type: scalar
+24
+
+# name: <cell-element>
+# type: scalar
+25
+
+# name: <cell-element>
+# type: scalar
+26
+
+# name: <cell-element>
+# type: scalar
+27
+
+# name: <cell-element>
+# type: scalar
+28
+
+# name: <cell-element>
+# type: scalar
+29
+
+# name: <cell-element>
+# type: scalar
+30
+
+# name: <cell-element>
+# type: scalar
+31
+
+# name: <cell-element>
+# type: scalar
+32
+
+# name: <cell-element>
+# type: scalar
+33
+
+# name: <cell-element>
+# type: scalar
+34
+
+# name: <cell-element>
+# type: scalar
+35
+
+# name: <cell-element>
+# type: scalar
+36
+
+# name: <cell-element>
+# type: scalar
+37
+
+# name: <cell-element>
+# type: scalar
+38
+
+# name: <cell-element>
+# type: scalar
+39
+
+# name: <cell-element>
+# type: scalar
+40
+
+# name: <cell-element>
+# type: scalar
+41
+
+# name: <cell-element>
+# type: scalar
+42
+
+# name: <cell-element>
+# type: scalar
+43
+
+# name: <cell-element>
+# type: scalar
+44
+
+# name: <cell-element>
+# type: scalar
+45
+
+# name: <cell-element>
+# type: scalar
+46
+
+# name: <cell-element>
+# type: scalar
+47
+
+# name: <cell-element>
+# type: scalar
+48
+
+# name: <cell-element>
+# type: scalar
+49
+
+# name: <cell-element>
+# type: scalar
+50
+
+# name: <cell-element>
+# type: scalar
+51
+
+# name: <cell-element>
+# type: scalar
+52
+
+# name: <cell-element>
+# type: scalar
+53
+
+# name: <cell-element>
+# type: scalar
+54
+
+# name: <cell-element>
+# type: scalar
+55
+
+# name: is_alt_spliced
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+1
+
+# name: <cell-element>
+# type: int64 scalar
+0
+
+# name: name
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021127
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022280
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021277
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017734
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017735
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017732
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017733
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021128
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022131
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00002047
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004077
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00000006
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004049
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004014
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00000237
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021470
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021458
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021475
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022129
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022127
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00003006
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022122
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021005
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021355
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021354
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021351
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021350
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021352
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017978
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017979
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021347
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00003836
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021348
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004946
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004043
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00002141
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004409
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004412
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00001404
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022119
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021467
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021466
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021464
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021009
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00021468
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022130
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00006047
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00018232
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022115
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00020990
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00017741
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00004920
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00000408
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00022118
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Gene:WBGene00000788
+
+# name: source
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+Coding_transcript
+
+# name: start
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: scalar
+2851998
+
+# name: <cell-element>
+# type: scalar
+2468789
+
+# name: <cell-element>
+# type: scalar
+2489977
+
+# name: <cell-element>
+# type: scalar
+2418054
+
+# name: <cell-element>
+# type: scalar
+2420832
+
+# name: <cell-element>
+# type: scalar
+2438802
+
+# name: <cell-element>
+# type: scalar
+2434005
+
+# name: <cell-element>
+# type: scalar
+2853979
+
+# name: <cell-element>
+# type: scalar
+2775908
+
+# name: <cell-element>
+# type: scalar
+2304546
+
+# name: <cell-element>
+# type: scalar
+2823469
+
+# name: <cell-element>
+# type: scalar
+2571783
+
+# name: <cell-element>
+# type: scalar
+2907723
+
+# name: <cell-element>
+# type: scalar
+2071354
+
+# name: <cell-element>
+# type: scalar
+2949610
+
+# name: <cell-element>
+# type: scalar
+2297281
+
+# name: <cell-element>
+# type: scalar
+2279835
+
+# name: <cell-element>
+# type: scalar
+2312495
+
+# name: <cell-element>
+# type: scalar
+2735346
+
+# name: <cell-element>
+# type: scalar
+2730003
+
+# name: <cell-element>
+# type: scalar
+2707565
+
+# name: <cell-element>
+# type: scalar
+2928394
+
+# name: <cell-element>
+# type: scalar
+2219487
+
+# name: <cell-element>
+# type: scalar
+2128592
+
+# name: <cell-element>
+# type: scalar
+2113650
+
+# name: <cell-element>
+# type: scalar
+2072679
+
+# name: <cell-element>
+# type: scalar
+2069681
+
+# name: <cell-element>
+# type: scalar
+2078961
+
+# name: <cell-element>
+# type: scalar
+2692095
+
+# name: <cell-element>
+# type: scalar
+2668161
+
+# name: <cell-element>
+# type: scalar
+2064302
+
+# name: <cell-element>
+# type: scalar
+2929785
+
+# name: <cell-element>
+# type: scalar
+2064976
+
+# name: <cell-element>
+# type: scalar
+2761173
+
+# name: <cell-element>
+# type: scalar
+2755625
+
+# name: <cell-element>
+# type: scalar
+2451909
+
+# name: <cell-element>
+# type: scalar
+2069084
+
+# name: <cell-element>
+# type: scalar
+2875394
+
+# name: <cell-element>
+# type: scalar
+2580942
+
+# name: <cell-element>
+# type: scalar
+2895330
+
+# name: <cell-element>
+# type: scalar
+2306992
+
+# name: <cell-element>
+# type: scalar
+2313271
+
+# name: <cell-element>
+# type: scalar
+2333327
+
+# name: <cell-element>
+# type: scalar
+2160044
+
+# name: <cell-element>
+# type: scalar
+2299850
+
+# name: <cell-element>
+# type: scalar
+2759031
+
+# name: <cell-element>
+# type: scalar
+2562659
+
+# name: <cell-element>
+# type: scalar
+2645283
+
+# name: <cell-element>
+# type: scalar
+2866509
+
+# name: <cell-element>
+# type: scalar
+2784647
+
+# name: <cell-element>
+# type: scalar
+2415190
+
+# name: <cell-element>
+# type: scalar
+2727013
+
+# name: <cell-element>
+# type: scalar
+2281538
+
+# name: <cell-element>
+# type: scalar
+2880920
+
+# name: <cell-element>
+# type: scalar
+2686656
+
+# name: stop
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: scalar
+2853856
+
+# name: <cell-element>
+# type: scalar
+2471936
+
+# name: <cell-element>
+# type: scalar
+2497372
+
+# name: <cell-element>
+# type: scalar
+2420356
+
+# name: <cell-element>
+# type: scalar
+2421736
+
+# name: <cell-element>
+# type: scalar
+2442949
+
+# name: <cell-element>
+# type: scalar
+2435637
+
+# name: <cell-element>
+# type: scalar
+2855735
+
+# name: <cell-element>
+# type: scalar
+2778697
+
+# name: <cell-element>
+# type: scalar
+2306793
+
+# name: <cell-element>
+# type: scalar
+2830294
+
+# name: <cell-element>
+# type: scalar
+2576021
+
+# name: <cell-element>
+# type: scalar
+2924716
+
+# name: <cell-element>
+# type: scalar
+2072551
+
+# name: <cell-element>
+# type: scalar
+2957877
+
+# name: <cell-element>
+# type: scalar
+2304396
+
+# name: <cell-element>
+# type: scalar
+2280868
+
+# name: <cell-element>
+# type: scalar
+2313009
+
+# name: <cell-element>
+# type: scalar
+2742509
+
+# name: <cell-element>
+# type: scalar
+2731454
+
+# name: <cell-element>
+# type: scalar
+2717550
+
+# name: <cell-element>
+# type: scalar
+2931254
+
+# name: <cell-element>
+# type: scalar
+2222310
+
+# name: <cell-element>
+# type: scalar
+2145973
+
+# name: <cell-element>
+# type: scalar
+2118552
+
+# name: <cell-element>
+# type: scalar
+2076908
+
+# name: <cell-element>
+# type: scalar
+2070611
+
+# name: <cell-element>
+# type: scalar
+2085614
+
+# name: <cell-element>
+# type: scalar
+2692470
+
+# name: <cell-element>
+# type: scalar
+2672435
+
+# name: <cell-element>
+# type: scalar
+2064690
+
+# name: <cell-element>
+# type: scalar
+2931362
+
+# name: <cell-element>
+# type: scalar
+2065483
+
+# name: <cell-element>
+# type: scalar
+2776104
+
+# name: <cell-element>
+# type: scalar
+2758205
+
+# name: <cell-element>
+# type: scalar
+2464638
+
+# name: <cell-element>
+# type: scalar
+2069589
+
+# name: <cell-element>
+# type: scalar
+2876637
+
+# name: <cell-element>
+# type: scalar
+2586127
+
+# name: <cell-element>
+# type: scalar
+2900861
+
+# name: <cell-element>
+# type: scalar
+2308913
+
+# name: <cell-element>
+# type: scalar
+2315985
+
+# name: <cell-element>
+# type: scalar
+2338646
+
+# name: <cell-element>
+# type: scalar
+2209630
+
+# name: <cell-element>
+# type: scalar
+2302824
+
+# name: <cell-element>
+# type: scalar
+2760459
+
+# name: <cell-element>
+# type: scalar
+2563018
+
+# name: <cell-element>
+# type: scalar
+2657242
+
+# name: <cell-element>
+# type: scalar
+2869374
+
+# name: <cell-element>
+# type: scalar
+2786069
+
+# name: <cell-element>
+# type: scalar
+2418522
+
+# name: <cell-element>
+# type: scalar
+2727546
+
+# name: <cell-element>
+# type: scalar
+2291184
+
+# name: <cell-element>
+# type: scalar
+2883455
+
+# name: <cell-element>
+# type: scalar
+2689468
+
+# name: strand
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
++
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1
+-
+
+# name: transcripts
+# type: cell
+# rows: 1
+# columns: 55
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:W10C8.4a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:W10C8.4b
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y74C10AL.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:Y23H5B.6
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:F23C8.5.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:F23C8.5.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:F23C8.6
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:F23C8.3
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:F23C8.4
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W10C8.5.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W10C8.5.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W10C8.5.3
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 4
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9B.13a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9B.13b
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9B.13c.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9B.13c.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y39G10AR.13.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y39G10AR.13.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:W10C8.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:C55C2.5a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:C55C2.5b
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:C55C2.5c
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9AL.18.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9AL.18.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:Y37E3.9
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y71F9AR.1
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y39G10AR.12a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Transcript:Y39G10AR.12b.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Transcript:Y39G10AR.12b.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y39G10AL.1
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y39G10AR.20.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y39G10AR.20.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:Y71F9B.8
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9B.3.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9B.3.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y71F9B.5a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9B.5b.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9B.5b.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9AM.6.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9AM.6.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9AM.6.3
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:W03F11.1
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y37E3.17a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y37E3.17b
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.16.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.16.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.10.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.10.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 4
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.8a.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.8a.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.8b.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y37E3.8b.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:Y37E3.11
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:F32B5.4
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 8
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:F32B5.6a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:F32B5.6b
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:F32B5.6c
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:F32B5.6d.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:F32B5.6d.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:F32B5.6d.3
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:F32B5.6d.4
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:F32B5.6d.5
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:Y37E3.3
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9AM.5.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+Transcript:Y71F9AM.5.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y37E3.4.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y37E3.4.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9B.10a.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9B.10a.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9B.10b
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:Y71F9B.7
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:T16H5.1a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:T16H5.1b.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:T16H5.1b.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y37E3.7.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:Y37E3.7.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 11
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13a.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13a.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13a.3
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.3
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.4
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.5
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.6
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.7
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y71F9AL.13b.8
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:K07A3.1.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:K07A3.1.2
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:K07A3.1.3
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9AL.17
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y39G10AR.9
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y39G10AR.8
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y39G10AR.6
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 4
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W03F11.6a
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W03F11.6b
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W03F11.6c
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:W03F11.6d
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y39G10AR.10.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+Transcript:Y39G10AR.10.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:Y71F9B.9
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:C55C2.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:F40E3.5.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+Transcript:F40E3.5.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Transcript:Y71F9AL.10
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:W03D8.9
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:F23C8.13
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+Transcript:Y71F9B.4
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y39G10AL.3.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y39G10AL.3.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 2
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9AL.14.1
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+Transcript:Y71F9AL.14.2
+
+
+# name: <cell-element>
+# type: cell
+# rows: 1
+# columns: 1
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+Transcript:F32B5.8
+
+
