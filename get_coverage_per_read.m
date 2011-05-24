@@ -64,7 +64,7 @@ if ~isfield(CFG, 'tracks_max_mismatches')
 end
 
 win = CFG.read_len;
-eidx = [max(gene.eidx(1)-win,1):gene.eidx(1)-1, gene.eidx, gene.eidx(end)+1:min(gene.eidx(end)+win,CFG.chr_len(gene.chr_num))];
+eidx = [max(gene.eidx(1)-win,1):gene.eidx(1)-1, gene.eidx, gene.eidx(end)+1:gene.eidx(end)+win];
 win_size = length(max(gene.eidx(1)-win,1):gene.eidx(1)-1);
 
 for f = 1:length(CFG.tracks_fn{gene.chr_num}),
