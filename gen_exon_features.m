@@ -63,7 +63,7 @@ end
 eidx2tidx = zeros(1, length(eidx));
 eidx2tidx(tidx) = 1:length(tidx);
 
-feat = sparse(length(eidx), 1);
+feat = zeros(length(eidx), 1);
 idx = zeros(length(eidx), 1);
 num_bins = CFG.num_plifs/2 - 1;
 lmt = get_limits(CFG.max_side_len, num_bins+1);

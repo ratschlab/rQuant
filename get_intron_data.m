@@ -57,9 +57,11 @@ for s = 1:length(strand_str),
   strand = (strand_str(s)=='-') + 1;
   if ~isempty(intron_starts{strand})
     idx = find(intron_starts{strand}>=gene.start & intron_stops{strand}<=gene.stop);
-    intron_list = [intron_list; ...
-                   double([intron_starts{strand}(idx), intron_stops{strand}(idx), ...
-                        conf{strand}(idx), ((strand_str(s)=='-')+1)*ones(length(idx),1)])];
+    if ~isempty(idx)
+      intron_list = [intron_list; ...
+                     double([intron_starts{strand}(idx), intron_stops{strand}(idx), ...
+                     conf{strand}(idx), ((strand_str(s)=='-')+1)*ones(length(idx),1)])];
+    end
   end
 end
 if CFG.VERBOSE>=2,
@@ -78,6 +80,9 @@ for t = 1:length(gene.transcripts),
   for e = 1:size(exons,1)-1,
     if ~isempty(intron_list)
       idx = find(exons(e,2)+1==intron_list(:,1) & exons(e+1,1)-1==intron_list(:,2));
+      if CFG.both_strands && isfield(gene, 'strands') && ~all(intron_list(idx,4)==(gene.strands(t)=='-')+1)
+        idx = [];
+      end
       if CFG.both_strands && isfield(gene, 'strands') && ~isempty(idx)
         assert(all(intron_list(idx,4)==(gene.strands(t)=='-')+1));
       end
