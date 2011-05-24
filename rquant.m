@@ -1,18 +1,20 @@
-%
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
-%
-% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2009-2010 Max Planck Society
-%
-
 function rquant(CFG)
-% rquant(CFG)
+% RQUANT   Determines the abundance of multiple transcripts per gene locus from RNA-Seq measurements.
 %
-% -- input --
-% CFG: configuration struct
+%   rquant(CFG)
+%
+%   -- input --
+%   CFG: configuration struct
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2011 Max Planck Society
+%
 
 
 %%%% paths

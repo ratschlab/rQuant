@@ -1,24 +1,36 @@
 function [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const)
-% [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const)
+% OPT_PROFILES_DESCENT   Determines the optimal profile functions.
 %
-% -- input --
-% CFG: configuration struct
-% profile_weights: weights of profile functions
-% tscp_len_bin: vector of length bins for each transcript
-% exon_feat: P x num_bins matrix of features for P exonic positions
-% exon_feat_val: vector of indices to supporting points f
-% exon_feat_val_next: vector of indices to supporting points f+1
-% exon_feat_row: vector of row indices for sparse P x T matrix (position index)
-% exon_feat_col: vector column indices for sparse P x T matrix (transcript index)
-% weights: weights of transcripts
-% coverage: vector of observed exon coverage
-% seq_coeff: vector of sequence correction
-% R_const: constant residue
+%   [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col, weights, coverage, seq_coeff, R_const)
 %
-% -- output --
-% profile_weights: weights of profile functions
-% obj: objective value at optimum
-% fval: objective value at each step
+%   -- input --
+%   CFG:                configuration struct
+%   profile_weights:    weights of profile functions
+%   tscp_len_bin:       vector of length bins for each transcript
+%   exon_feat:          P x num_bins matrix of features for P exonic positions
+%   exon_feat_val:      vector of indices to supporting points f
+%   exon_feat_val_next: vector of indices to supporting points f+1
+%   exon_feat_row:      vector of row indices for sparse P x T matrix (position index)
+%   exon_feat_col:      vector column indices for sparse P x T matrix (transcript index)
+%   weights:            weights of transcripts
+%   coverage:           vector of observed exon coverage
+%   seq_coeff:          vector of sequence correction
+%   R_const:            constant residue
+%
+%   -- output --
+%   profile_weights: weights of profile functions
+%   obj: objective value at optimum
+%   fval: objective value at each step
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
 
 
 F = CFG.num_plifs;                     % number of supporting points
