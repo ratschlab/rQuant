@@ -1,32 +1,31 @@
-%
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
-%
-% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2009-2010 Max Planck Society
-%
-
 function genes = opt_transcripts_caller(PAR)
-% genes = opt_transcripts_caller(PAR)
+% OPT_TRANSCRIPTS_CALLER   Prepares data for transcript weight optimisation problem.
 %
-% -- input --
-% PAR contains
-%     CFG: configuration struct
-%     genes: struct defining genes with start, stops, exons etc.
+%   genes = opt_transcripts_caller(PAR)
+%
+%   -- input --
+%   PAR contains
+%     CFG:             configuration struct
+%     genes:           struct defining genes with start, stops, exons etc.
 %     profile_weights: weights of profile functions
-%     intron_dists: distances to closest intron
-%     seq_weights: weights for sequence normalisation
 %
-% -- output --
-% genes: struct with additional fields of eg. estimated transcript weights
+%   -- output --
+%   genes:             struct with additional fields of e.g. estimated transcript weights
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2011 Max Planck Society
+%
 
 
 CFG = PAR.CFG;
 genes = PAR.genes;
 profile_weights = PAR.profile_weights;
-intron_dists = PAR.intron_dists;
 if CFG.norm_seqbias
   seq_weights = PAR.seq_weights;
 end
@@ -77,27 +76,11 @@ for c = chr_num,
     end
     %%%%% prepare exon mask %%%%%
     exon_mask = zeros(gene.exonic_len, length(gene.transcripts));
-    gene.intron_dists = zeros(gene.exonic_len, length(gene.transcripts));
     for t = 1:length(gene.transcripts),
       if isfield(gene, 'strands') && ~isempty(gene.strands),
         strand_str = gene.strands(t);
       else
         strand_str = gene.strand;
-      end
-      dist = gen_intron_features(gene, t, CFG.num_intron_plifs, CFG.read_len);
-      assert(gene.exonic_len==size(dist,1));
-      idx = find(sum(sum(dist,2),3));
-      for p = idx',
-        tmp_dist = squeeze(dist(p,:,:));
-        if all(tmp_dist(:)==0),
-          gene.intron_dists(p,t) = 0;
-        else
-          if strand_str=='+'
-            gene.intron_dists(p,t) = intron_dists(tmp_dist==1);
-          else
-            gene.intron_dists(p,t) = intron_dists(tmp_dist'==1);
-          end
-        end
       end
       % fill exon mask
       if strand_str=='+'
@@ -125,7 +108,6 @@ for c = chr_num,
         seq_coeff(idx_exon_t, 1) = gen_sequence_features(CFG, genes(g), t)' * seq_weights;
         exon_mask(:,t) = exon_mask(:,t) .* seq_coeff;
       end
-      %exon_mask(:,t) = gen_exon_features(gene, t, CFG.num_plifs, CFG.max_side_len) * (profile_weights(rev_idx, gene.transcript_len_bin(t), gene.expr_bin(t))+1e-8) - gene.intron_dists(:,t);
     end
     
     %%%%% prepare intron mask %%%%%
@@ -187,12 +169,6 @@ for c = chr_num,
     genes(g).transcript_weights = weights;
     genes(g).obj = obj;
   end
-end
-
-if 0 %isequal(CFG.optimizer, 'cplex'),
-  fprintf(1, '\n');
-  [lpenv, status] = cplex_quit(lpenv,0);
-  lpenv = 0;
 end
 
 if CFG.VERBOSE>0, fprintf(1, '\nFinished after %2.f s\n', toc); end

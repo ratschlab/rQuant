@@ -1,12 +1,23 @@
 function p_adj = get_adj_bins(CFG)
-% p_adj = get_adj_bins(CFG)
-% 
-% -- input --
-% CFG: configuration struct
+% GET_ADJ_BINS   Gets adjacent supporting points
 %
-% -- output --
-% p_adj: F*N x 2 matrix of adjacent supporting points (1: prevoius, 2: next)
-
+%   p_adj = get_adj_bins(CFG)
+% 
+%   -- input --
+%   CFG:   configuration struct
+%
+%   -- output --
+%   p_adj: F*N x 2 matrix of adjacent supporting points (1: previous, 2: next)
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
 
 pw_nnz = get_included_thetas(CFG);
 F = CFG.num_plifs;

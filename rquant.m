@@ -23,7 +23,7 @@ CFG = configure_rquant(CFG);
 
 %%%% determine read length and number of mapped reads %%%%
 if 1
-if isequal(CFG.organism, 'elegans')
+if isequal(CFG.organism, 'elegans') || isequal(CFG.organism, 'arabidopsis') || isequal(CFG.organism, 'human') 
   CFG.read_len = 75;
 else
   CFG.read_len = 36;

@@ -1,28 +1,34 @@
+function [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
+% GEN_EXON_FEATURES  Generates transcript length feature matrix for PliFs.
 %
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
+%   [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
 %
-% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2009-2010 Max Planck Society
+%   -- input --
+%   CFG:         configuration struct with
+%                   num_plifs: number of supporting points for PLiFs and
+%                   max_side_len: maximal number of positions to be
+%                   considered at both transcript parts
+%   gene:        struct defining a gene with start, stops, exons etc.
+%   t:           index of transcript
+%   reverse_ret: if true, the positions are considered in reverse
+%                direction on the reverse strand
+%
+%   -- output --
+%   feat:        vector of features for P exonic positions
+%   idx:         vector of indices to supporting points f
+%   idx_next:    vector of indices to supporting points f+1
+%   del_idx:     vector of position that do not cover a whole bin
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2011 Max Planck Society
 %
 
-function [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
-% [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
-%
-% -- input --
-% gene: struct defining a gene with start, stops, exons etc.
-% t: index of transcript
-% CFG: configuration struct with num_plifs: number of supporting points for PLiFs and
-%      max_side_len: maximal number of positions to be considered at both transcript parts
-% reverse_ret: reverse output for reverse strand
-%
-% -- output --
-% feat: vector of features for P exonic positions
-% idx: vector of indices to supporting points f
-% idx_next: vector of indices to supporting points f+1
-% del_idx: vector of position that do not cover a whole bin
 
 if nargin<4  reverse_ret = 0;
 end

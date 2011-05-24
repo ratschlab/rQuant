@@ -1,14 +1,26 @@
 function [profile_weights, obj, seq_weights] = opt_density(CFG, genes)
-% [profile_weights, obj, seq_weights] = opt_profiles_smo(CFG, genes)
+% OPT_DENSITY   Determines optimal parameters of density function.
 %
-% -- input --
-% CFG: configuration struct
-% genes: struct defining genes with start, stops, exons etc.
+%   [profile_weights, obj, seq_weights] = opt_profiles_smo(CFG, genes)
 %
-% -- output --
-% profile_weights: weights of profile functions 
-% obj: objective evaluated with optimal parameters
-% seq_weights: weights for sequence normalisation
+%   -- input --
+%   CFG:             configuration struct
+%   genes:           struct defining genes with start, stops, exons etc.
+%
+%   -- output --
+%   profile_weights: weights of profile functions 
+%   obj:             objective evaluated with optimal parameters
+%   seq_weights:     weights for sequence normalisation
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
 
 
 T = length([genes.transcripts]);       % number of transcripts
@@ -62,7 +74,7 @@ if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
-  %fprintf('%i\r', g);
+  fprintf('%i\r', g);
   try
     [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
   catch

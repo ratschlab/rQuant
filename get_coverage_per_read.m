@@ -1,27 +1,31 @@
-%
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
-%
-% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2009-2010 Max Planck Society
-%
-
 function [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
-% [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
+% GET_COVERAGE_PER_READ  Gets the reads from the BAM file covering the gene region.
 %
-% -- input --
-% CFG: configuration struct
-% gene: struct defining a gene with start, stops, exons etc.
-% reverse_ret: reverse exon_count for minus strand
+%   [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
 %
-% -- output --
-% coverage: matrix of exonic positions x reads
-% excluded_reads: reads excluded per transcript
-% ok: indicates success of file parsing
-% intron_list: nx4 list of introns (intron start, intron stop, confirmation, strand)
-% read_starts: vector of number of reads starting at the given exonic positions 
+%   -- input --
+%   CFG:            configuration struct
+%   gene:           struct defining a gene with start, stops, exons etc.
+%   reverse_ret:    if true, the positions are considered in reverse
+%                   direction on the reverse strand
+%
+%   -- output --
+%   coverage:       matrix of exonic positions x reads
+%   excluded_reads: reads excluded per transcript
+%   ok:             indicates success of file parsing
+%   intron_list:    nx4 list of introns
+%                   (intron start, intron stop, confirmation, strand)
+%   read_starts:    vector of number of reads starting at the given exonic positions 
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2011 Max Planck Society
+%
 
 
 MIN_COV = 0.5;

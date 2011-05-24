@@ -20,9 +20,17 @@ function kmers = seq_2_kmers(seq, order, win_size)
 % kmers: matrix of positional substring occurrence
 
 
+acgt = 'ACGT';
+
+fidx = find(seq=='N');
+% replace Ns by random base
+if ~isempty(fidx)
+  ridx = ceil(rand(1, length(fidx))*4);
+  seq(fidx) = acgt(ridx);
+end
+
 assert(all(all(seq=='A' | seq=='C' | seq=='G' | seq=='T')));
 s_len = length(seq);
-acgt = 'ACGT';
 num_nt = length(acgt);
 
 % determine number of k-mer occurences in whole sequence
