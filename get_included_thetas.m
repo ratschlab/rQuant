@@ -1,11 +1,24 @@
 function pw_nnz = get_included_thetas(CFG)
-% pw_nnz = get_included_thetas(CFG)
+% GET_INCLUDED_THETAS   Gets supporting points included in optimisation.
 %
-% -- input --
-% CFG: configuration struct
+%   pw_nnz = get_included_thetas(CFG)
 %
-% -- ouput --
-% pw_nnz: F x N logical matrix indicating included supporting points (thetas)
+%   -- input --
+%   CFG: configuration struct
+%
+%   -- ouput --
+%   pw_nnz: F x N logical matrix indicating included supporting points (thetas)
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
+
 
 F = CFG.num_plifs;
 N = size(CFG.transcript_len_ranges,1);

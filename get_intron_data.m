@@ -1,15 +1,27 @@
 function [intron_mask intron_count] = get_intron_data(gene, CFG, introns, gene_idx)
-% [intron_mask intron_count] = get_intron_data(gene, CFG, introns)
+% GET_INTRON_DATA   Prepares intron data for gene.
 %
-% -- input --
-% gene: struct defining a gene with start, stops, exons etc.
-% CFG: configuration struct
-% introns: nx4 list of introns (intron start, intron stop, confirmation, strand)
-% gene_idx: index of gene
+%   [intron_mask intron_count] = get_intron_data(gene, CFG, introns)
 %
-% -- output --
-% intron_mask: IxT matrix defining whether an intron belongs to a particular transcript
-% intron_count: vector of observed intron confirmation
+%   -- input --
+%   gene:         struct defining a gene with start, stops, exons etc.
+%   CFG:          configuration struct
+%   introns:      nx4 list of introns (intron start, intron stop, confirmation, strand)
+%   gene_idx:     index of gene
+%
+%   -- output --
+%   intron_mask:  IxT matrix defining whether an intron belongs to a particular transcript
+%   intron_count: vector of observed intron confirmation
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2011 Max Planck Society
+%
 
 
 % plus strand

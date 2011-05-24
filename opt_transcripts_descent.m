@@ -1,22 +1,34 @@
 function [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, max_iter, weights0, reg)
-%[weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, max_iter, weights0, reg)
+% OPT_TRANSCRIPTS_DESCENT   Determines the optimal transcript weights.
 %
-% -- input --
-% CFG: configuration struct
-% coverage: vector of observed exon coverage 
-% exon_mask: PxT matrix modelling 'importance' of a position within a transcript
-% intron_count: vector of observed intron confirmation
-% intron_mask: IxT matrix defining whether an intron belongs to a particular transcript
-% C_w: regularisation parameter per transcript (T x 1)
-% R_const: constant residue
-% max_iter: maximal number of iterations (optional)
-% weights0: initialisation values of the weights (optional)
-% reg: regularisation method (optional)
+%   [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, max_iter, weights0, reg)
 %
-% -- output --
-% weights: weights of transcripts
-% obj: objective value at optimum
-% fval: objective value at each step
+%    -- input --
+%    CFG:          configuration struct
+%    coverage:     vector of observed exon coverage 
+%    exon_mask:    PxT matrix modelling 'importance' of a position within a transcript
+%    intron_count: vector of observed intron confirmation
+%    intron_mask:  IxT matrix defining whether an intron belongs to a particular transcript
+%    C_w:          regularisation parameter per transcript (T x 1)
+%    R_const:      constant residue
+%    max_iter:     maximal number of iterations (optional)
+%    weights0:     initialisation values of the weights (optional)
+%    reg:          regularisation method (optional)
+%
+%    -- output --
+%    weights:     weights of transcripts
+%    obj:         objective value at optimum
+%    fval:        objective value at each step
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
 
 
 T = size(exon_mask,2); % number of transcripts
@@ -132,7 +144,7 @@ else
   end
 end
 if CFG.VERBOSE>0 && cnt>0, fprintf(1, 'objectives differ for %i transcripts\n', cnt); end
-assert(all(fval(1:end-1)-fval(2:end)>-1e-3));
+assert(all(fval(1:end-1)-fval(2:end)>-1e-2));
 if CFG.VERBOSE>0, fprintf(1, 'Took %.1fs.\n', toc); end
 
 obj = fval(end);

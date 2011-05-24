@@ -37,7 +37,7 @@ CFG.paired = 0;
 CFG.norm_seqbias = 0;
 CFG.RR.half_win_size = 10;
 CFG.RR.num_train_frac = 0.8;
-CFG.RR.order = 2;
+CFG.RR.order = 1;
 CFG.RR.lambda = 1e-2;
 
 %%%%% profile learning
@@ -56,7 +56,7 @@ CFG.transcript_len_ranges = round([tlr(1:end-1)'+1 tlr(2:end)']);
 % bins for distances to closest intron
 CFG.num_intron_plifs = 5;
 % enables subsampling of data for learning profiles
-CFG.subsample = 1;
+CFG.subsample = 0;
 % maximal number of examples for learning profiles
 CFG.max_num_train_exm = 1e6;
 % fraction of positions to be subsampled for learning profiles

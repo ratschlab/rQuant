@@ -1,21 +1,23 @@
-%
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
-%
-% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2009-2010 Max Planck Society
-%
-
 function save_fname = rquant_core(CFG)
-% save_fname = rquant_core(CFG)
+% RQUANT_CORE   Core function of rQuant.
 %
-% -- input --
-% CFG: configuration struct
+%   save_fname = rquant_core(CFG)
 %
-% -- output --
-% save_fname: file name of saved rQuant result
+%   -- input --
+%   CFG:        configuration struct
+%
+%   -- output --
+%   save_fname: file name of saved rQuant result
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2011 Max Planck Society
+%
 
 
 if CFG.use_rproc,
@@ -31,7 +33,7 @@ if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-genes = genes(1:1000);
+%genes = genes(1:1000);
 
 % add eidx, adapt to closed intervals
 [genes num_del] = sanitise_genes(genes, CFG);
@@ -39,7 +41,8 @@ genes = genes(1:1000);
 % determine ranges of transcript length bins
 if isequal(CFG.gene_source, 'annotation')
   tl = [genes.transcript_length];
-  if ~isequal(CFG.organism, 'human')
+  if 1%~isequal(CFG.organism, 'human')
+    %tlr = [0 inf];
     tlr = ceil([0 prctile(tl,20) prctile(tl,40) prctile(tl,60) prctile(tl,80) inf])
   else
     tlr = ceil([0 prctile(tl,10) prctile(tl,20) prctile(tl,30) ...
@@ -86,9 +89,9 @@ if CFG.load_profiles,
 else
   profile_weights = ones(CFG.num_plifs, size(CFG.transcript_len_ranges,1));
   x = linspace(0, 0.5, CFG.num_intron_plifs);
-  intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));  
+  intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));
+  seq_weights = [];
 end
-profile_weights(profile_weights(:,end)==0, end) = 1; % fixes 0-weights in last bin that were not learned because of too little data
 profile_weights
 
 
@@ -99,11 +102,22 @@ if CFG.learn_profiles & ~CFG.load_profiles
   else
     fprintf(1, '...\n\n');
   end
+  if 1
   profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
-  tscp_len_bin = zeros(1, length(genes));
+  tscp_len_bin = zeros(1, length(profile_genes));
+  max_len = inf;%CFG.transcript_len_ranges(end,1)+CFG.transcript_len_ranges(end-1,2)-CFG.transcript_len_ranges(end-1,1)+1;
   for g = 1:length(profile_genes),
     ridx = randperm(length(profile_genes(g).transcripts));
     tscp_len_bin(g) = profile_genes(g).transcript_len_bin(ridx(1));
+    % correct last bin
+    %if profile_genes(g).transcript_length(ridx(1)) > max_len
+      %tscp_len_bin(g) = 0;
+    %end
+    [tmp_coverage] = get_coverage_per_read(CFG, profile_genes(g), 1);    
+    profile_genes(g).mean_ec = mean(tmp_coverage);
+    if mean(tmp_coverage) < 15
+      tscp_len_bin(g) = 0;
+    end
   end
   % minimal number of examples in one transcript length bin
   min_bin_num = inf;
@@ -119,9 +133,15 @@ if CFG.learn_profiles & ~CFG.load_profiles
   end
   profile_genes = profile_genes(profile_genes_idx);
   ridx = randperm(length(profile_genes));
+  %num_exm = length(profile_genes);
   num_exm = min(length(profile_genes), 500);
   profile_genes = profile_genes(ridx(1:num_exm));
+  else
+    profile_genes = genes([genes.is_alt]==0);
+    %profile_genes = genes;
+  end
   fprintf('using %i genes for profile learning\n', length(profile_genes));
+  %keyboard
   [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes);
   %[profile_weights, obj, seq_weights] = opt_density_smo(CFG, profile_genes);
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
@@ -130,10 +150,10 @@ if CFG.learn_profiles & ~CFG.load_profiles
   else
     save(save_fname, 'CFG', 'profile_genes', 'profile_weights');
   end
-  return
 end
   
 fprintf(1, '\nDetermining transcript weights...\n');
+profile_weights(:,end) = 1
 
 PAR.CFG = CFG;
 PAR.profile_weights = profile_weights;

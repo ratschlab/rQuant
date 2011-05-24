@@ -3,18 +3,31 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% directories from which to load read data and genes %%%%%
-CFG.organism = 'elegans';
+%CFG.organism = 'arabidopsis';
+%CFG.organism = 'elegans';
+CFG.organism = 'human';
+%CFG.exp = 'fs_strong_bias_seq_bias';
 CFG.exp = 'fs_strong_bias_seq_bias';
 CFG.gene_source = 'annotation';
 
-CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
-CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
+%CFG.tracks_dir = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/';
+%CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/tracks/';
+%CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
+CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/tracks/';
+CFG.repeats_fn = '';
+%CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
 
 %%%%% genes %%%%% 
-CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2011-01-26/genes_expr.mat';
+%CFG.gene_fn = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/genes_ara.mat';
+%CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/run_2011-03-28/genes_expr.mat';
+%CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2011-01-26/genes_expr.mat';
+CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/run_2011-05-02/genes_expr.mat';
 
 %%%%% genome info %%%%%
-CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
+%CFG.genome_info = init_genome('/fml/ag-raetsch/share/databases/genomes/A_thaliana/arabidopsis_tair10/annotations/genome.gio/genome.config');
+%CFG.genome_info = init_genome('/fml/ag-raetsch/home/bohnert/tmp/ara_test/genome_tair7.config');
+%CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
+CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/human/hg19/hg19.gio/genome.config');
 % contig length
 for c = 1:length(CFG.genome_info.flat_fnames),
   d = dir(CFG.genome_info.flat_fnames{c});
@@ -38,15 +51,17 @@ CFG.write_density_model = 0;
 CFG.optimizer = 'cplex';
 
 %%%%% enables profile learning %%%%%
-CFG.learn_profiles = 1;
+CFG.learn_profiles = 0;
 
 %%%%% pre-learned profiles %%%%%
+%CFG.profiles_fn = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/profiles.mat';
+%CFG.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/fs_strong_bias_2011-03-28_s100f100n10/tmp/iter21.mat';
 CFG.profiles_fn = '';
 
 %%%%% regularisation strengths %%%%%
-C_I = [10^0 10^1 10^2];
-C_F = [10^1 10^3 10^4];
-C_N = [10^0 10^1 10^2];
+C_I = 100;%[10^0 10^1 10^2];
+C_F = 100;%[10^1 10^2 10^3 10^4];
+C_N = 10;%[10^0 10^1 10^2];
 
 %%%%% rproc settings for rquant subjobs %%%%%
 CFG.use_rproc = 0; % 1: cluster submission or 0: locally
@@ -66,7 +81,7 @@ if CFG.use_rproc,
   CFG.rproc_time                  = 5*60; % mins
 end
 
-run_local = 0;
+run_local = 1;
 
 for s = 1:length(C_I),
   CFG.C_I = C_I(s);
@@ -76,14 +91,17 @@ for s = 1:length(C_I),
       CFG.C_N = C_N(n);
       exp_str = sprintf('s%if%in%i', CFG.C_I, CFG.C_F, CFG.C_N);
       %%%%% result directory %%%%%
-      %date_exp = '2011-03-02';
-      date_exp = datestr(now,'yyyy-mm-dd');
+      date_exp = '2011-05-06-0';
+      %date_exp = datestr(now,'yyyy-mm-dd');
       %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
-      CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+      %CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+      %CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+      CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
       if ~exist(CFG.out_dir ,'dir'),
         [s m mid] = mkdir(CFG.out_dir);
         assert(s);
       end
+      CFG.profiles_fn = sprintf('%s/profiles.mat', CFG.out_dir);
       %%%%% rproc settings for main job %%%%%
       if ~run_local
         rproc_memreq                = 2000;
