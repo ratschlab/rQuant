@@ -34,11 +34,9 @@ clear PAR;
 %%%% paths
 addpath(CFG.paths);
 
-if CFG.VERBOSE>0, tic; end
-
-genes(1).mean_ec = [];
-genes(1).transcript_weights = [];
-genes(1).obj = [];
+[genes.mean_ec] = deal([]);  
+[genes.transcript_weights] = deal([]);
+[genes.obj] = deal([]);
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,
@@ -50,11 +48,7 @@ for c = chr_num,
     %%%%% load exon coverage and introns for gene %%%%%
     try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
-      if ~CFG.norm_seqbias
-        [coverage excluded_reads reads_ok introns] = get_coverage_per_read(CFG, gene);
-      else
-        [coverage excluded_reads reads_ok introns genes(g).num_read_starts] = get_coverage_per_read(CFG, gene);
-      end
+      [coverage excluded_reads reads_ok introns] = get_coverage_per_read(CFG, gene);
       if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
     catch
       reads_ok = 0;
@@ -165,10 +159,13 @@ for c = chr_num,
     end
     
     CFG.VERBOSE = 1;
-    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, gene.transcript_length', CFG.C_I);
+    C_w = gene.transcript_length';
+    %C_w = full(mean(coverage)) * gene.transcript_length';
+    %C_w = full(mean(coverage))*ones(length(gene.transcript_length),1);
+    %C_w = 1/full(mean(coverage)) * gene.transcript_length';
+    %C_w = ones(length(gene.transcript_length),1);
+    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w);
     genes(g).transcript_weights = weights;
     genes(g).obj = obj;
   end
 end
-
-if CFG.VERBOSE>0, fprintf(1, '\nFinished after %2.f s\n', toc); end
