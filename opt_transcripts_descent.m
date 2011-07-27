@@ -3,22 +3,22 @@ function [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask
 %
 %   [weights, obj, fval] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, max_iter, weights0, reg)
 %
-%    -- input --
-%    CFG:          configuration struct
-%    coverage:     vector of observed exon coverage 
-%    exon_mask:    PxT matrix modelling 'importance' of a position within a transcript
-%    intron_count: vector of observed intron confirmation
-%    intron_mask:  IxT matrix defining whether an intron belongs to a particular transcript
-%    C_w:          regularisation parameter per transcript (T x 1)
-%    R_const:      constant residue
-%    max_iter:     maximal number of iterations (optional)
-%    weights0:     initialisation values of the weights (optional)
-%    reg:          regularisation method (optional)
+%   -- input --
+%   CFG:          configuration struct
+%   coverage:     vector of observed exon coverage 
+%   exon_mask:    PxT matrix modelling 'importance' of a position within a transcript
+%   intron_count: vector of observed intron confirmation
+%   intron_mask:  IxT matrix defining whether an intron belongs to a particular transcript
+%   C_w:          regularisation parameter per transcript (T x 1)
+%   R_const:      constant residue
+%   max_iter:     maximal number of iterations (optional)
+%   weights0:     initialisation values of the weights (optional)
+%   reg:          regularisation method (optional)
 %
-%    -- output --
-%    weights:     weights of transcripts
-%    obj:         objective value at optimum
-%    fval:        objective value at each step
+%   -- output --
+%   weights:     weights of transcripts
+%   obj:         objective value at optimum
+%   fval:        objective value at each step
 %
 %
 %   This program is free software; you can redistribute it and/or modify

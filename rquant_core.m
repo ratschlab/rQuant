@@ -102,7 +102,7 @@ if CFG.learn_profiles & ~CFG.load_profiles
   else
     fprintf(1, '...\n\n');
   end
-  if 1
+  if 0
   profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
   tscp_len_bin = zeros(1, length(profile_genes));
   max_len = inf;%CFG.transcript_len_ranges(end,1)+CFG.transcript_len_ranges(end-1,2)-CFG.transcript_len_ranges(end-1,1)+1;
@@ -137,13 +137,13 @@ if CFG.learn_profiles & ~CFG.load_profiles
   num_exm = min(length(profile_genes), 500);
   profile_genes = profile_genes(ridx(1:num_exm));
   else
-    profile_genes = genes([genes.is_alt]==0);
+    load('~/tmp/profiles.mat', 'profile_genes');
+    %profile_genes = genes([genes.is_alt]==0);
     %profile_genes = genes;
   end
   fprintf('using %i genes for profile learning\n', length(profile_genes));
   %keyboard
   [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes);
-  %[profile_weights, obj, seq_weights] = opt_density_smo(CFG, profile_genes);
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
   if CFG.norm_seqbias
     save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
@@ -153,7 +153,6 @@ if CFG.learn_profiles & ~CFG.load_profiles
 end
   
 fprintf(1, '\nDetermining transcript weights...\n');
-profile_weights(:,end) = 1
 
 PAR.CFG = CFG;
 PAR.profile_weights = profile_weights;

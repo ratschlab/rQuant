@@ -42,13 +42,13 @@ CFG.RR.lambda = 1e-2;
 
 %%%%% profile learning
 % enables loading of profiles from CFG.profiles_fn
-CFG.load_profiles = 0;
+CFG.load_profiles = 1;
 %%%%% number of iterations %%%%%
 CFG.max_iter = 100;
 % number of plifs for profile functions
-CFG.num_plifs = 50;
+CFG.num_plifs = 100; %50
 % maximal number of positions to be considered at both transcript ends
-CFG.max_side_len = 5000;
+CFG.max_side_len = 500; %5000
 % bins for different transcript lengths % prctile(tlen,10) prctile(tlen,90)
 tlr = [0 649 1008 1379 1977 inf];
 %tlr = [1 750 921 1092 1263 1434 1605 1776 1947 2118 2289 2461 2632 2803 2974 3145 3316 3487 3658 3829 4000 Inf];

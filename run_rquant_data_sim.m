@@ -3,31 +3,33 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% directories from which to load read data and genes %%%%%
-%CFG.organism = 'arabidopsis';
-%CFG.organism = 'elegans';
-CFG.organism = 'human';
-%CFG.exp = 'fs_strong_bias_seq_bias';
-CFG.exp = 'fs_strong_bias_seq_bias';
+CFG.organism = 'elegans'; % 'arabidopsis' 'human'
+CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias_seq_bias'
 CFG.gene_source = 'annotation';
 
-%CFG.tracks_dir = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/';
-%CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/tracks/';
-%CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
-CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/tracks/';
-CFG.repeats_fn = '';
-%CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
-
-%%%%% genes %%%%% 
-%CFG.gene_fn = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/genes_ara.mat';
-%CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/run_2011-03-28/genes_expr.mat';
-%CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2011-01-26/genes_expr.mat';
-CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/run_2011-05-02/genes_expr.mat';
-
-%%%%% genome info %%%%%
-%CFG.genome_info = init_genome('/fml/ag-raetsch/share/databases/genomes/A_thaliana/arabidopsis_tair10/annotations/genome.gio/genome.config');
-%CFG.genome_info = init_genome('/fml/ag-raetsch/home/bohnert/tmp/ara_test/genome_tair7.config');
-%CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
-CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/human/hg19/hg19.gio/genome.config');
+%%%%% tracks, repeats, genes, genome info %%%%% 
+switch CFG.organism
+ case 'arabidopsis'
+  %CFG.tracks_dir = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/';
+  %CFG.repeats_fn = '';
+  %CFG.gene_fn = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/genes_ara.mat';
+  %CFG.genome_info = init_genome('/fml/ag-raetsch/home/bohnert/tmp/ara_test/genome_tair7.config');
+  CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/tracks/';
+  CFG.repeats_fn = '';
+  CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/run_2011-03-28/genes_expr.mat';
+  CFG.genome_info = init_genome('/fml/ag-raetsch/share/databases/genomes/A_thaliana/arabidopsis_tair10/annotations/genome.gio/genome.config');
+ case 'elegans'
+  CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/tracks/';
+  CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks/';
+  %CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2011-01-26/genes_expr.mat';
+  CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/run_2011-07-06/genes_expr.mat';
+  CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
+ case 'human'
+  CFG.tracks_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/tracks/';
+  CFG.repeats_fn = '';
+  CFG.gene_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/run_2011-05-02/genes_expr.mat';
+  CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/human/hg19/hg19.gio/genome.config');
+end
 % contig length
 for c = 1:length(CFG.genome_info.flat_fnames),
   d = dir(CFG.genome_info.flat_fnames{c});
@@ -47,15 +49,10 @@ CFG.tracks_max_mismatches = 1e3;
 CFG.write_gff = 0;
 CFG.write_density_model = 0;
 
-%%%%% optimizer %%%%%
-CFG.optimizer = 'cplex';
-
 %%%%% enables profile learning %%%%%
-CFG.learn_profiles = 0;
+CFG.learn_profiles = 1;
 
 %%%%% pre-learned profiles %%%%%
-%CFG.profiles_fn = '/fml/ag-raetsch/home/bohnert/tmp/ara_test/profiles.mat';
-%CFG.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/fs_strong_bias_2011-03-28_s100f100n10/tmp/iter21.mat';
 CFG.profiles_fn = '';
 
 %%%%% regularisation strengths %%%%%
@@ -91,12 +88,16 @@ for s = 1:length(C_I),
       CFG.C_N = C_N(n);
       exp_str = sprintf('s%if%in%i', CFG.C_I, CFG.C_F, CFG.C_N);
       %%%%% result directory %%%%%
-      date_exp = '2011-05-06-0';
       %date_exp = datestr(now,'yyyy-mm-dd');
-      %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
-      %CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
-      %CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
-      CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+      date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
+      switch CFG.organism
+       case 'arabidopsis'
+        CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+       case 'elegans'
+        CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+       case 'human'
+        CFG.out_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/rquant/%s_%s_%s/', CFG.exp, date_exp, exp_str);
+      end
       if ~exist(CFG.out_dir ,'dir'),
         [s m mid] = mkdir(CFG.out_dir);
         assert(s);
@@ -112,8 +113,7 @@ for s = 1:length(C_I),
         rproc_par.arch              = 64;
         rproc_par.identifier        = '';
         rproc_par.verbosity         = 0;
-        rproc_time                  = 72*60; % mins
-        %rproc_par.envstr            = 'export MOSEKLM_LICENSE_FILE=/fml/ag-raetsch/share/software/mosek/6/licenses/mosek.lic; export LD_LIBRARY_PATH=/fml/ag-raetsch/share/software/mosek/6/tools/platform/linux64x86/bin';
+        rproc_time                  = 72*60;
         rproc_par.identifier = sprintf('rq.%s%s-', CFG.organism(1:2), exp_str);
         fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
         job = rproc('rquant', CFG, rproc_memreq, rproc_par, rproc_time);

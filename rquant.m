@@ -18,7 +18,7 @@ function rquant(CFG)
 
 
 %%%% paths
-[CFG.paths CFG.rproc_par.envstr] = set_rquant_paths(CFG);
+CFG.paths = set_rquant_paths(CFG);
 
 %%%% configuration
 CFG = configure_rquant(CFG);

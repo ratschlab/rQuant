@@ -21,6 +21,7 @@ function limits = get_limits(max_lmt, num_lmt)
 %
 
 
+%limits = round(linspace(0, max_lmt, num_lmt));
 limits = round(linspace(0, sqrt(max_lmt), num_lmt).^2);
 limits(1) = 1;
 limits(end) = inf;
