@@ -22,13 +22,10 @@ function [genes, num_del] = sanitise_genes(genes, CFG)
 
 % add exonic length
 % initialise transcript length bins
-genes(1).transcript_length = [];
-genes(1).transcript_len_bin = [];
-genes(1).eidx = [];
-genes(1).exonic_len = 0;
-if CFG.norm_seqbias
-  genes(1).num_read_starts = [];
-end
+[genes.transcript_length] = deal([]);
+[genes.transcript_len_bin] = deal([]);
+[genes.eidx] = deal([]);
+[genes.exonic_len] = deal(0);
 del_idx = false(1, length(genes));
 for g = 1:length(genes),
   eidx = [];
@@ -81,9 +78,6 @@ for g = 1:length(genes),
   assert(genes(g).start<=genes(g).stop);
   genes(g).eidx = unique(eidx);
   genes(g).exonic_len = length(genes(g).eidx);
-  if CFG.norm_seqbias
-    genes(g).num_read_starts = zeros(1, genes(g).exonic_len);
-  end
 end
 genes(del_idx) = [];
 num_del = sum(del_idx);
