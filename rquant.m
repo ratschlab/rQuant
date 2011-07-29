@@ -39,7 +39,7 @@ end
 
 %%%%% options Galaxy/local usage %%%%%
 % more output to stdout
-CFG.VERBOSE = 2; % 0: no output, 1: more output, 2: debug output
+CFG.VERBOSE = 1; % 0: no output, 1: more output, 2: debug output
 % parallelisation with rproc (1: cluster submission or 0: locally)
 if ~isfield(CFG, 'use_rproc'), CFG.use_rproc = 0; end
 
@@ -143,7 +143,7 @@ CFG.seq.order = 1;
 % enables loading of profiles from CFG.profiles_fn
 CFG.load_profiles = load_profiles;
 CFG.profiles_fn = profiles_fn;
-CFG.learn_profiles = learn_profiles;
+CFG.learn_profiles = learn_profiles; % 0: no learning, 1: empirically estimated, 2: optimised
 % number of iterations
 CFG.max_iter = 100;
 % number of plifs for profile functions
@@ -162,7 +162,16 @@ CFG.subsample_frac = 0.23;
 if ~isfield(CFG, 'C_I'), CFG.C_I = 100; end
 if ~isfield(CFG, 'C_F'), CFG.C_F = 100; end
 if ~isfield(CFG, 'C_N'), CFG.C_N = 10; end
-
+% checks of variable domains
+if CFG.load_profiles && CFG.learn_profiles==1,
+  error('Pre-learned profiles cannot be used for empirical profile estimation.');
+end
+if CFG.norm_seqbias && CFG.learn_profiles==1,
+  error('Sequence bias estimation only works with density optimisation');
+end
+if ~exist(profiles_fn, 'file') && CFG.load_profiles
+  error('File with pre-learned profiles does not exist.');
+end
 
 %%%%% rquant %%%%%
 save_fname = rquant_core(CFG);
