@@ -29,10 +29,10 @@ PAR.CFG.write_density_model = 0;
 PAR.profiles_fn_out = '';
 
 %%%%% enables profile learning %%%%%
-PAR.learn_profiles = 1;
+PAR.learn_profiles = 2;
 
 %%%%% pre-learned profiles %%%%%
-PAR.load_profiles = 0;
+PAR.load_profiles = 1;
 PAR.profiles_fn = '';
 
 %%%%% regularisation strengths %%%%%
@@ -84,7 +84,8 @@ for s = 1:length(C_I),
         [s m mid] = mkdir(PAR.output_dir);
         assert(s);
       end
-      PAR.CFG.profiles_fn = sprintf('%s/profiles.mat', PAR.output_dir);
+      PAR.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_strong_bias_2011-07-08_12h25_s100f100n10/profiles.mat';
+      %PAR.profiles_fn = sprintf('%s/profiles.mat', PAR.output_dir);
       %%%%% rproc settings for main job %%%%%
       if ~run_local
         rproc_memreq                = 2000;

@@ -75,7 +75,7 @@ if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
 tmp_VERBOSE = CFG.VERBOSE;
 CFG.VERBOSE = 0;
 for g = 1:length(genes),
-  fprintf('%i\r', g);
+  if tmp_VERBOSE>1, fprintf(1, '%i\r', g); end
   try
     [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
   catch
@@ -172,7 +172,7 @@ if any(~mask),
     %seq_target = seq_target(:, subs_idx);
     %seq_target_bg = seq_target_bg(:, subs_idx);
   end
-  if CFG.VERBOSE>0, fprintf('subsampled from %i to %i positions\n', P_all, P); end
+  if CFG.VERBOSE>0, fprintf('Subsampled from %i to %i positions\n', P_all, P); end
   clear P_old;
 end
 
@@ -201,7 +201,10 @@ if nargin<3
 else
   profile_weights(~pw_nnz) = 0;
 end
-profile_weights
+if CFG.VERBOSE>0 && CFG.load_profiles,
+  fprintf(1, 'Using these profiles as initialisation\n')
+  profile_weights
+end
 profile_weights_old = zeros(F, N);
 norm_pw = ones(1, N);
 fval = 1e100*ones(1, num_opt_steps); % objective values

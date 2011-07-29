@@ -30,7 +30,7 @@ end
 
 % add eidx, adapt to closed intervals
 [genes num_del num_merged] = sanitise_genes(genes, CFG);
-if CFG.VERBOSE>0, fprintf(1, 'using %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
+if CFG.VERBOSE>0, fprintf(1, '\nUsing %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
 clear num_del num_merged;
 
 % determine ranges of transcript length bins
@@ -51,7 +51,7 @@ end
 
 
 % initialise profiles
-if CFG.load_profiles,
+if CFG.load_profiles
   if CFG.VERBOSE>1
     fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
   elseif CFG.VERBOSE==1
@@ -66,73 +66,79 @@ if CFG.load_profiles,
     load(CFG.profiles_fn, 'seq_weights');
   end
   if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
-    error('profiles have wrong dimensions');
+    error('Profiles have wrong dimensions.');
   end
 else
-  %profile_weights = get_empirical_profiles(CFG, genes);
   profile_weights = ones(CFG.num_plifs, size(CFG.transcript_len_ranges,1));
   seq_weights = [];
 end
-if CFG.VERBOSE>1
-  profile_weights
-end
 
 
-if CFG.learn_profiles & ~CFG.load_profiles
+if CFG.learn_profiles>0
   fprintf(1, '\nDetermining profile');
   if CFG.norm_seqbias
-    fprintf(1, ' and sequence bias...\n\n');
-  else
-    fprintf(1, '...\n\n');
+    fprintf(1, ' and sequence bias');
   end
-  if 0
-  profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
-  tscp_len_bin = zeros(1, length(profile_genes));
-  max_len = inf;%CFG.transcript_len_ranges(end,1)+CFG.transcript_len_ranges(end-1,2)-CFG.transcript_len_ranges(end-1,1)+1;
-  for g = 1:length(profile_genes),
-    ridx = randperm(length(profile_genes(g).transcripts));
-    tscp_len_bin(g) = profile_genes(g).transcript_len_bin(ridx(1));
-    % correct last bin
-    %if profile_genes(g).transcript_length(ridx(1)) > max_len
+  if CFG.learn_profiles==1
+    fprintf(1, ' by empirical estimation...\n\n');
+    assert(~CFG.norm_seqbias);
+    profile_genes = genes;
+    profile_weights = get_empirical_profiles(CFG, profile_genes);
+  elseif CFG.learn_profiles==2
+    fprintf(1, ' by optimisation...\n\n');
+    if 0
+    profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
+    tscp_len_bin = zeros(1, length(profile_genes));
+    max_len = inf;%CFG.transcript_len_ranges(end,1)+CFG.transcript_len_ranges(end-1,2)-CFG.transcript_len_ranges(end-1,1)+1;
+    for g = 1:length(profile_genes),
+      ridx = randperm(length(profile_genes(g).transcripts));
+      tscp_len_bin(g) = profile_genes(g).transcript_len_bin(ridx(1));
+      % correct last bin
+      %if profile_genes(g).transcript_length(ridx(1)) > max_len
       %tscp_len_bin(g) = 0;
-    %end
-    [tmp_coverage] = get_coverage_per_read(CFG, profile_genes(g), 1);    
-    profile_genes(g).mean_ec = mean(tmp_coverage);
-    if mean(tmp_coverage) < 15
-      tscp_len_bin(g) = 0;
+      %end
+      [tmp_coverage] = get_coverage_per_read(CFG, profile_genes(g), 1);    
+      profile_genes(g).mean_ec = mean(tmp_coverage);
+      if mean(tmp_coverage) < 15
+        tscp_len_bin(g) = 0;
+      end
     end
+    % minimal number of examples in one transcript length bin
+    min_bin_num = inf;
+    for r = 1:size(CFG.transcript_len_ranges,1),
+      min_bin_num = min(min_bin_num, sum(tscp_len_bin==r));
+    end
+    % take equal number of examples in each bin
+    profile_genes_idx = [];
+    for r = 1:size(CFG.transcript_len_ranges,1),
+      fidx = find(tscp_len_bin==r);
+      ridx = randperm(length(fidx));
+      profile_genes_idx = [profile_genes_idx, fidx(ridx(1:min_bin_num))];
+    end
+    profile_genes = profile_genes(profile_genes_idx);
+    ridx = randperm(length(profile_genes));
+    %num_exm = length(profile_genes);
+    num_exm = min(length(profile_genes), 500);
+    profile_genes = profile_genes(ridx(1:num_exm));
+    else
+      load('~/tmp/profiles.mat', 'profile_genes');
+    end
+    if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end
+    %keyboard
+    tmp_VERBOSE = CFG.VERBOSE;
+    CFG.VERBOSE = 2;
+    [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
+    CFG.VERBOSE = tmp_VERBOSE;
   end
-  % minimal number of examples in one transcript length bin
-  min_bin_num = inf;
-  for r = 1:size(CFG.transcript_len_ranges,1),
-    min_bin_num = min(min_bin_num, sum(tscp_len_bin==r));
-  end
-  % take equal number of examples in each bin
-  profile_genes_idx = [];
-  for r = 1:size(CFG.transcript_len_ranges,1),
-    fidx = find(tscp_len_bin==r);
-    ridx = randperm(length(fidx));
-    profile_genes_idx = [profile_genes_idx, fidx(ridx(1:min_bin_num))];
-  end
-  profile_genes = profile_genes(profile_genes_idx);
-  ridx = randperm(length(profile_genes));
-  %num_exm = length(profile_genes);
-  num_exm = min(length(profile_genes), 500);
-  profile_genes = profile_genes(ridx(1:num_exm));
-  else
-    load('~/tmp/profiles.mat', 'profile_genes');
-    %profile_genes = genes([genes.is_alt]==0);
-    %profile_genes = genes;
-  end
-  fprintf('using %i genes for profile learning\n', length(profile_genes));
-  %keyboard
-  [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
-  save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
-  if CFG.norm_seqbias
-    save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
-  else
-    save(save_fname, 'CFG', 'profile_genes', 'profile_weights');
-  end
+    save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
+    if CFG.norm_seqbias
+      save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
+    else
+      save(save_fname, 'CFG', 'profile_genes', 'profile_weights');
+    end
+end
+if CFG.VERBOSE>1
+  profile_weights
 end
   
 if CFG.VERBOSE>0, fprintf(1, '\nDetermining transcript weights...\n'); end
