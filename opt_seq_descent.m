@@ -1,26 +1,37 @@
 function [seq_weights, obj, fval] = opt_seq_descent(CFG, seq_weights, seq_feat, exon_mask, tmp_seq_weights, weights, coverage, R_const)
-% [seq_weights, obj, fval] = opt_seq_descent(CFG, seq_weights, seq_feat, exon_mask, tmp_seq_weights, weights, coverage, R_const)
+% OPT_SEQ_DESCENT   Determines the optimal sequence weights.
 %
-% -- input --
-% CFG: configuration struct
-% seq_weights: weights for sequence normalisation
-% seq_feat: vector of encoded sequence features
-% exon_mask: P x T matrix of profile correction
-% tmp_seq_weights: S*T x T matrix of sequence weights for each transcript
-% weights: weights of transcripts
-% coverage: vector of observed exon coverage
-% R_const: constant residue
-% 
+%   [seq_weights, obj, fval] = opt_seq_descent(CFG, seq_weights, seq_feat, exon_mask, tmp_seq_weights, weights, coverage, R_const)
 %
-% -- output --
-% seq_weights: weights for sequence normalisation
-% obj: objective value at optimum
-% fval: objective value at each step
+%   -- input --
+%   CFG:             configuration struct
+%   seq_weights:     weights for sequence normalisation
+%   seq_feat:        vector of encoded sequence features
+%   exon_mask:       P x T matrix of profile correction
+%   tmp_seq_weights: S*T x T matrix of sequence weights for each transcript
+%   weights:         weights of transcripts
+%   coverage:        vector of observed exon coverage
+%   R_const:         constant residue
+%
+%   -- output --
+%   seq_weights:     weights for sequence normalisation
+%   obj:             objective value at optimum
+%   fval:            objective value at each step
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
 
 
 S = 0;
-for o = 1:CFG.RR.order,
-  S = S + (CFG.RR.half_win_size*2-o+1) * 4^o;
+for o = 1:CFG.seq.order,
+  S = S + (CFG.seq.half_win_size*2-o+1) * 4^o;
 end
 T = length(weights);
 ts_idx = zeros(1,S*T);

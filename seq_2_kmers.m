@@ -1,23 +1,25 @@
-%
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
-%
-% Written (W) 2007-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2007-2010 Max Planck Society
-%
-
 function kmers = seq_2_kmers(seq, order, win_size)
-% kmers = seq_2_kmers(seq, order, win_size)
+% SEQ_2_KMERS   Determines occurences of substrings in the sequence.
 %
-% -- input --
-% seq: sequence
-% order: maximal substring length
-% win_size: size of subsequence window
+%   kmers = seq_2_kmers(seq, order, win_size)
 %
-% -- output --
-% kmers: matrix of positional substring occurrence
+%   -- input --
+%   seq:      sequence
+%   order:    maximal substring length
+%   win_size: size of subsequence window
+%
+%   -- output --
+%   kmers:    matrix of positional substring occurrence
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
 
 
 acgt = 'ACGT';

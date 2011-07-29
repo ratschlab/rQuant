@@ -1,12 +1,22 @@
 function plot_profiles(profile_weights, CFG)
-% plot_profiles(fname)
+% PLOT_PROFILES   Visualises profiles.
 %
-% -- input --
-% profile_weights: weights of profile functions
-% CFG: configuration struct
+%   plot_profiles(profile_weights, CFG)
 %
-% -- output --
-% visualises profile weights
+%   -- input --
+%   profile_weights: weights of profile functions
+%   CFG:             configuration struct
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
+
 
 figure(); hold on;
 col = colormap;

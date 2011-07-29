@@ -4,7 +4,7 @@ function pw_nnz = get_included_thetas(CFG)
 %   pw_nnz = get_included_thetas(CFG)
 %
 %   -- input --
-%   CFG: configuration struct
+%   CFG:    configuration struct
 %
 %   -- ouput --
 %   pw_nnz: F x N logical matrix indicating included supporting points (thetas)
