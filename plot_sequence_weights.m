@@ -1,10 +1,23 @@
 function plot_sequence_weights(weights, order, win_size)
-% plot_sequence_weights(weights, order, win_size)
+% PLOT_SEQUENCE_WEIGHTS   Visualises sequence weights.
 %
-% -- input --
-% weights: weights of trained Ridge regression
-% order: order of k-mers
-% win_size: size of sequence window
+%   plot_sequence_weights(weights, order, win_size)
+%
+%   -- input --
+%   weights:  estimated sequence weights
+%   order:    order of k-mers
+%   win_size: size of sequence window
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
+%
+
 
 acgt = 'ACGT';
 num_nt = length(acgt);

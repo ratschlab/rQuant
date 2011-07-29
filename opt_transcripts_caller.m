@@ -34,7 +34,9 @@ clear PAR;
 %%%% paths
 addpath(CFG.paths);
 
-[genes.mean_ec] = deal([]);  
+[genes.mean_ec] = deal([]);
+[genes.coverage] = deal([]);
+[genes.introns] = deal([]);
 [genes.transcript_weights] = deal([]);
 [genes.obj] = deal([]);
 
@@ -44,7 +46,7 @@ for c = chr_num,
   if CFG.VERBOSE>0, fprintf(1, '\nprocessing %i genes for contig %i (%s)\n', length(chr_idx), genes(chr_idx(1)).chr_num, genes(chr_idx(1)).chr); end
   for g = chr_idx,
     gene = genes(g);
-    fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len);
+    if CFG.VERBOSE>0, fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len); end
     %%%%% load exon coverage and introns for gene %%%%%
     try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
@@ -60,8 +62,8 @@ for c = chr_num,
       continue;
     end
     genes(g).mean_ec = full(mean(sum(coverage,2)));
-    genes(g).all_coverage = sum(coverage,2);
-    genes(g).all_introns = introns;
+    genes(g).coverage = sum(coverage,2);
+    genes(g).introns = introns;
     if isempty(coverage) || genes(g).mean_ec==0
       if CFG.VERBOSE>0, fprintf(1, 'no coverage for gene %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = 0;
@@ -109,7 +111,7 @@ for c = chr_num,
     
     %%%%% prepare repeat mask %%%%%
     repeat_mask = false(gene.exonic_len, 1); 
-    fname = sprintf('%s%s_repeat', CFG.repeats_fn, gene.chr);
+    fname = sprintf('%s/%s_repeat', CFG.repeats_fn, gene.chr);
     if exist(sprintf('%s.pos', fname), 'file')
       [map.pos map.repeats] = interval_query(fname, {'repeats'}, [gene.start;gene.stop]);
       if ~isempty(map.pos)
@@ -139,7 +141,7 @@ for c = chr_num,
       if size(exon_mask,1)<2*(CFG.max_side_len-1)
         if ~all(any(exon_mask, 2)')
           [mval midx] = max(gene.transcript_len_bin);
-          fprintf('gene inconsistent with profile (%i: %i)\n', mval, gene.transcript_length(midx));
+          if CFG.VERBOSE>0, fprintf('gene inconsistent with profile (%i: %i)\n', mval, gene.transcript_length(midx)); end
         end
         %assert(all(any(exon_mask, 2)'));
       else
@@ -158,7 +160,6 @@ for c = chr_num,
       continue;
     end
     
-    CFG.VERBOSE = 1;
     C_w = gene.transcript_length';
     %C_w = full(mean(coverage)) * gene.transcript_length';
     %C_w = full(mean(coverage))*ones(length(gene.transcript_length),1);

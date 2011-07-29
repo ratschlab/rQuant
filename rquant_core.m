@@ -20,37 +20,23 @@ function save_fname = rquant_core(CFG)
 %
 
 
-if CFG.use_rproc,
-  DEBUG = 0;
-else
-  DEBUG = 1;
-  CFG.VERBOSE = 2;
-end
-
 %%%% load genes
 load(CFG.gene_fn, '*genes');
 if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-%genes = genes(1:1000);
+%genes = genes(1:100);
 
 % add eidx, adapt to closed intervals
-[genes num_del] = sanitise_genes(genes, CFG);
+[genes num_del num_merged] = sanitise_genes(genes, CFG);
+if CFG.VERBOSE>0, fprintf(1, 'using %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
+clear num_del num_merged;
 
 % determine ranges of transcript length bins
-if isequal(CFG.gene_source, 'annotation')
-  tl = [genes.transcript_length];
-  if 1%~isequal(CFG.organism, 'human')
-    %tlr = [0 inf];
-    tlr = ceil([0 prctile(tl,20) prctile(tl,40) prctile(tl,60) prctile(tl,80) inf])
-  else
-    tlr = ceil([0 prctile(tl,10) prctile(tl,20) prctile(tl,30) ...
-                prctile(tl,40) prctile(tl,50) prctile(tl,60) ...
-                prctile(tl,70) prctile(tl,80) prctile(tl,90) inf])
-  end
-  CFG.transcript_len_ranges = round([tlr(1:end-1)'+1 tlr(2:end)']);
-end
+tl = [genes.transcript_length];
+tlr = ceil([0 prctile(tl,20) prctile(tl,40) prctile(tl,60) prctile(tl,80) inf]);
+CFG.transcript_len_ranges = round([tlr(1:end-1)'+1 tlr(2:end)']);
 % assign length bin to each transcript
 for g = 1:length(genes),
   for t = 1:length(genes(g).transcripts),
@@ -58,41 +44,38 @@ for g = 1:length(genes),
                                           CFG.transcript_len_ranges(:,2) >= genes(g).transcript_length(t));
   end
 end
-CFG.transcript_len_ranges
+if CFG.VERBOSE>1
+  CFG.transcript_len_ranges
+  CFG
+end
 
 
-CFG
-fprintf(1,'using %i genes (deleted %i)\n\n', length(genes), num_del);
-clear num_del;
-
-% initialise profiles and intron distances
+% initialise profiles
 if CFG.load_profiles,
-  fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
-  load(CFG.profiles_fn, 'profile_weights');
+  if CFG.VERBOSE>1
+    fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
+  elseif CFG.VERBOSE==1
+    fprintf(1, '\nLoading profiles...\n');
+  end
+  if strcmp(CFG.profiles_fn(end-3:end), '.mat')
+    load(CFG.profiles_fn, 'profile_weights');
+  else
+    profile_weights = read_density_model(CFG.profiles_fn);
+  end
   if CFG.norm_seqbias
     load(CFG.profiles_fn, 'seq_weights');
   end
-  %load(CFG.profiles_fn, 'RES');
-  %profile_weights = RES{end-1}.profile_weights;
   if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
     error('profiles have wrong dimensions');
   end
-  x = linspace(0, 0.5, CFG.num_intron_plifs);
-  intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));
-  if 0
-  intron_dists = RES{end-1}.intron_dists;
-  if ~(size(intron_dists,1)==CFG.num_intron_plifs && size(intron_dists,2)==CFG.num_intron_plifs)
-    error('intron distance matrix has wrong dimensions');
-  end
-  clear RES;
-  end
 else
+  %profile_weights = get_empirical_profiles(CFG, genes);
   profile_weights = ones(CFG.num_plifs, size(CFG.transcript_len_ranges,1));
-  x = linspace(0, 0.5, CFG.num_intron_plifs);
-  intron_dists = 1-(1-x(end:-1:1))'*(1-x(end:-1:1));
   seq_weights = [];
 end
-profile_weights
+if CFG.VERBOSE>1
+  profile_weights
+end
 
 
 if CFG.learn_profiles & ~CFG.load_profiles
@@ -143,7 +126,7 @@ if CFG.learn_profiles & ~CFG.load_profiles
   end
   fprintf('using %i genes for profile learning\n', length(profile_genes));
   %keyboard
-  [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes);
+  [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
   if CFG.norm_seqbias
     save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
@@ -152,11 +135,10 @@ if CFG.learn_profiles & ~CFG.load_profiles
   end
 end
   
-fprintf(1, '\nDetermining transcript weights...\n');
+if CFG.VERBOSE>0, fprintf(1, '\nDetermining transcript weights...\n'); end
 
 PAR.CFG = CFG;
 PAR.profile_weights = profile_weights;
-PAR.intron_dists = intron_dists;
 if CFG.norm_seqbias
   PAR.seq_weights = seq_weights;
 end
@@ -213,20 +195,14 @@ else
   PAR.genes = genes;
   genes = opt_transcripts_caller(PAR);
 end
-  
-if ~isfield(CFG, 'out_fn')
-  save_fname = sprintf('%s%s_%s_%s.mat', CFG.out_dir, CFG.exp, CFG.gene_source, CFG.method);
-else
-  if CFG.paired,
-    save_fname = strrep(CFG.out_fn, '.mat', '_rquant_paired.mat');
+
+save_fname = CFG.output_file;
+if ~isempty(save_fname)
+  if CFG.norm_seqbias
+    save(save_fname, 'CFG', 'genes', 'profile_weights', 'seq_weights');
   else
-    save_fname = strrep(CFG.out_fn, '.mat', '_rquant.mat');
+    save(save_fname, 'CFG', 'genes', 'profile_weights');
   end
 end
-if CFG.norm_seqbias
-  save(save_fname, 'CFG', 'genes', 'profile_weights', 'seq_weights');
-else
-  save(save_fname, 'CFG', 'genes', 'profile_weights');
-end
 
-fprintf(1, '\n\nFinished transcript quantitation.\n');
+if CFG.VERBOSE>0, fprintf(1, '\n\nFinished transcript quantitation.\n'); end

@@ -1,22 +1,25 @@
+function segments = gen_segments(gene)
+% GEN_SEGMENTS   Union of all exons in a gene.
 %
-% This program is free software; you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 3 of the License, or
-% (at your option) any later version.
+%   segments = gen_segments(gene)
 %
-% Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
-% Copyright (C) 2009-2010 Max Planck Society
+%   -- input --
+%   gene:     struct defining a gene with start, stop, exons etc.
+%
+%   -- output --
+%   segments: Sx2 vector of starts and stops in exonic coordinates
+%             defining common segments S across exons of all transcripts
+%
+%
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+%
+%   Written (W) 2009-2010 Regina Bohnert, Gunnar Raetsch
+%   Copyright (C) 2009-2010 Max Planck Society
 %
 
-function segments = gen_segments(gene)
-% segments = gen_segments(gene)
-%
-% -- input --
-% gene: struct defining a gene with start, stop, exons etc.
-%
-% -- output --
-% segments: Sx2 vector of starts and stops in exonic coordinates
-%           defining common segments S across exons of all transcripts
 
 offset = gene.start-1;
 eidx = gene.eidx;
