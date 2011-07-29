@@ -37,7 +37,7 @@ end
 
 % merge transcripts from overlapping loci
 parent_genes = genes; clear genes;
-genes = merge_transcripts_by_colocation(parent_genes, {'transcripts', 'exons'}, 0, CFG.VERBOSE>1);
+genes = merge_transcripts_by_colocation(parent_genes, {'transcripts', 'exons', 'expr_orig'}, 0, CFG.VERBOSE>1);
 num_merged = length(parent_genes) - length(genes);
 
 % add exonic length
