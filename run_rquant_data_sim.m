@@ -1,3 +1,7 @@
+addpath('~/svn/tools/rproc');
+addpath('~/svn/tools/utils');
+addpath('~/svn/tools/genomes');
+
 %%%%% experiment %%%%%
 CFG.organism = 'elegans'; % 'arabidopsis' 'human'
 CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias_seq_bias'
@@ -12,6 +16,7 @@ switch CFG.organism
  case 'elegans'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200';
   CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks';
+  PAR.CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
   PAR.CFG.correct_intervals = 1;
  case 'human'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19';
@@ -32,13 +37,13 @@ PAR.profiles_fn_out = '';
 PAR.learn_profiles = 2;
 
 %%%%% pre-learned profiles %%%%%
-PAR.load_profiles = 1;
+PAR.load_profiles = 0;
 PAR.profiles_fn = '';
 
 %%%%% regularisation strengths %%%%%
-C_I = 100;%[10^0 10^1 10^2];
-C_F = 100;%[10^1 10^2 10^3 10^4];
-C_N = 10;%[10^0 10^1 10^2];
+C_I = 100; %[10^0 10^1 10^2];
+C_F = 100; %[10^1 10^2 10^3 10^4];
+C_N = 10;  %[10^0 10^1 10^2];
 
 %%%%% rproc settings for rquant subjobs %%%%%
 PAR.CFG.use_rproc = 0; % 1: cluster submission or 0: locally
@@ -67,17 +72,16 @@ for s = 1:length(C_I),
     PAR.CFG.C_F = C_F(f);
     for n = 1:length(C_N),
       PAR.CFG.C_N = C_N(n);
-      exp_str = sprintf('s%if%in%i', PAR.CFG.C_I, PAR.CFG.C_F, PAR.CFG.C_N);
       %%%%% result directory %%%%%
-      date_exp = datestr(now,'yyyy-mm-dd');
-      %date_exp = datestr(now,'yyyy-mm-dd_HHhMM');
+      %date_exp = datestr(now,'yyyy-mm-dd');
+      date_exp = datestr(now,'yyyy-mm-dd_HHhMM')
       switch CFG.organism
        case 'arabidopsis'
-        PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s_%s', CFG.exp, date_exp, exp_str);
+        PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s', CFG.exp, date_exp);
        case 'elegans'
-        PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s_%s', CFG.exp, date_exp, exp_str);
+        PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/%s_%s', CFG.exp, date_exp);
        case 'human'
-        PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/rquant/%s_%s_%s', CFG.exp, date_exp, exp_str);
+        PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19/rquant/%s_%s', CFG.exp, date_exp);
       end
       PAR.output_file = sprintf('%s/%s_rquant.gff3', PAR.output_dir, CFG.exp);
       if ~exist(PAR.output_dir ,'dir'),
@@ -86,9 +90,12 @@ for s = 1:length(C_I),
       end
       PAR.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_strong_bias_2011-07-08_12h25_s100f100n10/profiles.mat';
       %PAR.profiles_fn = sprintf('%s/profiles.mat', PAR.output_dir);
+      % save parameters
+      fname = strrep(PAR.output_file, '.gff3', '.par');
+      write_parameters(PAR, fname);
       %%%%% rproc settings for main job %%%%%
       if ~run_local
-        rproc_memreq                = 2000;
+        rproc_memreq                = 3000;
         rproc_par.priority          = 8;
         rproc_par.express           = 0;
         rproc_par.immediately_bg    = 0;
@@ -97,7 +104,7 @@ for s = 1:length(C_I),
         rproc_par.identifier        = '';
         rproc_par.verbosity         = 0;
         rproc_time                  = 72*60;
-        rproc_par.identifier = sprintf('rq.%s%s-', CFG.organism(1:2), exp_str);
+        rproc_par.identifier = sprintf('rq.%s-', CFG.organism(1:2));
         fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
         job = rproc('rquant_rproc', PAR, rproc_memreq, rproc_par, rproc_time);
       else

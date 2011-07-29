@@ -66,11 +66,13 @@ if ~exist(CFG.out_dir ,'dir'),
 end
 CFG.output_file = strrep(output_file, '.gff3', '.mat');
 
+
 %%%%% directories from which to load read data and genes %%%%%
 CFG.samtools_dir = sprintf('%s/', SAMTOOLS_DIR);
 CFG.gene_dir = anno_dir; 
 CFG.gene_fn = sprintf('%s/genes.mat', CFG.gene_dir);
 if ~isfield(CFG, 'repeats_fn'), CFG.repeats_fn = ''; end
+
 
 %%%%% genome information %%%%%
 try
@@ -172,6 +174,7 @@ end
 if ~exist(profiles_fn, 'file') && CFG.load_profiles
   error('File with pre-learned profiles does not exist.');
 end
+
 
 %%%%% rquant %%%%%
 save_fname = rquant_core(CFG);
