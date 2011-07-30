@@ -137,9 +137,11 @@ CFG.paired = 0;
 if ~isfield(CFG, 'correct_intervals'), CFG.correct_intervals = 0; end
   
 %%%%% sequence bias normalisation
-CFG.norm_seqbias = 0;
-CFG.seq.half_win_size = 10;
-CFG.seq.order = 1;
+if ~isfield(CFG, 'norm_seqbias'), CFG.norm_seqbias = 0; end
+if CFG.norm_seqbias
+  CFG.seq.half_win_size = 10;
+  CFG.seq.order = 1;
+end
 
 %%%%% profile learning
 % enables loading of profiles from CFG.profiles_fn

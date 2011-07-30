@@ -4,7 +4,7 @@ addpath('~/svn/tools/genomes');
 
 %%%%% experiment %%%%%
 CFG.organism = 'elegans'; % 'arabidopsis' 'human'
-CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias_seq_bias'
+CFG.exp = 'fs_strong_bias_seq_bias'; % 'fs_strong_bias_seq_bias'
 PAR.CFG.read_len = 75;
 
 %%%%% tracks, repeats, genes, genome info %%%%% 
@@ -33,17 +33,19 @@ PAR.CFG.write_gff = 0;
 PAR.CFG.write_density_model = 0;
 PAR.profiles_fn_out = '';
 
-%%%%% enables profile learning %%%%%
+%%%%% profile learning %%%%%
+% enables profile learning
 PAR.learn_profiles = 2;
-
-%%%%% pre-learned profiles %%%%%
+% pre-learned profiles
 PAR.load_profiles = 0;
 PAR.profiles_fn = '';
-
-%%%%% regularisation strengths %%%%%
+% regularisation strengths
 C_I = 100; %[10^0 10^1 10^2];
 C_F = 100; %[10^1 10^2 10^3 10^4];
 C_N = 10;  %[10^0 10^1 10^2];
+
+%%%%% sequence bias normalisation %%%%%
+PAR.CFG.norm_seqbias = 1;
 
 %%%%% rproc settings for rquant subjobs %%%%%
 PAR.CFG.use_rproc = 0; % 1: cluster submission or 0: locally
