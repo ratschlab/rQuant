@@ -26,4 +26,5 @@ fprintf(fd, 'C_N\t%i\n', PAR.CFG.C_N);
 fprintf(fd, 'learn_profiles\t%i\n', PAR.learn_profiles);
 fprintf(fd, 'load_profiles\t%i\n', PAR.load_profiles);
 fprintf(fd, 'profiles\t%s\n', PAR.profiles_fn);
+fprintf(fd, 'norm_seqbias\t%i\n', PAR.CFG.norm_seqbias);
 fclose(fd);
