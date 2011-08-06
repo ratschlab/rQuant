@@ -132,7 +132,7 @@ CFG.both_strands = 1;
 
 %%%%% transcript weight optimisation
 % method to determine transcript weights 
-CFG.method = 'seg'; % 'pos' or 'seg'
+CFG.method = 'pos'; % 'pos' or 'seg'
 CFG.paired = 0;
 if ~isfield(CFG, 'correct_intervals'), CFG.correct_intervals = 0; end
   
@@ -153,9 +153,9 @@ CFG.learn_profiles = learn_profiles; % 0: no learning, 1: empirically estimated,
 % number of iterations
 CFG.max_iter = 100;
 % number of plifs for profile functions
-CFG.num_plifs = 50;
+CFG.num_plifs = 100;
 % maximal number of positions to be considered at both transcript ends
-CFG.max_side_len = 5000;
+CFG.max_side_len = 500;
 % bins for different transcript lengths
 CFG.transcript_len_ranges = [];
 % enables subsampling of data for learning profiles
