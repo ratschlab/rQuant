@@ -4,23 +4,23 @@ addpath('~/svn/tools/genomes');
 
 %%%%% experiment %%%%%
 CFG.organism = 'elegans'; % 'arabidopsis' 'human'
-CFG.exp = 'fs_strong_bias_seq_bias'; % 'fs_strong_bias_seq_bias'
+CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias_seq_bias'
 PAR.CFG.read_len = 75;
 
 %%%%% tracks, repeats, genes, genome info %%%%% 
 switch CFG.organism
  case 'arabidopsis'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10';
-  CFG.repeats_fn = '';
+  PAR.CFG.repeats_fn = '';
   PAR.CFG.correct_intervals = 1;
  case 'elegans'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200';
-  CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks';
+  PAR.CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks';
   PAR.CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
   PAR.CFG.correct_intervals = 1;
  case 'human'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19';
-  CFG.repeats_fn = '';
+  PAR.CFG.repeats_fn = '';
   PAR.CFG.correct_intervals = 1;
 end
 PAR.anno_dir = sprintf('%s/annotation', CFG.base_dir);
@@ -35,17 +35,17 @@ PAR.profiles_fn_out = '';
 
 %%%%% profile learning %%%%%
 % enables profile learning
-PAR.learn_profiles = 2;
+PAR.learn_profiles = 0;
 % pre-learned profiles
 PAR.load_profiles = 0;
 PAR.profiles_fn = '';
 % regularisation strengths
-C_I = 100; %[10^0 10^1 10^2];
+C_I = 100; %[10^0 10^1 10^2 10^3];
 C_F = 100; %[10^1 10^2 10^3 10^4];
 C_N = 10;  %[10^0 10^1 10^2];
 
 %%%%% sequence bias normalisation %%%%%
-PAR.CFG.norm_seqbias = 1;
+PAR.CFG.norm_seqbias = 0;
 
 %%%%% rproc settings for rquant subjobs %%%%%
 PAR.CFG.use_rproc = 0; % 1: cluster submission or 0: locally
@@ -66,7 +66,7 @@ if PAR.CFG.use_rproc,
 end
 
 
-run_local = 1;
+run_local = 0;
 
 for s = 1:length(C_I),
   PAR.CFG.C_I = C_I(s);
@@ -75,8 +75,8 @@ for s = 1:length(C_I),
     for n = 1:length(C_N),
       PAR.CFG.C_N = C_N(n);
       %%%%% result directory %%%%%
-      date_exp = datestr(now,'yyyy-mm-dd');
-      %date_exp = datestr(now,'yyyy-mm-dd_HHhMM')
+      %date_exp = datestr(now,'yyyy-mm-dd');
+      date_exp = datestr(now,'yyyy-mm-dd_HHhMM')
       switch CFG.organism
        case 'arabidopsis'
         PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s', CFG.exp, date_exp);
@@ -96,7 +96,7 @@ for s = 1:length(C_I),
       write_parameters(PAR, fname);
       %%%%% rproc settings for main job %%%%%
       if ~run_local
-        rproc_memreq                = 3000;
+        rproc_memreq                = 2000;
         rproc_par.priority          = 8;
         rproc_par.express           = 0;
         rproc_par.immediately_bg    = 0;
@@ -108,10 +108,10 @@ for s = 1:length(C_I),
         rproc_par.identifier = sprintf('rq.%s-', CFG.organism(1:2));
         fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
         job = rproc('rquant_rproc', PAR, rproc_memreq, rproc_par, rproc_time);
+        pause(60);
       else
         rquant_rproc(PAR);
       end
-      pause(60);
     end
   end
 end
