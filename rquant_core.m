@@ -109,11 +109,12 @@ if CFG.learn_profiles>0
       profile_genes_idx = [profile_genes_idx, fidx(ridx(1:min_bin_num))];
     end
     profile_genes = profile_genes(profile_genes_idx);
-    ridx = randperm(length(profile_genes));
-    num_exm = min(length(profile_genes), 500);
-    profile_genes = profile_genes(ridx(1:num_exm));
+    %ridx = randperm(length(profile_genes));
+    %num_exm = min(length(profile_genes), 500);
+    %profile_genes = profile_genes(ridx(1:num_exm));
     else
-      load('~/tmp/profiles.mat', 'profile_genes');
+      load('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/profile_genes.mat', 'profile_genes');
+      %load('~/tmp/profiles.mat', 'profile_genes');
     end
     if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end
     [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);

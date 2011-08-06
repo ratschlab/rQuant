@@ -163,7 +163,7 @@ CFG.subsample = 0;
 % maximal number of examples for learning profiles
 CFG.max_num_train_exm = 1e6;
 % fraction of positions to be subsampled for learning profiles
-CFG.subsample_frac = 0.23;
+CFG.subsample_frac = 0.2;
 % regularisation strengths
 if ~isfield(CFG, 'C_I'), CFG.C_I = 100; end
 if ~isfield(CFG, 'C_F'), CFG.C_F = 100; end
