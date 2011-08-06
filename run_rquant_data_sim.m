@@ -75,8 +75,8 @@ for s = 1:length(C_I),
     for n = 1:length(C_N),
       PAR.CFG.C_N = C_N(n);
       %%%%% result directory %%%%%
-      %date_exp = datestr(now,'yyyy-mm-dd');
-      date_exp = datestr(now,'yyyy-mm-dd_HHhMM')
+      date_exp = datestr(now,'yyyy-mm-dd');
+      %date_exp = datestr(now,'yyyy-mm-dd_HHhMM')
       switch CFG.organism
        case 'arabidopsis'
         PAR.output_dir = sprintf('/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10/rquant/%s_%s', CFG.exp, date_exp);
@@ -90,8 +90,7 @@ for s = 1:length(C_I),
         [s m mid] = mkdir(PAR.output_dir);
         assert(s);
       end
-      PAR.profiles_fn = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/fs_strong_bias_2011-07-08_12h25_s100f100n10/profiles.mat';
-      %PAR.profiles_fn = sprintf('%s/profiles.mat', PAR.output_dir);
+      PAR.profiles_fn = sprintf('%s/profiles.mat', PAR.output_dir);
       % save parameters
       fname = strrep(PAR.output_file, '.gff3', '.par');
       write_parameters(PAR, fname);
@@ -112,6 +111,7 @@ for s = 1:length(C_I),
       else
         rquant_rproc(PAR);
       end
+      pause(60);
     end
   end
 end

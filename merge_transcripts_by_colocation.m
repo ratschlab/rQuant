@@ -70,6 +70,14 @@ while ~isempty(idx)
 end
 genes = find_start_stop(genes, 0);
 genes = rmfield(genes, 'remove');
+% update is_alt field
+for g = 1:length(genes),
+  if length(genes(g).transcripts)>1
+    genes(g).is_alt = 1;
+  else
+    genes(g).is_alt = 0;
+  end
+end
 return;
 
 
