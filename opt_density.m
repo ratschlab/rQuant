@@ -314,11 +314,6 @@ while 1
   cnt = cnt + 1;
   CFG.VERBOSE = tmp_VERBOSE;
   
-  %%%%% C. optimise sequence weights
-  if 0%CFG.norm_seqbias
-    
-  end
-  
   %%%%% convergence criteria
   if CFG.norm_seqbias
     norm_weights = norm([weights_old, reshape(profile_weights_old,1,F*N), seq_weights_old'] - [weights, reshape(profile_weights,1,F*N), seq_weights']);
