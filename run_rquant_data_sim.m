@@ -35,14 +35,14 @@ PAR.profiles_fn_out = '';
 
 %%%%% profile learning %%%%%
 % enables profile learning
-PAR.learn_profiles = 1; % 0: no learning, 1: empirically estimated, 2: optimised
+PAR.learn_profiles = 2; % 0: no learning, 1: empirically estimated, 2: optimised
 % pre-learned profiles
 PAR.load_profiles = 0;
 PAR.profiles_fn = '';
 % regularisation strengths
 C_I = 100; %[10^0 10^1 10^2 10^3];
-C_F = 100; %[10^1 10^2 10^3 10^4];
-C_N = 10;  %[10^0 10^1 10^2];
+C_F = [10^1 10^2 10^3 10^4];
+C_N = [10^0 10^1 10^2];
 
 %%%%% sequence bias normalisation %%%%%
 PAR.CFG.norm_seqbias = 0;
