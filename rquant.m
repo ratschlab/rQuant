@@ -132,7 +132,7 @@ CFG.both_strands = 1;
 
 %%%%% transcript weight optimisation
 % method to determine transcript weights 
-CFG.method = 'pos'; % 'pos' or 'seg'
+CFG.method = 'seg'; % 'pos' or 'seg'
 CFG.paired = 0;
 if ~isfield(CFG, 'correct_intervals'), CFG.correct_intervals = 0; end
   
