@@ -20,19 +20,16 @@ function save_fname = rquant_core(CFG)
 %
 
 
-%%%% load genes
+%%%% load genes and pre-processing %%%%%
 load(CFG.gene_fn, '*genes');
 if exist('all_genes', 'var')
   genes = all_genes;
   clear all_genes;
 end
-%genes = genes(1:100);
-
 % add eidx, adapt to closed intervals
 [genes num_del num_merged] = sanitise_genes(genes, CFG);
 if CFG.VERBOSE>0, fprintf(1, '\nUsing %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
 clear num_del num_merged;
-
 % determine ranges of transcript length bins
 tl = [genes.transcript_length];
 tlr = ceil([0 prctile(tl,20) prctile(tl,40) prctile(tl,60) prctile(tl,80) inf]);
@@ -50,7 +47,7 @@ if CFG.VERBOSE>1
 end
 
 
-% initialise profiles
+%%%%% initialise profiles %%%%%
 if CFG.load_profiles
   if CFG.VERBOSE>1
     fprintf(1, '\nLoading profiles... (%s)\n', CFG.profiles_fn);
@@ -74,6 +71,7 @@ else
 end
 
 
+%%%%% read density estimation %%%%%
 if CFG.learn_profiles>0
   fprintf(1, '\nDetermining profile');
   if CFG.norm_seqbias
@@ -89,14 +87,9 @@ if CFG.learn_profiles>0
     if 0
     profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
     tscp_len_bin = zeros(1, length(profile_genes));
-    max_len = inf;%CFG.transcript_len_ranges(end,1)+CFG.transcript_len_ranges(end-1,2)-CFG.transcript_len_ranges(end-1,1)+1;
     for g = 1:length(profile_genes),
       ridx = randperm(length(profile_genes(g).transcripts));
       tscp_len_bin(g) = profile_genes(g).transcript_len_bin(ridx(1));
-      % correct last bin
-      %if profile_genes(g).transcript_length(ridx(1)) > max_len
-      %tscp_len_bin(g) = 0;
-      %end
       [tmp_coverage] = get_coverage_per_read(CFG, profile_genes(g), 1);    
       profile_genes(g).mean_ec = mean(tmp_coverage);
       if mean(tmp_coverage) < 15
@@ -117,16 +110,12 @@ if CFG.learn_profiles>0
     end
     profile_genes = profile_genes(profile_genes_idx);
     ridx = randperm(length(profile_genes));
-    %num_exm = length(profile_genes);
     num_exm = min(length(profile_genes), 500);
     profile_genes = profile_genes(ridx(1:num_exm));
     else
       load('~/tmp/profiles.mat', 'profile_genes');
     end
     if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end
-    %keyboard
-    tmp_VERBOSE = CFG.VERBOSE;
-    CFG.VERBOSE = 2;
     [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
     CFG.VERBOSE = tmp_VERBOSE;
   end
@@ -140,9 +129,10 @@ end
 if CFG.VERBOSE>1
   profile_weights
 end
-  
-if CFG.VERBOSE>0, fprintf(1, '\nDetermining transcript weights...\n'); end
 
+
+%%%%% transcript weight estimation %%%%%
+if CFG.VERBOSE>0, fprintf(1, '\nDetermining transcript weights...\n'); end
 PAR.CFG = CFG;
 PAR.profile_weights = profile_weights;
 if CFG.norm_seqbias
@@ -201,7 +191,7 @@ else
   PAR.genes = genes;
   genes = opt_transcripts_caller(PAR);
 end
-
+% save results
 save_fname = CFG.output_file;
 if ~isempty(save_fname)
   if CFG.norm_seqbias

@@ -139,8 +139,10 @@ if ~isfield(CFG, 'correct_intervals'), CFG.correct_intervals = 0; end
 %%%%% sequence bias normalisation
 if ~isfield(CFG, 'norm_seqbias'), CFG.norm_seqbias = 0; end
 if CFG.norm_seqbias
-  CFG.seq.half_win_size = 10;
-  CFG.seq.order = 1;
+  CFG.seq.half_win_size = 20;
+  CFG.seq.order = 2;
+  CFG.seq.lambda = 1e-2;
+  CFG.seq.num_train_frac = 0.8;
 end
 
 %%%%% profile learning

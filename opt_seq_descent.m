@@ -56,8 +56,7 @@ while 1
      %%% R1: residue for beta independent variables
      idx_wo_be = setdiff([1:S*T], [k:S:S*T]);
      tmp_seq_weights(ts_idx) = repmat(seq_weights, T, 1);
-     R1 = exon_mask.*(seq_feat(:,idx_wo_be)*tmp_seq_weights(idx_wo_be,:))*weights' - ...
-          coverage;
+     R1 = exon_mask.*(seq_feat(:,idx_wo_be)*tmp_seq_weights(idx_wo_be,:))*weights' - coverage;
      %%% S1: residue of quadratic term
      S1 = sum(Rbe.^2);
      %%% S2: residue of linear term
