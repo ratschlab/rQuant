@@ -119,6 +119,7 @@ for c = chr_num,
       end
     end
     
+    %%%%% segment or position-based %%%%%
     if strcmp(CFG.method, 'seg') % segment-wise
       % code only works for CFG.paired=0
       assert(size(coverage,1)==gene.exonic_len);
@@ -158,6 +159,7 @@ for c = chr_num,
       continue;
     end
     
+    %%%%% transcript weight optimisation %%%%%
     C_w = gene.transcript_length';
     [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w);
     genes(g).transcript_weights = weights;
