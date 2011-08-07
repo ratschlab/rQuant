@@ -166,6 +166,11 @@ if any(~mask),
   clear P_old;
 end
 
+% adjust regularisation parameters
+CFG.C_I = CFG.C_I*P/1000;
+CFG.C_F = CFG.C_F*P/1000;
+CFG.C_N = CFG.C_N*P/1000;
+
 out_dir = sprintf('%s/tmp/', CFG.out_dir);
 if ~exist(out_dir ,'dir'),
   [s m mid] = mkdir(out_dir);
