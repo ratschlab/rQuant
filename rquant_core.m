@@ -117,14 +117,16 @@ if CFG.learn_profiles>0
       %load('~/tmp/profiles.mat', 'profile_genes');
     end
     if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end
+    tmp_VERBOSE = CFG.VERBOSE;
+    CFG.VERBOSE = 2;
     [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
     CFG.VERBOSE = tmp_VERBOSE;
   end
     save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
     if CFG.norm_seqbias
-      save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights');
+      save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights', 'obj');
     else
-      save(save_fname, 'CFG', 'profile_genes', 'profile_weights');
+      save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'obj');
     end
 end
 if CFG.VERBOSE>1
