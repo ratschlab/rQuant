@@ -76,7 +76,11 @@ if ~isfield(CFG, 'repeats_fn'), CFG.repeats_fn = ''; end
 
 %%%%% genome information %%%%%
 try
-  [s bam_header] = unix(sprintf('%s./samtools view %s -H', CFG.samtools_dir, track));
+  if iscell(track)
+    [s bam_header] = unix(sprintf('%s./samtools view %s -H', CFG.samtools_dir, track{1}));
+  else
+    [s bam_header] = unix(sprintf('%s./samtools view %s -H', CFG.samtools_dir, track));
+  end
   assert(s==0);
   fidx1 = strfind(bam_header,'SN'); fidx2 = strfind(bam_header,'LN');
   for c = 1:length(fidx1), 
@@ -90,6 +94,7 @@ end
 
 %%%%% read length, number of mapped reads, bai file %%%%%
 if ~isfield(CFG, 'read_len')
+  assert(length(track) & ~iscell(track));
   CFG.read_len = 0;
   for c = 1:length(contig_names),
     fprintf('Checking bam file: contig %i/%i\n', c, length(contig_names));
@@ -119,7 +124,13 @@ if ~isfield(CFG, 'read_len')
   end
 else
   for c = 1:length(contig_names),
-    CFG.tracks_fn{c} = {track};
+    if iscell(track)
+      for f = 1:length(track),
+        CFG.tracks_fn{c}{f} = track{f};
+      end
+    else
+      CFG.tracks_fn{c} = {track};
+    end
   end
   mapped_reads = zeros(1, length(CFG.tracks_fn));
 end
