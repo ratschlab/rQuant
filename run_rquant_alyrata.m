@@ -23,7 +23,7 @@ PAR.profiles_fn_out = '';
 
 %%%%% profile learning %%%%%
 % enables profile learning
-PAR.learn_profiles = 0; % 0: no learning, 1: empirically estimated, 2: optimised
+PAR.learn_profiles = 2; % 0: no learning, 1: empirically estimated, 2: optimised
 % pre-learned profiles
 PAR.load_profiles = 0;
 PAR.profiles_fn = '';
