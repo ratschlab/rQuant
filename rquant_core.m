@@ -82,6 +82,7 @@ if CFG.learn_profiles>0
     assert(~CFG.norm_seqbias);
     profile_genes = genes;
     profile_weights = get_empirical_profiles(CFG, profile_genes);
+    obj = 0;
   elseif CFG.learn_profiles==2
     fprintf(1, ' by optimisation...\n\n');
     if 0
@@ -113,7 +114,8 @@ if CFG.learn_profiles>0
     %num_exm = min(length(profile_genes), 500);
     %profile_genes = profile_genes(ridx(1:num_exm));
     else
-      load('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/profile_genes.mat', 'profile_genes');
+      load(sprintf('%s/profile_genes.mat', CFG.out_dir), 'profile_genes'); 
+      %load('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/profile_genes.mat', 'profile_genes');
       %load('~/tmp/profiles.mat', 'profile_genes');
     end
     if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end
@@ -122,12 +124,12 @@ if CFG.learn_profiles>0
     [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
     CFG.VERBOSE = tmp_VERBOSE;
   end
-    save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
-    if CFG.norm_seqbias
-      save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights', 'obj');
-    else
-      save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'obj');
-    end
+  save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
+  if CFG.norm_seqbias
+    save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights', 'obj');
+  else
+    save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'obj');
+  end
 end
 if CFG.VERBOSE>1
   profile_weights
