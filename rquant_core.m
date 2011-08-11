@@ -114,8 +114,8 @@ if CFG.learn_profiles>0
     %num_exm = min(length(profile_genes), 500);
     %profile_genes = profile_genes(ridx(1:num_exm));
     else
-      load(sprintf('%s/profile_genes.mat', CFG.out_dir), 'profile_genes'); 
-      %load('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/profile_genes.mat', 'profile_genes');
+      %load(sprintf('%s/profile_genes.mat', CFG.out_dir), 'profile_genes'); 
+      load('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/profile_genes.mat', 'profile_genes');
       %load('~/tmp/profiles.mat', 'profile_genes');
     end
     if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end

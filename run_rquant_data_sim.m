@@ -41,8 +41,8 @@ PAR.load_profiles = 0;
 PAR.profiles_fn = '';
 % regularisation strengths
 C_I = 100; %[10^0 10^1 10^2 10^3];
-C_F = [10^1 10^2 10^3 10^4];
-C_N = [10^0 10^1 10^2];
+C_F = 10^5;%[10^3 10^4 10^5 10^7];
+C_N = 1;%[10^0 10^2 10^5];
 
 %%%%% sequence bias normalisation %%%%%
 PAR.CFG.norm_seqbias = 0;
