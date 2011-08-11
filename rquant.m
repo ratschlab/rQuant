@@ -166,7 +166,7 @@ CFG.max_iter = 100;
 % number of plifs for profile functions
 CFG.num_plifs = 100;
 % maximal number of positions to be considered at both transcript ends
-CFG.max_side_len = 500;
+CFG.max_side_len = 3700;
 % bins for different transcript lengths
 CFG.transcript_len_ranges = [];
 % enables subsampling of data for learning profiles

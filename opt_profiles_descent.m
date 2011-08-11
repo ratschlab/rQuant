@@ -188,10 +188,10 @@ while 1
   end
   iter = iter + 1;
 end
-if mean(fval(1:end-1)-fval(2:end)>-1e-2)<0.95
+if 0%mean(fval(1:end-1)-fval(2:end)>-1e-2)<0.95
   fprintf(1, 'objective non-decreasing\n');
 end
-%assert(all(fval(1:end-1)-fval(2:end)>-1e-3)); % objective should decrease at every step
+assert(all(fval(1:end-1)-fval(2:end)>-1e-3)); % objective should decrease at every step
 if CFG.VERBOSE>0, fprintf(1, 'Took %.1fs.\n', toc); end
 
 profile_weights = reshape(profile_weights, F, N);
