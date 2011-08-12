@@ -85,7 +85,7 @@ if CFG.learn_profiles>0
     obj = 0;
   elseif CFG.learn_profiles==2
     fprintf(1, ' by optimisation...\n\n');
-    if 0
+    if 1
     profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
     tscp_len_bin = zeros(1, length(profile_genes));
     for g = 1:length(profile_genes),
