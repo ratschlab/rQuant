@@ -59,7 +59,8 @@ run_local = 0;
 for e = 1:length(CFG.exp),
   PAR.track = sprintf('%s/tracks/%s.bam', CFG.base_dir, CFG.exp{e});
   %%%%% result directory %%%%%
-  date_exp = datestr(now,'yyyy-mm-dd');
+  %date_exp = datestr(now,'yyyy-mm-dd');
+  date_exp = datestr(now,'yyyy-mm-dd_HHhMM')
   PAR.output_dir = sprintf('%s/rquant/%s_%s', CFG.base_dir, CFG.exp{e}, date_exp);
   PAR.output_file = sprintf('%s/%s_rquant.gff3', PAR.output_dir, CFG.exp{e});
   if ~exist(PAR.output_dir ,'dir'),
@@ -84,7 +85,7 @@ for e = 1:length(CFG.exp),
     rproc_par.identifier = sprintf('rq.%s-', CFG.organism(1:2));
     fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
     job = rproc('rquant_rproc', PAR, rproc_memreq, rproc_par, rproc_time);
-    pause(10);
+    pause(60);
   else
     rquant_rproc(PAR);
   end
