@@ -226,11 +226,12 @@ while 1
     if iter==1
       seq_genes = genes([genes.mean_ec]>150);
       [seq_weights, seq_feat_train, Q1, Q2] = train_norm_sequence(CFG, seq_genes, [], profile_weights);
-    else
-      [seq_weights, tmp_seq_feat, Q1, Q2] = train_norm_sequence(CFG, seq_genes, seq_feat_train, profile_weights);
-      clear tmp_seq_feat;
+    %else
+      %[seq_weights, tmp_seq_feat, Q1, Q2] = train_norm_sequence(CFG, seq_genes, seq_feat_train, profile_weights);
+      %clear tmp_seq_feat;
     end
     % update seq_coeff
+    if iter==1
     seq_coeff = sparse(P_all, T);
     ct = 0; ci = 0;
     for g = 1:length(genes),
@@ -241,6 +242,7 @@ while 1
     end
     assert(P_all==size(seq_coeff,1));
     seq_coeff = seq_coeff(subs_idx, :);
+    end
     exon_mask = gen_exon_mask(profile_weights, tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col);
     exon_mask = seq_coeff.*exon_mask;
     fval(cnt) = sum((exon_mask*weights'-coverage).^2) + abs(weights)*C_w  + CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
