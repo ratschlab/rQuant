@@ -1,7 +1,7 @@
-function [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
-% GET_COVERAGE_PER_READ  Gets the reads from the BAM file covering the gene region.
+function [coverage reads_ok intron_list read_starts paired_reads] = get_coverage_per_read(CFG, gene, reverse_ret)
+% GET_COVERAGE_PER_READ   Gets the reads from the BAM file covering the gene region.
 %
-%   [coverage excluded_reads ok intron_list read_starts] = get_coverage_per_read(CFG, gene, reverse_ret)
+%   [coverage reads_ok intron_list read_starts paired_reads] = get_coverage_per_read(CFG, gene, reverse_ret)
 %
 %   -- input --
 %   CFG:            configuration struct
@@ -11,11 +11,11 @@ function [coverage excluded_reads ok intron_list read_starts] = get_coverage_per
 %
 %   -- output --
 %   coverage:       matrix of exonic positions x reads
-%   excluded_reads: reads excluded per transcript
-%   ok:             indicates success of file parsing
+%   reads_ok:       indicates success of file parsing
 %   intron_list:    nx4 list of introns
 %                   (intron start, intron stop, confirmation, strand)
-%   read_starts:    vector of number of reads starting at the given exonic positions 
+%   read_starts:    vector of number of reads starting at the given exonic positions
+%   paired_reads:   struct including starts, stops and mates for paired-end reads
 %
 %
 %   This program is free software; you can redistribute it and/or modify
@@ -28,17 +28,23 @@ function [coverage excluded_reads ok intron_list read_starts] = get_coverage_per
 %
 
 
-MIN_COV = 0.5;
-ok = 1;
+% initialisation
 coverage = [];
-excluded_reads = [];
+reads_ok = 1;
 intron_list = zeros(2, 0);
-read_starts = zeros(gene.exonic_len, 1);
+read_starts = zeros(0, 1);
+paired_reads.starts = zeros(1, 0);
+paired_reads.stops = zeros(1, 0);
+paired_reads.mates = zeros(2, 0);
 
-collapse = double(~CFG.paired & nargout<=4);
+collapse = double(~CFG.paired & nargout<4);
 
 if nargin<3
   reverse_ret = 0;
+end
+
+if nargout==5
+  assert(CFG.paired==1);
 end
 
 if ~isfield(CFG, 'both_strands')
@@ -51,17 +57,18 @@ else
   strand = gene.strand;
 end
 
+% parameters for get_reads
 if ~isfield(CFG, 'tracks_max_intron_len')
   CFG.tracks_max_intron_len = 1e9;
 end
-
 if ~isfield(CFG, 'tracks_min_exon_len')
   CFG.tracks_min_exon_len = -1;
 end
-
 if ~isfield(CFG, 'tracks_max_mismatches')
   CFG.tracks_max_mismatches = CFG.read_len;
 end
+subsample = 1000; mapped = 1; spliced = 1; maxminlen = 0;
+
 
 win = CFG.read_len;
 eidx = [max(gene.eidx(1)-win,1):gene.eidx(1)-1, gene.eidx, gene.eidx(end)+1:gene.eidx(end)+win];
@@ -73,20 +80,28 @@ for f = 1:length(CFG.tracks_fn{gene.chr_num}),
     warning('BAM file %s does not exist', fname);
   end
   try
-    if nargout>3
-      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
+    if nargout==5
+      [coverage_idx_tmp{f}, intron_list_tmp, cov_paired_tmp, mates_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, subsample, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches, mapped, spliced, maxminlen, CFG.paired);
+      clear cov_paired_tmp;
+    elseif nargout==3 || nargout==4
+      [coverage_idx_tmp{f}, intron_list_tmp] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, subsample, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches, mapped, spliced, maxminlen, CFG.paired);
     else
-      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, 1000, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches);
+      [coverage_idx_tmp{f}] = get_reads(fname, gene.chr, eidx(1), eidx(end), strand, collapse, subsample, CFG.tracks_max_intron_len, CFG.tracks_min_exon_len, CFG.tracks_max_mismatches, mapped, spliced, maxminlen, CFG.paired);
     end
   catch
     warning('get_reads failed');
     intron_list = intron_list';
-    ok = 0;
+    reads_ok = 0;
     return;
   end
   if exist('intron_list_tmp', 'var')
     if ~isempty(intron_list_tmp),
       intron_list = [intron_list intron_list_tmp];
+    end
+  end
+  if exist('mates_tmp', 'var')
+    if ~isempty(mates_tmp),
+      paired_reads.mates = [paired_reads.mates mates_tmp+1];
     end
   end
 end
@@ -109,20 +124,17 @@ else
 end
   
 % process intron list (1: intron start, 2: intron stop, 3: confirmation, 4: strand)
-if nargout>3
-  intron_list = [intron_list', zeros(size(intron_list,2), 1), (gene.strand=='-')*ones(size(intron_list,2), 1)];
-  intron_list_unique = unique(intron_list, 'rows');
-  for n = 1:size(intron_list_unique,1),
-    intron_list_unique(n,3) = sum(intron_list_unique(n,1)==intron_list(:,1) & ...
-                                  intron_list_unique(n,2)==intron_list(:,2) & ...
-                                  intron_list_unique(n,4)==intron_list(:,4));
-  end
-  intron_list = intron_list_unique;
-  clear intron_list_unique;
+if nargout>2
+  intron_list = sortrows(intron_list');
+  [tmp fidx] = unique(intron_list, 'rows', 'first');
+  [intron_list_unique lidx] = unique(intron_list, 'rows', 'last');
+  intron_list = [intron_list_unique, [lidx-fidx+1], (gene.strand=='-')*ones(size(intron_list_unique,1), 1)];
+  clear tmp intron_list_unique;
 end
 
 % process read starts: count reads starting at each exonic position
-if nargout>4
+if nargout>3
+  read_starts = zeros(gene.exonic_len, 1);
   for c = 1:size(coverage, 2),
     fidx = find(coverage(:,c)~=0, 1, 'first');
     if ~isempty(fidx),
@@ -132,34 +144,27 @@ if nargout>4
   end
 end
 
-% determine set of excluded reads
-if CFG.paired
-  offset = gene.start-1;
-  eidx = 1:length(gene.eidx);
-  sum_all = sum(coverage,1);
-  for t = 1:length(gene.transcripts),
-    tidx = [];
-    for e = 1:size(gene.exons{t},1),
-      tidx = [tidx, gene.exons{t}(e,1):gene.exons{t}(e,2)];
-      tidx = unique(tidx);
+% process read starts and stops: store indices (eidx based)
+if nargout>4
+  paired_reads.starts = nan(1, size(coverage, 2));
+  paired_reads.stops = nan(1, size(coverage, 2));
+  for c = 1:size(coverage, 2),
+    fidx = find(coverage(:,c)~=0, 1, 'first');
+    lidx = find(coverage(:,c)~=0, 1, 'last');
+    if ~isempty(fidx) && ~isempty(lidx)
+      if (fidx==1 || lidx==size(coverage, 1)) && sum(coverage(:,c),1)<CFG.read_len, continue; end
+      paired_reads.starts(c) = gene.eidx(fidx);
+      paired_reads.stops(c) = gene.eidx(lidx);
     end
-    tidx = unique(tidx)-offset;
-    assert(all(tidx>=0));
-    % transcript indices in relative exonic coordinates
-    [tmp idx1 idx2] = intersect(tidx, gene.eidx-offset);
-    assert(isequal(tidx, gene.eidx(idx2)-offset));
-    tidx = idx2;
-    % exclude reads that do not cover at least MIN_COV of all transcript positions
-    excluded_reads{t} = find(sum(coverage(tidx,:),1)./sum_all<MIN_COV);
   end
-else
- for t = 1:length(gene.transcripts),
-   excluded_reads{t} = [];
- end
+  idx = find(~isnan(paired_reads.starts) & ~isnan(paired_reads.stops));
+  [C fidx1] = intersect(paired_reads.mates(1,:), idx);
+  [C fidx2] = intersect(paired_reads.mates(2,:), idx);
+  paired_reads.mates = paired_reads.mates(:,intersect(fidx1, fidx2));
 end
 
-% collapse coverage if single reads are not required
-if ~CFG.paired
+% collapse coverage as single reads are not required anymore
+if CFG.paired || nargout>3
   coverage = sum(coverage, 2);
 end
 
