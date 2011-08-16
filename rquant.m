@@ -144,8 +144,8 @@ CFG.both_strands = 1;
 %%%%% transcript weight optimisation
 % method to determine transcript weights 
 CFG.method = 'pos'; % 'pos' or 'seg'
-CFG.paired = 0;
-if ~isfield(CFG, 'correct_intervals'), CFG.correct_intervals = 0; end
+if ~isfield(CFG, 'paired'), CFG.paired = 0; end % usage of paired-end data
+if ~isfield(CFG, 'correct_intervals'), CFG.correct_intervals = 0; end % correction to closed interval
   
 %%%%% sequence bias normalisation
 if ~isfield(CFG, 'norm_seqbias'), CFG.norm_seqbias = 0; end
@@ -179,6 +179,7 @@ CFG.subsample_frac = 0.2;
 if ~isfield(CFG, 'C_I'), CFG.C_I = 100; end
 if ~isfield(CFG, 'C_F'), CFG.C_F = 100; end
 if ~isfield(CFG, 'C_N'), CFG.C_N = 10; end
+if CFG.paired && ~isfield(CFG, 'C_PE'), CFG.C_PE = 100; end
 % checks of variable domains
 if CFG.load_profiles && CFG.learn_profiles==1,
   error('Pre-learned profiles cannot be used for empirical profile estimation.');

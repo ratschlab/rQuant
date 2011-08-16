@@ -3,8 +3,8 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% experiment %%%%%
-CFG.organism = 'elegans'; % 'arabidopsis' 'human'
-CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias_seq_bias'
+CFG.organism = 'elegans'; % 'arabidopsis', 'human'
+CFG.exp = 'fs_weak_bias_paired'; % 'fs_strong_bias', 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
 PAR.CFG.read_len = 75;
 
 %%%%% tracks, repeats, genes, genome info %%%%% 
@@ -35,7 +35,7 @@ PAR.profiles_fn_out = '';
 
 %%%%% profile learning %%%%%
 % enables profile learning
-PAR.learn_profiles = 2; % 0: no learning, 1: empirically estimated, 2: optimised
+PAR.learn_profiles = 0; % 0: no learning, 1: empirically estimated, 2: optimised
 % pre-learned profiles
 PAR.load_profiles = 0;
 PAR.profiles_fn = '';
@@ -43,6 +43,10 @@ PAR.profiles_fn = '';
 C_I = 100; %[10^0 10^1 10^2 10^3];
 C_F = 10^5;%[10^3 10^4 10^5 10^7];
 C_N = 1;%[10^0 10^2 10^5];
+C_PE = [50 70 100 120 150];
+
+%%%%% paired-end %%%%%
+PAR.CFG.paired = 1;
 
 %%%%% sequence bias normalisation %%%%%
 PAR.CFG.norm_seqbias = 0;
@@ -68,6 +72,9 @@ end
 
 run_local = 0;
 
+for p = 1:length(C_PE),
+PAR.CFG.C_PE = C_PE(p); 
+PAR.CFG.C_PE
 for s = 1:length(C_I),
   PAR.CFG.C_I = C_I(s);
   for f = 1:length(C_F),
@@ -114,4 +121,5 @@ for s = 1:length(C_I),
       end
     end
   end
+end
 end

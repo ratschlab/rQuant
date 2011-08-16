@@ -1,5 +1,5 @@
 function profile_weights = get_empirical_profiles(CFG, genes)
-% GET_EMPIRICAL_PROFILES  Estimates profiles empirically from read data.
+% GET_EMPIRICAL_PROFILES   Estimates profiles empirically from read data.
 %
 %   profile_weights = get_empirical_profiles(CFG, genes)
 %
@@ -28,7 +28,7 @@ pw_nnz = get_included_thetas(CFG);
 lmt = get_limits(CFG.max_side_len, CFG.num_plifs/2);
 for g = 1:length(genes),
   if length(genes(g).transcripts)>1, continue; end
-  [tmp_coverage tmp_ex_reads reads_ok] = get_coverage_per_read(CFG, genes(g), 1);
+  [tmp_coverage reads_ok] = get_coverage_per_read(CFG, genes(g), 1);
   assert(reads_ok==1);
   if genes(g).exonic_len>=CFG.num_plifs
     fidx = find(lmt<=genes(g).exonic_len/2, 1, 'last');

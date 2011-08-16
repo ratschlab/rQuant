@@ -1,5 +1,5 @@
 function density_model = read_density_model(fname)
-% READ_DENSITY_MODEL  Reads density model from text file into matrix.
+% READ_DENSITY_MODEL   Reads density model from text file into matrix.
 %
 %   density_model = read_density_model(fname)
 %

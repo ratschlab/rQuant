@@ -114,3 +114,7 @@ for g = 1:length(genes),
 end
 genes(del_idx) = [];
 num_del = sum(del_idx);
+
+% add splicegraph
+if isfield(genes, 'splicegraph'), genes = rmfield(genes, 'splicegraph'); end
+genes = build_splice_graph_caller(genes);
