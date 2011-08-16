@@ -23,8 +23,8 @@ function pair_mat = gen_paired_segments(segments, paired_reads)
 
 pair_mat = zeros(size(segments, 1));
 for p = 1:size(paired_reads.mates, 2),
-  r1 = paired_reads.mates(1, p);
-  r2 = paired_reads.mates(2, p);
+  r1 = paired_reads.mates(1,p);
+  r2 = paired_reads.mates(2,p);
   if paired_reads.starts(r1)>paired_reads.starts(r2) && paired_reads.stops(r1)>paired_reads.stops(r2)
     r = r1; r1 = r2; r2 = r;
   end

@@ -28,6 +28,7 @@ if exist('all_genes', 'var')
 end
 % add eidx, adapt to closed intervals
 [genes num_del num_merged] = sanitise_genes(genes, CFG);
+genes = genes(1:500);
 if CFG.VERBOSE>0, fprintf(1, '\nUsing %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
 clear num_del num_merged;
 % determine ranges of transcript length bins
@@ -68,6 +69,16 @@ if CFG.load_profiles
 else
   profile_weights = ones(CFG.num_plifs, size(CFG.transcript_len_ranges,1));
   seq_weights = [];
+end
+
+
+%%%%% estimate insert size distribution %%%%%
+if CFG.paired
+  fprintf(1, '\nEstimating insert size distribution...\n');
+  genes_paired = genes([genes.exonic_len]<5000);
+  ridx = randperm(length(genes_paired));
+  genes_paired = genes_paired(ridx(1:min(length(ridx),50)));
+  CFG.ins_sizes = estimate_ins_size_distr(CFG, genes_paired);
 end
 
 
@@ -148,23 +159,12 @@ if CFG.use_rproc
   JOB_INFO = rproc_empty(CFG.rproc_num_jobs);
   % submit jobs to cluster
   for f = 1:CFG.rproc_num_jobs,
-    PAR.genes = genes( (f-1)*num_genes_per_job+1 : min(f*num_genes_per_job, length(genes)) );
-    switch CFG.organism,
-     case 'elegans'
-      FG.rproc_memreq = 3000;
-      CFG.rproc_par.mem_req_resubmit = [6000 8000 20000];
-     case 'drosophila',
-      CFG.rproc_memreq = 4000;
-      CFG.rproc_par.mem_req_resubmit = [7000 10000 20000];
-     case 'human',
-      CFG.rproc_memreq = 5000;
-      CFG.rproc_par.mem_req_resubmit = [8000 12000 20000];
-    end
-    CFG.rproc_par.identifier = sprintf('rq.%s.f%i-', CFG.organism(1:3), f);
+    PAR.genes = genes((f-1)*num_genes_per_job+1 : min(f*num_genes_per_job, length(genes)));
+    CFG.rproc_par.identifier = sprintf('rq.f%i-', f);
     fprintf(1, 'Submitting job %i (%s) to cluster\n', f, CFG.rproc_par.identifier);
     JOB_INFO(f) = rproc('opt_transcripts_caller', PAR, CFG.rproc_memreq, CFG.rproc_par, CFG.rproc_time); pause(1);
   end
-  save(sprintf('~/tmp/%s_%s_%s.mat', CFG.exp, CFG.gene_source, datestr(now,'yyyy-mm-dd_HHhMM') ), 'JOB_INFO');
+  %save(sprintf('~/tmp/%s_%s_%s.mat', CFG.exp, CFG.gene_source, datestr(now,'yyyy-mm-dd_HHhMM') ), 'JOB_INFO');
   % wait for jobs
   [JOB_INFO num_crashed] = rproc_wait(JOB_INFO, 60, 1, -1);
   if num_crashed>0, pause(60); end; % some delay to wait until results are written
