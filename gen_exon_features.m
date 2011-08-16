@@ -1,5 +1,5 @@
 function [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
-% GEN_EXON_FEATURES  Generates transcript length feature matrix for PliFs.
+% GEN_EXON_FEATURES   Generates transcript length feature matrix for PliFs.
 %
 %   [feat, idx, idx_next, del_idx] = gen_exon_features(CFG, gene, t, reverse_ret)
 %

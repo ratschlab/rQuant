@@ -1,5 +1,5 @@
 function write_parameters(PAR, fname)
-% WRITE_PARAMETERS   Writes parameters to file
+% WRITE_PARAMETERS   Writes parameters to file.
 %
 %   write_parameters(PAR, fname)
 %
@@ -13,8 +13,8 @@ function write_parameters(PAR, fname)
 %   the Free Software Foundation; either version 3 of the License, or
 %   (at your option) any later version.
 %
-%   Written (W) 2009-2011 Regina Bohnert, Gunnar Raetsch
-%   Copyright (C) 2009-2011 Max Planck Society
+%   Written (W) 2011 Regina Bohnert
+%   Copyright (C) 2011 Max Planck Society
 %
 
 
@@ -27,4 +27,6 @@ fprintf(fd, 'learn_profiles\t%i\n', PAR.learn_profiles);
 fprintf(fd, 'load_profiles\t%i\n', PAR.load_profiles);
 fprintf(fd, 'profiles\t%s\n', PAR.profiles_fn);
 fprintf(fd, 'norm_seqbias\t%i\n', PAR.CFG.norm_seqbias);
+fprintf(fd, 'paired\t%i\n', PAR.CFG.paired);
+if PAR.CFG.paired, fprintf(fd, 'C_PE\t%i\n', PAR.CFG.C_PE); end
 fclose(fd);

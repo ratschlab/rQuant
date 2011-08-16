@@ -72,9 +72,9 @@ for g = 1:length(genes),
   if tmp_VERBOSE>1, fprintf(1, '%i\r', g); end
   try
     if CFG.norm_seqbias
-      [tmp_coverage excluded_reads reads_ok tmp_introns genes(g).num_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
+      [tmp_coverage reads_ok tmp_introns genes(g).num_read_starts] = get_coverage_per_read(CFG, genes(g), 1);
     else
-      [tmp_coverage excluded_reads reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
+      [tmp_coverage reads_ok tmp_introns] = get_coverage_per_read(CFG, genes(g), 1);
     end
   catch
     reads_ok = 0;
@@ -276,7 +276,7 @@ while 1
   tmp_VERBOSE = CFG.VERBOSE;
   CFG.VERBOSE = 0;
   R_const = CFG.C_N*sum(sum((profile_weights(:,1:end-1)-profile_weights(:,2:end)).^2) + CFG.C_F*sum(sum((profile_weights(1:end-1,:)-profile_weights(2:end,:)).^2)));
-  [weights, fval(cnt)] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w, R_const, 1, weights, 'L1');
+  [weights, fval(cnt)] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, [], [], C_w, R_const, 1, weights, 'L1');
   %if ~(fval_old(end)-fval(cnt)>-1e-3)
   %  %fval_old(end)-fval(cnt)
   %end

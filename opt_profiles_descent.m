@@ -18,9 +18,9 @@ function [profile_weights, obj, fval] = opt_profiles_descent(CFG, profile_weight
 %   R_const:            constant residue
 %
 %   -- output --
-%   profile_weights: weights of profile functions
-%   obj: objective value at optimum
-%   fval: objective value at each step
+%   profile_weights:    weights of profile functions
+%   obj:                objective value at optimum
+%   fval:               objective value at each step
 %
 %
 %   This program is free software; you can redistribute it and/or modify

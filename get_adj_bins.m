@@ -1,5 +1,5 @@
 function p_adj = get_adj_bins(CFG)
-% GET_ADJ_BINS   Gets adjacent supporting points
+% GET_ADJ_BINS   Gets adjacent supporting points.
 %
 %   p_adj = get_adj_bins(CFG)
 % 

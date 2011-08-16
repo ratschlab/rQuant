@@ -47,10 +47,21 @@ for c = chr_num,
   for g = chr_idx,
     gene = genes(g);
     if CFG.VERBOSE>0, fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len); end
+    if CFG.paired && gene.exonic_len>7000
+      if CFG.VERBOSE>0, fprintf(1, 'gene too long %i\n', g); end
+      genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
+      genes(g).obj = nan;
+      continue;
+    end
     %%%%% load exon coverage and introns for gene %%%%%
     try
       if CFG.VERBOSE>1, fprintf(1, 'Loading reads...\n'); tic; end
-      [coverage excluded_reads reads_ok introns] = get_coverage_per_read(CFG, gene);
+      if CFG.paired
+        [coverage, reads_ok, introns, read_starts, paired_reads] = get_coverage_per_read(CFG, gene);
+        clear read_starts;
+      else
+        [coverage, reads_ok, introns] = get_coverage_per_read(CFG, gene);
+      end
       if CFG.VERBOSE>1, fprintf(1, 'Took %.1fs.\n', toc); end
     catch
       reads_ok = 0;
@@ -159,9 +170,21 @@ for c = chr_num,
       continue;
     end
     
+    %%%%% generate paired-end data %%%%%
+    if CFG.paired
+      [paired_exp, paired_obs] = get_paired_data(CFG, gene, paired_reads);
+      norm_pe = sum(sum(sum(paired_exp)));
+      if norm_pe~=0 
+        paired_exp = paired_exp./norm_pe;
+      end
+      assert(all(all(all(~isnan(paired_exp)))));
+    else
+      paired_exp = []; paired_obs = [];
+    end
+    
     %%%%% transcript weight optimisation %%%%%
     C_w = gene.transcript_length';
-    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, C_w);
+    [weights, obj] = opt_transcripts_descent(CFG, coverage, exon_mask, intron_count, intron_mask, paired_exp, paired_obs, C_w);
     genes(g).transcript_weights = weights;
     genes(g).obj = obj;
   end
