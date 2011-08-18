@@ -28,7 +28,6 @@ if exist('all_genes', 'var')
 end
 % add eidx, adapt to closed intervals
 [genes num_del num_merged] = sanitise_genes(genes, CFG);
-genes = genes(1:500);
 if CFG.VERBOSE>0, fprintf(1, '\nUsing %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
 clear num_del num_merged;
 % determine ranges of transcript length bins

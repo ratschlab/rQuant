@@ -41,9 +41,9 @@ PAR.load_profiles = 0;
 PAR.profiles_fn = '';
 % regularisation strengths
 C_I = 100; %[10^0 10^1 10^2 10^3];
-C_F = 10^5;%[10^3 10^4 10^5 10^7];
-C_N = 1;%[10^0 10^2 10^5];
-C_PE = [50 70 100 120 150];
+C_F = 10^5; %[10^3 10^4 10^5 10^7];
+C_N = 1; %[10^0 10^2 10^5];
+C_PE = 10; %[10 25 50 75 100];
 
 %%%%% paired-end %%%%%
 PAR.CFG.paired = 1;
@@ -52,10 +52,10 @@ PAR.CFG.paired = 1;
 PAR.CFG.norm_seqbias = 0;
 
 %%%%% rproc settings for rquant subjobs %%%%%
-PAR.CFG.use_rproc = 0; % 1: cluster submission or 0: locally
+PAR.CFG.use_rproc = 1; % 1: cluster submission or 0: locally
 if PAR.CFG.use_rproc,
-  PAR.CFG.rproc_num_jobs              = 50;
-  PAR.CFG.rproc_memreq                = 4000;
+  PAR.CFG.rproc_num_jobs              = 10;
+  PAR.CFG.rproc_memreq                = 3000;
   PAR.CFG.rproc_par.priority          = 8;
   PAR.CFG.rproc_par.resubmit          = 3;
   PAR.CFG.rproc_par.mem_req_resubmit  = [8000 12000 20000];
@@ -73,8 +73,7 @@ end
 run_local = 0;
 
 for p = 1:length(C_PE),
-PAR.CFG.C_PE = C_PE(p); 
-PAR.CFG.C_PE
+PAR.CFG.C_PE = C_PE(p);
 for s = 1:length(C_I),
   PAR.CFG.C_I = C_I(s);
   for f = 1:length(C_F),

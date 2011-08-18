@@ -47,7 +47,8 @@ for c = chr_num,
   for g = chr_idx,
     gene = genes(g);
     if CFG.VERBOSE>0, fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len); end
-    if CFG.paired && gene.exonic_len>7000
+    if (gene.stop-gene.start+1)>10^5 || gene.exonic_len>8000
+    %if CFG.paired && (gene.stop-gene.start+1)>10^5
       if CFG.VERBOSE>0, fprintf(1, 'gene too long %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
       genes(g).obj = nan;
