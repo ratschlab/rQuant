@@ -25,7 +25,7 @@ function [pair_mat_exp, pair_mat_obs, segments, paired_reads_exp] = get_paired_d
 %
 
 
-var_ins_size = false;
+var_ins_size = true;
 
 %%% get distinguishable segments from splicegraph
 [segments, exon_pointer, seg_admat, initial, terminal] = define_segments(gene.splicegraph{1}, gene.splicegraph{2});
