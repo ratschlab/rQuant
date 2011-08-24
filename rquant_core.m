@@ -28,6 +28,10 @@ if exist('all_genes', 'var')
 end
 % add eidx, adapt to closed intervals
 [genes num_del num_merged] = sanitise_genes(genes, CFG);
+for g = 1:length(genes),
+  len(g) = length(genes(g).transcript_length);
+end
+genes = genes(len>3);
 if CFG.VERBOSE>0, fprintf(1, '\nUsing %i genes (merged %i, deleted %i)\n\n', length(genes), num_merged, num_del); end
 clear num_del num_merged;
 % determine ranges of transcript length bins
@@ -163,9 +167,8 @@ if CFG.use_rproc
     fprintf(1, 'Submitting job %i (%s) to cluster\n', f, CFG.rproc_par.identifier);
     JOB_INFO(f) = rproc('opt_transcripts_caller', PAR, CFG.rproc_memreq, CFG.rproc_par, CFG.rproc_time); pause(1);
   end
-  %save(sprintf('~/tmp/%s_%s_%s.mat', CFG.exp, CFG.gene_source, datestr(now,'yyyy-mm-dd_HHhMM') ), 'JOB_INFO');
   % wait for jobs
-  [JOB_INFO num_crashed] = rproc_wait(JOB_INFO, 60, 1, -1);
+  [JOB_INFO num_crashed] = rproc_wait(JOB_INFO, 120, 1, -1);
   if num_crashed>0, pause(60); end; % some delay to wait until results are written
   try
     % collect results

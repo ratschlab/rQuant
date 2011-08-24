@@ -174,11 +174,6 @@ for c = chr_num,
     %%%%% generate paired-end data %%%%%
     if CFG.paired
       [paired_exp, paired_obs] = get_paired_data(CFG, gene, paired_reads);
-      norm_pe = sum(sum(sum(paired_exp)));
-      if norm_pe~=0 
-        paired_exp = paired_exp./norm_pe;
-      end
-      assert(all(all(all(~isnan(paired_exp)))));
     else
       paired_exp = []; paired_obs = [];
     end
