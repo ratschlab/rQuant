@@ -3,8 +3,8 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% experiment %%%%%
-CFG.organism = 'human'; % 'elegans', 'arabidopsis', 'human'
-CFG.exp = 'fs_weak_bias_paired'; % 'fs_strong_bias', 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
+CFG.organism = 'elegans'; % 'elegans', 'arabidopsis', 'human'
+CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias', 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
 PAR.CFG.read_len = 75;
 
 %%%%% tracks, repeats, genes, genome info %%%%% 
@@ -46,13 +46,13 @@ C_N = 1; %[10^0 10^2 10^5];
 C_PE = [10^2];%[10 10^2 10^3 10^4 5*10^4];
 
 %%%%% paired-end %%%%%
-PAR.CFG.paired = 1;
+PAR.CFG.paired = 0;
 
 %%%%% sequence bias normalisation %%%%%
 PAR.CFG.norm_seqbias = 0;
 
 %%%%% rproc settings for rquant subjobs %%%%%
-PAR.CFG.use_rproc = 1; % 1: cluster submission or 0: locally
+PAR.CFG.use_rproc = 0; % 1: cluster submission or 0: locally
 if PAR.CFG.use_rproc,
   PAR.CFG.rproc_num_jobs              = 20;
   PAR.CFG.rproc_memreq                = 3000;
