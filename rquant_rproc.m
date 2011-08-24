@@ -33,10 +33,18 @@ global RQUANT_PATH RQUANT_SRC_PATH
 global RQUANT_VERSION
 % SAMTools path
 global SAMTOOLS_DIR
-RQUANT_VERSION = getenv('RQUANT_VERSION');
-RQUANT_PATH = getenv('RQUANT_PATH');
-RQUANT_SRC_PATH = getenv('RQUANT_SRC_PATH');
-SAMTOOLS_DIR = getenv('SAMTOOLS_DIR');
+RQUANT_VERSION='2.0';
+RQUANT_PATH='/fml/ag-raetsch/home/bohnert/svn/releases/rQuant/trunk';
+RQUANT_SRC_PATH='/fml/ag-raetsch/home/bohnert/svn/projects/rquant/src-dev';
+SAMTOOLS_DIR='/fml/ag-raetsch/share/software/samtools';
+addpath('~/svn/tools/rproc');
+addpath('~/svn/tools/utils');
+addpath('~/svn/tools/genomes');
+addpath('~/svn/projects/splicing/splicegraphs');
+%RQUANT_VERSION = getenv('RQUANT_VERSION');
+%RQUANT_PATH = getenv('RQUANT_PATH');
+%RQUANT_SRC_PATH = getenv('RQUANT_SRC_PATH');
+%SAMTOOLS_DIR = getenv('SAMTOOLS_DIR');
 if isempty(RQUANT_VERSION) || isempty(RQUANT_PATH) || isempty(RQUANT_SRC_PATH) || isempty(SAMTOOLS_DIR)
   error('rQuant paths are not set. At least one of these variables is empty: RQUANT_VERSION, RQUANT_PATH, RQUANT_SRC_PATH, SAMTOOLS_DIR.');
 end

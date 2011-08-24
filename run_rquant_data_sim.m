@@ -3,7 +3,7 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% experiment %%%%%
-CFG.organism = 'elegans'; % 'arabidopsis', 'human'
+CFG.organism = 'human'; % 'elegans', 'arabidopsis', 'human'
 CFG.exp = 'fs_weak_bias_paired'; % 'fs_strong_bias', 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
 PAR.CFG.read_len = 75;
 
@@ -43,7 +43,7 @@ PAR.profiles_fn = '';
 C_I = 100; %[10^0 10^1 10^2 10^3];
 C_F = 10^5; %[10^3 10^4 10^5 10^7];
 C_N = 1; %[10^0 10^2 10^5];
-C_PE = 10; %[10 25 50 75 100];
+C_PE = [10^2];%[10 10^2 10^3 10^4 5*10^4];
 
 %%%%% paired-end %%%%%
 PAR.CFG.paired = 1;
@@ -54,7 +54,7 @@ PAR.CFG.norm_seqbias = 0;
 %%%%% rproc settings for rquant subjobs %%%%%
 PAR.CFG.use_rproc = 1; % 1: cluster submission or 0: locally
 if PAR.CFG.use_rproc,
-  PAR.CFG.rproc_num_jobs              = 10;
+  PAR.CFG.rproc_num_jobs              = 20;
   PAR.CFG.rproc_memreq                = 3000;
   PAR.CFG.rproc_par.priority          = 8;
   PAR.CFG.rproc_par.resubmit          = 3;
@@ -70,7 +70,7 @@ if PAR.CFG.use_rproc,
 end
 
 
-run_local = 0;
+run_local = 1;
 
 for p = 1:length(C_PE),
 PAR.CFG.C_PE = C_PE(p);
