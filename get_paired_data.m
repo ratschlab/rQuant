@@ -29,6 +29,17 @@ var_ins_size = true;
 
 %%% get distinguishable segments from splicegraph
 [segments, exon_pointer, seg_admat, initial, terminal] = define_segments(gene.splicegraph{1}, gene.splicegraph{2});
+len_segments = segments(:,2)-segments(:,1)+1;
+pair_mat_len = zeros(size(segments,1));
+for s1 = 1:size(segments,1),
+ for s2 = 1:size(segments,1),
+   if s1~=s2
+     pair_mat_len(s1,s2) = len_segments(s1)+len_segments(s2);
+   else
+     pair_mat_len(s1,s2) = len_segments(s1);
+   end
+  end
+end
 
 %%% generate paired-end reads from annotated transcripts
 pair_mat_exp = zeros(size(segments,1), size(segments,1), length(gene.transcripts));
@@ -69,7 +80,7 @@ for t = 1:length(gene.transcripts),
     if num_reads>0
       paired_reads_exp.starts = paired_reads_exp.starts(1:num_reads);
       paired_reads_exp.stops = paired_reads_exp.stops(1:num_reads);
-      paired_reads_exp.mates = paired_reads_exp.mates(:,num_reads/2);
+      paired_reads_exp.mates = paired_reads_exp.mates(:,1:num_reads/2);
     else
       paired_reads_exp.starts = []; paired_reads_exp.stops = []; paired_reads_exp.mates = [];
     end
@@ -87,7 +98,14 @@ for t = 1:length(gene.transcripts),
   end
   % connectivity matrix for expected pairs
   pair_mat_exp(:,:,t) = gen_paired_segments(segments, paired_reads_exp)./max_iter;
+  pair_mat_exp(:,:,t) = pair_mat_exp(:,:,t)./pair_mat_len;
 end
+norm_pe = sum(sum(sum(pair_mat_exp)));
+if norm_pe~=0 
+  pair_mat_exp = pair_mat_exp./norm_pe;
+end
+assert(all(all(all(~isnan(pair_mat_exp)))));
 
 %%% connectivity  matrix for observed pairs
 pair_mat_obs = gen_paired_segments(segments, paired_reads_obs);
+pair_mat_obs = pair_mat_obs./pair_mat_len;
