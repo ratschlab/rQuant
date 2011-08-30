@@ -12,7 +12,7 @@ function rquant(anno_dir, track, output_file, output_dir, load_profiles, profile
 %   profiles_fn:     name of input file that stores profiles
 %   learn_profiles:  flag that enables learning of profiles
 %   profiles_fn_out: name of output file that stores profiles 
-%   CFG:             configuration struct (optional, allows the pass parameters settings)
+%   CFG:             configuration struct (optional, allows to pass parameters settings)
 %
 %
 %   This program is free software; you can redistribute it and/or modify
