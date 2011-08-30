@@ -34,8 +34,14 @@ for p = 1:size(paired_reads.mates, 2),
   s3 = find(segments(:,1)<paired_reads.stops(r2) & segments(:,2)>=paired_reads.stops(r2));
   if 1
   % find all segments connected and covered by a read pair
-  sl = unique([s0 s1]);
-  sr = unique([s2 s3]);
+  sl = [];
+  if ~isempty(s0), sl = s0; end
+  if ~isempty(s1), sl = [sl s1]; end
+  if ~isempty(sl), sl = unique(sl); end
+  sr = [];
+  if ~isempty(s2), sr = s2; end
+  if ~isempty(s3), sr = [sr s3]; end
+  if ~isempty(sr), sr = unique(sr); end
   for n1 = sl,
     for n2 = sr,
       pair_mat(n1,n2) = pair_mat(n1,n2) + 1;
