@@ -1,0 +1,8 @@
+The files contain example data from one 1 MB regions from the C. elegans genome.
+(This is one of the regions that have been defined in the nGASP project, see http://www.biomedcentral.com/1471-2105/9/549)
+
+These files are:
+* the genome annotation in GFF3 format
+* the genome annotation in AGS format
+* a small set of aligned reads in BAM format (generated with genomemapper/qpalma)
+* a pre-learned density model for the transcript profiles
