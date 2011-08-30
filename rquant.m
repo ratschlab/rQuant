@@ -166,7 +166,7 @@ CFG.profiles_fn = profiles_fn;
 CFG.learn_profiles = learn_profiles; % 0: no learning, 1: empirically estimated, 2: optimised
 % number of iterations
 CFG.max_iter = 100;
-% number of plifs for profile functions
+% number of supporting points for profile functions
 CFG.num_plifs = 100;
 % maximal number of positions to be considered at both transcript ends
 CFG.max_side_len = 500;
