@@ -47,9 +47,8 @@ for c = chr_num,
   for g = chr_idx,
     gene = genes(g);
     if CFG.VERBOSE>0, fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len); end
-    if (gene.stop-gene.start+1)>10^5 || gene.exonic_len>8000
-    %if CFG.paired && (gene.stop-gene.start+1)>10^5
-      if CFG.VERBOSE>0, fprintf(1, 'gene too long %i\n', g); end
+    if (gene.stop-gene.start+1)>10^5 || gene.exonic_len>10000 || length(gene.transcripts)>30
+      if CFG.VERBOSE>0, fprintf(1, 'gene too complex %i\n', g); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
       genes(g).obj = nan;
       continue;
@@ -117,7 +116,12 @@ for c = chr_num,
     end
     
     %%%%% prepare intron mask %%%%%
-    [intron_mask intron_count] = get_intron_data(gene, CFG, introns, g);
+    if ~isempty(introns)
+      [intron_mask intron_count] = get_intron_data(gene, CFG, introns, g);
+    else
+      intron_mask = zeros(0,length(gene.transcripts));
+      intron_count = [];
+    end
     
     %%%%% prepare repeat mask %%%%%
     repeat_mask = false(gene.exonic_len, 1); 

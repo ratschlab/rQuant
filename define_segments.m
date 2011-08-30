@@ -108,24 +108,26 @@ end
 %	exons can be terminal exons, but still oberlapp with other exons. 
 %	Then the termination information is lost when reducing the exons to segments 
 %
-terminal = zeros(1, num_seg);
-terminal(end) = 1;
-initial = zeros(1, num_seg);
-initial(1) = 1;
-for j = 1:num_seg
-  seg_end = segments(2, j);
-  seg_start = segments(1, j);
-  %if j==5
-  %	keyboard
-  %end
-  for e1 = exon_pointer{j}'
-    if exons(2, e1)==seg_end
-      terminal(j) = terminal(j) || is_terminal(exons, admat, e1);
-    end
-    if exons(1, e1)==seg_start
-      initial(j) = initial(j) || is_initial(exons, admat, e1);
-    end
-  end	
+if nargout>3
+  terminal = zeros(1, num_seg);
+  terminal(end) = 1;
+  initial = zeros(1, num_seg);
+  initial(1) = 1;
+  for j = 1:num_seg
+    seg_end = segments(2, j);
+    seg_start = segments(1, j);
+    %if j==5
+    %	keyboard
+    %end
+    for e1 = exon_pointer{j}'
+      if exons(2, e1)==seg_end
+        terminal(j) = terminal(j) || is_terminal(exons, admat, e1);
+      end
+      if exons(1, e1)==seg_start
+        initial(j) = initial(j) || is_initial(exons, admat, e1);
+      end
+    end	
+  end
 end
 
 segments = segments' + s-1;

@@ -26,9 +26,13 @@ function [pair_mat_exp, pair_mat_obs, segments, paired_reads_exp] = get_paired_d
 
 
 var_ins_size = true;
+if isempty(CFG.ins_sizes)
+  CFG.ins_sizes = 100;
+end
+
 
 %%% get distinguishable segments from splicegraph
-[segments, exon_pointer, seg_admat, initial, terminal] = define_segments(gene.splicegraph{1}, gene.splicegraph{2});
+segments = define_segments(gene.splicegraph{1}, gene.splicegraph{2});
 len_segments = segments(:,2)-segments(:,1)+1;
 pair_mat_len = zeros(size(segments,1));
 for s1 = 1:size(segments,1),
@@ -54,7 +58,8 @@ for t = 1:length(gene.transcripts),
   end
   if var_ins_size
     % insert size drawn from empirical distribution
-    max_iter = 5; num_reads = 0; num_reads_exp = 2*max_iter*(length(tidx)-2*CFG.read_len+1);
+    max_iter = min(5, length(CFG.ins_sizes));
+    num_reads = 0; num_reads_exp = 2*max_iter*(length(tidx)-2*CFG.read_len+1);
     paired_reads_exp.starts = nan(1, num_reads_exp);
     paired_reads_exp.stops = nan(1, num_reads_exp);
     paired_reads_exp.mates = nan(2, num_reads_exp);
