@@ -46,6 +46,7 @@ end
 if nargin<10
   max_iter = 1e100;
 end
+max_time = 60 ; % limit optimization to 60 seconds
 
 if nargin<11
   weights = full(mean(coverage)/T*ones(1,T));
@@ -62,7 +63,7 @@ end
 
 LB = 0.0;
 UB = full(mean(coverage));
-
+%CFG.VERBOSE=2
 cnt = 0;
 if CFG.VERBOSE>0, fprintf(1, '\nStarting optimising...\n'); tic; end
 if CFG.VERBOSE>1, fprintf(1, 'Itn\tObjective\tNorm diff\n'); end
@@ -188,6 +189,10 @@ else
     if norm(fval_old-fval)<1e-5 || norm(weights_old-weights)<1e-5 || iter>=max_iter,
       break;
     end
+    if toc>max_time,
+        warning('terminating optimization since time limit (%is). Last delta: %1.2e\n', max_time, norm(fval_old-fval)) ;
+        break ;
+    end ;
     iter = iter + 1;
   end
 end

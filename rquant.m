@@ -192,7 +192,6 @@ if ~exist(profiles_fn, 'file') && CFG.load_profiles
   error('File with pre-learned profiles does not exist.');
 end
 
-
 %%%%% rquant %%%%%
 save_fname = rquant_core(CFG);
 

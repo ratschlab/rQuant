@@ -3,8 +3,9 @@ addpath('~/svn/tools/utils');
 addpath('~/svn/tools/genomes');
 
 %%%%% experiment %%%%%
-CFG.organism = 'elegans'; % 'elegans', 'arabidopsis', 'human'
-CFG.exp = 'fs_strong_bias'; % 'fs_strong_bias', 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
+CFG.organism = 'human' ;% 'elegans'; % 'elegans', 'arabidopsis', 'human'
+                        %CFG.exp = 'fs_weak_bias_paired'; % 'fs_strong_bias', 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
+CFG.exp = 'fs_strong_bias' %, 'fs_strong_bias_seq_bias', 'fs_weak_bias_paired'
 PAR.CFG.read_len = 75;
 
 %%%%% tracks, repeats, genes, genome info %%%%% 
@@ -23,8 +24,19 @@ switch CFG.organism
   PAR.CFG.repeats_fn = '';
   PAR.CFG.correct_intervals = 1;
 end
-PAR.anno_dir = sprintf('%s/annotation', CFG.base_dir);
-PAR.track = sprintf('%s/tracks/%s.bam', CFG.base_dir, CFG.exp);
+PAR.anno_dir = sprintf('%s/annotation/%s', CFG.base_dir, CFG.exp);
+%PAR.track = sprintf('%s/tracks/%s.bam', CFG.base_dir, CFG.exp)
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.sorted.bam'
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.sorted.bam'
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.mmr.sorted.bam' ;
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_weak_bias.noise0.015.mmr.sorted.bam' ;
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.best.sorted.bam' ;
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_weak_bias.noise0.015.sorted.bam' ;
+%PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.cross3.bam' ;
+
+PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_weak_bias.noise0.03.x2.sorted.bam' ;
+%PAR.CFG.repeats_fn='/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.mmr1.rep/' ;
+%PAR.CFG.repeats_fn='/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.03.x2.mmr1.rep/' ;
 
 %%%%% output files %%%%%
 PAR.output_dir = '';
@@ -65,10 +77,12 @@ if PAR.CFG.use_rproc,
   PAR.CFG.rproc_par.immediately       = 0;
   PAR.CFG.rproc_par.arch              = 64;
   PAR.CFG.rproc_par.identifier        = '';
-  PAR.CFG.rproc_par.verbosity         = 0;
+  PAR.CFG.rproc_par.verbosity         = 1;
   PAR.CFG.rproc_time                  = 5*60;
 end
 
+% !!!
+PAR.CFG.tracks_max_mismatches=0
 
 run_local = 1;
 
@@ -109,7 +123,7 @@ for s = 1:length(C_I),
         rproc_par.immediately       = 0;
         rproc_par.arch              = 64;
         rproc_par.identifier        = '';
-        rproc_par.verbosity         = 0;
+        rproc_par.verbosity         = 1;
         rproc_time                  = 72*60;
         rproc_par.identifier = sprintf('rq.%s-', CFG.organism(1:2));
         fprintf(1, 'Submitting job %s to cluster\n', rproc_par.identifier);
@@ -117,8 +131,11 @@ for s = 1:length(C_I),
         pause(60);
       else
         rquant_rproc(PAR);
+        out_fn=strrep(PAR.output_file, '.gff3', '.mat')
+        evaluation(out_fn, 'Pearson', 2, 1) ;
       end
     end
   end
 end
 end
+
