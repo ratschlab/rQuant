@@ -13,19 +13,22 @@ switch CFG.organism
  case 'arabidopsis'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/arabidopsis/TAIR10';
   PAR.CFG.repeats_fn = '';
+  PAR.CFG.genome_info = init_genome('/fml/ag-raetsch/share/databases/genomes/A_thaliana/arabidopsis_tair10/annotations/genome.gio/genome.config');
   PAR.CFG.correct_intervals = 1;
  case 'elegans'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200';
   PAR.CFG.repeats_fn = '/fml/ag-raetsch/nobackup/projects/rgasp.2/annotations/elegans/repeat_masker/tracks';
   PAR.CFG.genome_info = init_genome('/fml/ag-raetsch/nobackup/projects/rgasp/genomes/elegans/elegans.gio/genome.config');
-  PAR.CFG.correct_intervals = 1;
+  PAR.CFG.correct_intervals = 1; % 1 if genes is half open -> corrects to closed
  case 'human'
   CFG.base_dir = '/fml/ag-raetsch/share/projects/rquant/data_sim/human/HG19';
   PAR.CFG.repeats_fn = '';
   PAR.CFG.correct_intervals = 1;
 end
+%PAR.anno_dir = sprintf('%s/annotation', CFG.base_dir); % annotation, name must be genes.mat
 PAR.anno_dir = sprintf('%s/annotation/%s', CFG.base_dir, CFG.exp);
 %PAR.track = sprintf('%s/tracks/%s.bam', CFG.base_dir, CFG.exp)
+%PAR.track = sprintf('%s/tracks/%s.bam', CFG.base_dir, CFG.exp); % alignents (bai must be present)
 %PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.sorted.bam'
 %PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.sorted.bam'
 %PAR.track = '/fml/ag-raetsch/nobackup/projects/mip_spladder/alignments/human/artifical_reads_ns/reads_strong_bias.noise0.015.mmr.sorted.bam' ;
@@ -51,10 +54,10 @@ PAR.learn_profiles = 0; % 0: no learning, 1: empirically estimated, 2: optimised
 % pre-learned profiles
 PAR.load_profiles = 0;
 PAR.profiles_fn = '';
-% regularisation strengths
+% regularisation strengths 
 C_I = 100; %[10^0 10^1 10^2 10^3];
-C_F = 10^5; %[10^3 10^4 10^5 10^7];
-C_N = 1; %[10^0 10^2 10^5];
+C_F = 10^5; %[10^3 10^4 10^5 10^7]; (only used for profile optimisation)
+C_N = 1; %[10^0 10^2 10^5]; (only used for profile optimisation)
 C_PE = [10^2];%[10 10^2 10^3 10^4 5*10^4];
 
 %%%%% paired-end %%%%%
