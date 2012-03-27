@@ -34,11 +34,11 @@ clear PAR;
 %%%% paths
 addpath(CFG.paths);
 
-[genes.mean_ec] = deal([]);
-[genes.coverage] = deal([]);
-[genes.introns] = deal([]);
-[genes.transcript_weights] = deal([]);
-[genes.obj] = deal([]);
+[genes(:).mean_ec] = deal([]);
+[genes(:).coverage] = deal([]);
+[genes(:).introns] = deal([]);
+[genes(:).transcript_weights] = deal([]);
+[genes(:).obj] = deal([]);
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,

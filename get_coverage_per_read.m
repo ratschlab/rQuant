@@ -124,16 +124,18 @@ else
 end
   
 % process intron list (1: intron start, 2: intron stop, 3: confirmation, 4: strand)
-if nargout>2 && ~isempty(intron_list)
+if nargout>2 
   intron_list = [intron_list', zeros(size(intron_list,2), 1), (gene.strand=='-')*ones(size(intron_list,2), 1)];
-  intron_list_unique = unique(intron_list, 'rows');
-  for n = 1:size(intron_list_unique,1),
-    intron_list_unique(n,3) = sum(intron_list_unique(n,1)==intron_list(:,1) & ...
-                                  intron_list_unique(n,2)==intron_list(:,2) & ...
-                                  intron_list_unique(n,4)==intron_list(:,4));
+  if ~isempty(intron_list)
+      intron_list_unique = unique(intron_list, 'rows');
+      for n = 1:size(intron_list_unique,1),
+        intron_list_unique(n,3) = sum(intron_list_unique(n,1)==intron_list(:,1) & ...
+                                      intron_list_unique(n,2)==intron_list(:,2) & ...
+                                      intron_list_unique(n,4)==intron_list(:,4));
+      end
+      intron_list = intron_list_unique;
+      clear intron_list_unique;
   end
-  intron_list = intron_list_unique;
-  clear intron_list_unique;
 end
 
 % process read starts: count reads starting at each exonic position

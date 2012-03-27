@@ -20,6 +20,7 @@ function X = gen_sequence_features(CFG, genes, tscp_idx)
 %   Copyright (C) 2011 Max Planck Society
 %
 
+addpath(CFG.paths)
 
 P = sum([genes.exonic_len]); % number of positions
 S = 0;

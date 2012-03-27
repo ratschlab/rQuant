@@ -34,8 +34,8 @@ global RQUANT_VERSION
 % SAMTools path
 global SAMTOOLS_DIR
 RQUANT_VERSION='2.1';
-RQUANT_PATH='/fml/ag-raetsch/home/bohnert/svn/releases/rQuant/trunk';
-RQUANT_SRC_PATH='/fml/ag-raetsch/home/bohnert/svn/projects/rquant/src-dev';
+RQUANT_PATH='/fml/ag-raetsch/home/akahles/svn/releases/rQuant/trunk';
+RQUANT_SRC_PATH='/fml/ag-raetsch/home/akahles/svn/projects/rquant/src-dev';
 SAMTOOLS_DIR='/fml/ag-raetsch/share/software/samtools';
 addpath('~/svn/tools/rproc');
 addpath('~/svn/tools/utils');
