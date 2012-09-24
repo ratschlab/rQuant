@@ -26,16 +26,19 @@ function genes = opt_transcripts_caller(PAR)
 CFG = PAR.CFG;
 genes = PAR.genes;
 profile_weights = PAR.profile_weights;
+if CFG.norm_seqbias
+  seq_weights = PAR.seq_weights;
+end
 clear PAR;
 
 %%%% paths
 addpath(CFG.paths);
 
-[genes.mean_ec] = deal([]);
-[genes.coverage] = deal([]);
-[genes.introns] = deal([]);
-[genes.transcript_weights] = deal([]);
-[genes.obj] = deal([]);
+[genes(:).mean_ec] = deal([]);
+[genes(:).coverage] = deal([]);
+[genes(:).introns] = deal([]);
+[genes(:).transcript_weights] = deal([]);
+[genes(:).obj] = deal([]);
 
 chr_num = unique([genes.chr_num]);
 for c = chr_num,
@@ -44,8 +47,8 @@ for c = chr_num,
   for g = chr_idx,
     gene = genes(g);
     if CFG.VERBOSE>0, fprintf(1, '\ngene %i: %i isoform(s) with %i exonic positions\n', g, length(gene.transcripts), gene.exonic_len); end
-    if (gene.stop-gene.start+1)>10^5 || gene.exonic_len>10000 || length(gene.transcripts)>30
-      if CFG.VERBOSE>0, fprintf(1, 'gene too complex %i\n', g); end
+    if (gene.stop-gene.start+1)>10^7 || gene.exonic_len>20000 || length(gene.transcripts)>30
+      if CFG.VERBOSE>0, fprintf(1, 'gene too complex %i (genomic length=%i, exonic_length=%i, num transcripts=%i)\n', g, gene.stop-gene.start+1, gene.exonic_len, length(gene.transcripts)); end
       genes(g).transcript_weights(1:length(genes(g).transcripts)) = nan;
       genes(g).obj = nan;
       continue;
@@ -97,6 +100,19 @@ for c = chr_num,
       fidx = find(feat_val>0); 
       feat = feat(fidx,:); feat_val = feat_val(fidx,:); feat_val_next = feat_val_next(fidx,:);
       exon_mask(fidx,t) = gen_exon_mask(profile_weights(rev_idx,:), gene.transcript_len_bin(t), feat, feat_val, feat_val_next, [1:length(fidx)]', ones(length(fidx),1));
+      % normalise profile for sequence biases (depending on transcript sequence)
+      if CFG.norm_seqbias
+        tidx = [];
+        for e = 1:size(gene.exons{t},1),
+          tidx = [tidx, gene.exons{t}(e,1):gene.exons{t}(e,2)];
+          tidx = unique(tidx);
+        end
+        [tmp1 idx_exon_t tmp2]= intersect(gene.eidx, tidx);
+        assert(isequal(tmp2,[1:length(tidx)]));        
+        seq_coeff = ones(gene.exonic_len, 1);
+        seq_coeff(idx_exon_t, 1) = norm_sequence(CFG, gene, t, seq_weights);
+        exon_mask(:,t) = exon_mask(:,t) .* seq_coeff;
+      end
     end
     
     %%%%% prepare intron mask %%%%%
@@ -106,17 +122,22 @@ for c = chr_num,
       intron_mask = zeros(0,length(gene.transcripts));
       intron_count = [];
     end
-      
     %%%%% prepare repeat mask %%%%%
     repeat_mask = false(gene.exonic_len, 1); 
     fname = sprintf('%s/%s_repeat', CFG.repeats_fn, gene.chr);
+    %fname = sprintf('%s/%s', CFG.repeats_fn, gene.chr);
     if exist(sprintf('%s.pos', fname), 'file')
-      [map.pos map.repeats] = interval_query(fname, {'repeats'}, [gene.start;gene.stop]);
-      if ~isempty(map.pos)
-        [tmp idx1 idx2] = intersect(map.pos, gene.eidx);
-        assert(length(idx2)<=length(map.pos));
-        repeat_mask(idx2) = true;
-      end
+        %[map.pos map.repeats] = interval_query(fname, {'repeats'}, [gene.start;gene.stop]);
+        [map.pos map.tmp] = interval_query(fname, {'pos'}, [gene.start;gene.stop]);
+        if ~isempty(map.pos)
+            [tmp idx1 idx2] = intersect(map.pos, gene.eidx);
+            assert(length(idx2)<=length(map.pos));
+            repeat_mask(idx2) = true;
+        end
+    else
+        if ~isempty(CFG.repeats_fn),
+            warning('repeats file %s.pos missing\n', fname) ;
+        end ;
     end
     
     %%%%% segment or position-based %%%%%
@@ -146,7 +167,9 @@ for c = chr_num,
       else
         %assert(all(any(exon_mask([1:CFG.max_side_len-1, end-CFG.max_side_len+2:end],:),2)'));
       end  
+      %Prev=sum(any(exon_mask, 2)>0) 
       mask = (any(exon_mask, 2) & ~repeat_mask)';
+      %Aft=sum(mask>0)
       exon_mask = exon_mask(mask, :);
       coverage = coverage(mask, :);
     else

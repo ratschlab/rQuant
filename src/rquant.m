@@ -150,6 +150,15 @@ if ~isfield(CFG, 'paired'), CFG.paired = 0; end % usage of paired-end data
 if CFG.paired && ~isfield(CFG, 'C_PE'), CFG.C_PE = 100; end
 if CFG.paired, CFG.ins_sizes = []; end
 
+%%%%% sequence bias normalisation
+if ~isfield(CFG, 'norm_seqbias'), CFG.norm_seqbias = 0; end
+if CFG.norm_seqbias
+  CFG.seq.half_win_size = 20;
+  CFG.seq.order = 2;
+  CFG.seq.lambda = 1e-2;
+  CFG.seq.num_train_frac = 0.8;
+end
+
 %%%%% profile learning
 % enables loading of profiles from CFG.profiles_fn
 CFG.load_profiles = load_profiles;
@@ -158,7 +167,7 @@ CFG.learn_profiles = learn_profiles; % 0: no learning, 1: empirically estimated,
 % number of iterations
 CFG.max_iter = 100;
 % number of supporting points for profile functions
-CFG.num_plifs = 50;
+CFG.num_plifs = 100;
 % maximal number of positions to be considered at both transcript ends
 CFG.max_side_len = 500;
 % bins for different transcript lengths
@@ -170,16 +179,18 @@ CFG.max_num_train_exm = 1e6;
 % fraction of positions to be subsampled for learning profiles
 CFG.subsample_frac = 0.2;
 % regularisation strengths
-if ~isfield(CFG, 'C_F'), CFG.C_F = 10^4; end
+if ~isfield(CFG, 'C_F'), CFG.C_F = 100; end
 if ~isfield(CFG, 'C_N'), CFG.C_N = 10; end
 % checks of variable domains
 if CFG.load_profiles && CFG.learn_profiles==1,
   error('Pre-learned profiles cannot be used for empirical profile estimation.');
 end
+if CFG.norm_seqbias && CFG.learn_profiles==1,
+  error('Sequence bias estimation only works with density optimisation');
+end
 if ~exist(profiles_fn, 'file') && CFG.load_profiles
   error('File with pre-learned profiles does not exist.');
 end
-
 
 %%%%% rquant %%%%%
 save_fname = rquant_core(CFG);
@@ -194,7 +205,7 @@ end
 
 %%%%% write learned read density model %%%%%
 if ~isfield(CFG, 'write_density_model'), CFG.write_density_model = 1; end
-if CFG.write_density_model && CFG.learn_profiles>0 && ~isempty(profiles_fn_out)
+if CFG.write_density_model && ~isempty(profiles_fn_out)
   load(save_fname, 'profile_weights');
   write_density_model(CFG, profile_weights, profiles_fn_out);
 end

@@ -89,15 +89,35 @@ while 1
     exon_feat_ones = sparse(exon_feat_row, exon_feat_col, 1, length(exon_feat_col), T);
     [exon_mask, exon_mask_part1, exon_mask_part2] = gen_exon_mask(reshape(profile_weights, F, N), tscp_len_bin, exon_feat, exon_feat_val, exon_feat_val_next, exon_feat_row, exon_feat_col);
     %%% Rth1: residue for theta_f_n
-    Rth1 = (exon_feat_ones(idx_w_th1,:)-exon_feat(idx_w_th1,:))*weights';
+    if CFG.norm_seqbias
+      Rth1 = seq_coeff(idx_w_th1,:).*(exon_feat_ones(idx_w_th1,:)-exon_feat(idx_w_th1,:))*weights';
+    else
+      Rth1 = (exon_feat_ones(idx_w_th1,:)-exon_feat(idx_w_th1,:))*weights';
+    end
     %%% Rth2: residue for theta_f-1_n
-    Rth2 = exon_feat(idx_w_th2,:)*weights';
+    if CFG.norm_seqbias
+      Rth2 = seq_coeff(idx_w_th2,:).*exon_feat(idx_w_th2,:)*weights';
+    else
+      Rth2 = exon_feat(idx_w_th2,:)*weights';
+    end
     %%% R1: residue for theta_f_n independent variables
-    R1 = exon_mask_part2(idx_w_th1,:)*weights' - coverage(idx_w_th1);
+    if CFG.norm_seqbias
+      R1 = seq_coeff(idx_w_th1,:).*exon_mask_part2(idx_w_th1,:)*weights' - coverage(idx_w_th1);
+    else
+      R1 = exon_mask_part2(idx_w_th1,:)*weights' - coverage(idx_w_th1);
+    end
     %%% R2: residue for theta_f-1_n independent variables
-    R2 = exon_mask_part1(idx_w_th2,:)*weights' - coverage(idx_w_th2);
+    if CFG.norm_seqbias
+      R2 = seq_coeff(idx_w_th2,:).*exon_mask_part1(idx_w_th2,:)*weights' - coverage(idx_w_th2);
+    else
+      R2 = exon_mask_part1(idx_w_th2,:)*weights' - coverage(idx_w_th2);
+    end
     %%% R3: residue for theta_f/f-1_n independent variables
-    R3 = exon_mask(idx_wo_th,:)*weights' - coverage(idx_wo_th);
+    if CFG.norm_seqbias
+      R3 = seq_coeff(idx_wo_th,:).*exon_mask(idx_wo_th,:)*weights' - coverage(idx_wo_th);
+    else
+      R3 = exon_mask(idx_wo_th,:)*weights' - coverage(idx_wo_th);
+    end
     clear exon_mask exon_mask_part1 exon_mask_part2;
     %%% R4: residue for coupling transcript length bins
     R4 = 0;
@@ -152,7 +172,11 @@ while 1
     pw_nnz1 = pw_nnz; pw_nnz1(F*(N-1)+1:end) = false;
     pw_nnz2 = pw_nnz; pw_nnz2(1:F) = false;
     fidx = find(pw_nnz1(1:F*(N-1)) & pw_nnz2(F+1:end));
-    obj_alt = sum((exon_mask*weights'-coverage).^2) + R_const + CFG.C_N*sum((profile_weights(fidx)-profile_weights(fidx+F)).^2) + CFG.C_F*sum((profile_weights(pw_nnz)-profile_weights(p_adj_f(2,pw_nnz))).^2);
+    if CFG.norm_seqbias
+      obj_alt = sum((seq_coeff.*exon_mask*weights'-coverage).^2) + R_const + CFG.C_N*sum((profile_weights(fidx)-profile_weights(fidx+F)).^2) + CFG.C_F*sum((profile_weights(pw_nnz)-profile_weights(p_adj_f(2,pw_nnz))).^2);
+    else
+      obj_alt = sum((exon_mask*weights'-coverage).^2) + R_const + CFG.C_N*sum((profile_weights(fidx)-profile_weights(fidx+F)).^2) + CFG.C_F*sum((profile_weights(pw_nnz)-profile_weights(p_adj_f(2,pw_nnz))).^2);
+    end
     if ~(abs(fval(cnt)-obj_alt)<1e-3) % objective should be indentical to not-expanded objective
       if CFG.VERBOSE>1, fprintf(1, 'objectives differ %.6f (theta %i)\n', abs(fval(cnt)-obj_alt), p); end
     end

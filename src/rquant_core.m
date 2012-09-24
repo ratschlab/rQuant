@@ -59,11 +59,15 @@ if CFG.load_profiles
   else
     profile_weights = read_density_model(CFG.profiles_fn);
   end
+  if CFG.norm_seqbias
+    load(CFG.profiles_fn, 'seq_weights');
+  end
   if ~(size(profile_weights,1)==CFG.num_plifs && size(profile_weights,2)==size(CFG.transcript_len_ranges,1))
     error('Profiles have wrong dimensions.');
   end
 else
   profile_weights = ones(CFG.num_plifs, size(CFG.transcript_len_ranges,1));
+  seq_weights = [];
 end
 
 
@@ -80,13 +84,18 @@ end
 %%%%% read density estimation %%%%%
 if CFG.learn_profiles>0
   fprintf(1, '\nDetermining profile');
+  if CFG.norm_seqbias
+    fprintf(1, ' and sequence bias');
+  end
   if CFG.learn_profiles==1
     fprintf(1, ' by empirical estimation...\n\n');
+    assert(~CFG.norm_seqbias);
     profile_genes = genes;
     profile_weights = get_empirical_profiles(CFG, profile_genes);
     obj = 0;
   elseif CFG.learn_profiles==2
     fprintf(1, ' by optimisation...\n\n');
+    if 1
     profile_genes = genes([genes.is_alt]==0); % only single-transcript genes
     tscp_len_bin = zeros(1, length(profile_genes));
     for g = 1:length(profile_genes),
@@ -111,17 +120,26 @@ if CFG.learn_profiles>0
       profile_genes_idx = [profile_genes_idx, fidx(ridx(1:min_bin_num))];
     end
     profile_genes = profile_genes(profile_genes_idx);
-    ridx = randperm(length(profile_genes));
-    num_exm = min(length(profile_genes), 500);
-    profile_genes = profile_genes(ridx(1:num_exm));
+    %ridx = randperm(length(profile_genes));
+    %num_exm = min(length(profile_genes), 500);
+    %profile_genes = profile_genes(ridx(1:num_exm));
+    else
+      %load(sprintf('%s/profile_genes.mat', CFG.out_dir), 'profile_genes'); 
+      load('/fml/ag-raetsch/share/projects/rquant/data_sim/elegans/WS200/rquant/profile_genes.mat', 'profile_genes');
+      %load('~/tmp/profiles.mat', 'profile_genes');
+    end
     if CFG.VERBOSE>0, fprintf(1, 'Using %i genes for profile learning\n', length(profile_genes)); end
     tmp_VERBOSE = CFG.VERBOSE;
     CFG.VERBOSE = 2;
-    [profile_weights, obj] = opt_density(CFG, profile_genes, profile_weights);
+    [profile_weights, obj, seq_weights] = opt_density(CFG, profile_genes, profile_weights);
     CFG.VERBOSE = tmp_VERBOSE;
   end
   save_fname = sprintf('%s/profiles.mat', CFG.out_dir);
-  save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'obj');
+  if CFG.norm_seqbias
+    save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'seq_weights', 'obj');
+  else
+    save(save_fname, 'CFG', 'profile_genes', 'profile_weights', 'obj');
+  end
 end
 if CFG.VERBOSE>1
   profile_weights
@@ -132,6 +150,9 @@ end
 if CFG.VERBOSE>0, fprintf(1, '\nDetermining transcript weights...\n'); end
 PAR.CFG = CFG;
 PAR.profile_weights = profile_weights;
+if CFG.norm_seqbias
+  PAR.seq_weights = seq_weights;
+end
 if CFG.use_rproc
   num_genes_per_job = ceil(length(genes)/CFG.rproc_num_jobs);
   JOB_INFO = rproc_empty(CFG.rproc_num_jobs);
@@ -176,7 +197,11 @@ end
 % save results
 save_fname = CFG.output_file;
 if ~isempty(save_fname)
-  save(save_fname, 'CFG', 'genes', 'profile_weights');
+  if CFG.norm_seqbias
+    save(save_fname, 'CFG', 'genes', 'profile_weights', 'seq_weights');
+  else
+    save(save_fname, 'CFG', 'genes', 'profile_weights');
+  end
 end
 
 if CFG.VERBOSE>0, fprintf(1, '\n\nFinished transcript quantitation.\n'); end
