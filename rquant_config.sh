@@ -10,6 +10,6 @@
 
 
 export RQUANT_VERSION=2.0
-export RQUANT_PATH=/fml/ag-raetsch/home/akahles/svn/releases/rQuant/trunk
-export RQUANT_SRC_PATH=/fml/ag-raetsch/home/akahles/svn/projects/rquant/src-dev
-export SAMTOOLS_DIR=/fml/ag-raetsch/share/software/samtools
+export RQUANT_PATH=/cbio/grlab/home/akahles/svn/releases/rQuant/trunk
+export RQUANT_SRC_PATH=/cbio/grlab/home/akahles/svn/projects/rquant/src-dev
+export SAMTOOLS_DIR=/cbio/grlab/share/software/samtools
